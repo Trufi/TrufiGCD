@@ -998,7 +998,7 @@ end
 function TrGCDEventHandler(self, event, ...)
 	local arg1, _, _, _, arg5 = ...; -- arg1 - who,  arg5 - spellID
 	local spellicon = select(3, GetSpellInfo(arg5))
-	local casttime = select(7, GetSpellInfo(arg5))/1000
+	local casttime = select(4, GetSpellInfo(arg5))/1000
 	local spellname = GetSpellInfo(arg5)
 	local i,t = TrGCDPlayerDetect(arg1) -- i - номер пользователя, t = true - если кто то из пати или на арене
 	if (TrGCDEnable and t and TrGCDQueueOpt[i].enable) then
