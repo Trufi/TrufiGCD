@@ -1,13 +1,25 @@
 ## Interface: 60000
+
 ## Title: TrufiGCD
-## Notes: View queue of last spells
+
+## Notes: Show last spells of player, party members and arena opponents
+
+## Version: 1.9
+
+## OptionalDeps: ButtonFacade, Masque
+
 ## SavedVariables: TrufiGCDGlSave
 ## SavedVariablesPerCharacter: TrufiGCDChSave
-## OptionalDeps: ButtonFacade, Masque
+
+TrufiGCD_luncher.lua
 
 # Libraries
 Libs\LibStub\Libstub.lua
 
+# Modules
+modules\utils.lua
+modules\savedVariables.lua
+modules\blacklist.lua
+
 # Addon
 TrufiGCD.lua
-TrufiGCD.xml

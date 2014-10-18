@@ -1,4 +1,5 @@
--- TrufiGCD stevemyz@gmail.com
+local blacklist = TrufiGCD:require('blacklist')
+local utils = TrufiGCD:require('utils')
 
 --sizeicon = 30 
 --speed = sizeicon /1.6 --скорость перемотка
@@ -14,42 +15,6 @@ TrGCDCastSp = {} -- 0 - каст идет, 1 - каст прошел и не и�
 TrGCDCastSpBanTime = {} --время остановки каста
 TrGCDBL = {} -- черный список спеллов
 local BLSpSel = nil --выделенный спелл в блэклисте
-local InnerBL = { --закрытый черный список, по ID
-	61391, -- Тайфун x2
-	5374, -- Расправа х3
-	27576, -- Расправа (левая рука) х3
-	88263, -- Молот Праведника х3
-	98057, -- Великий воин Света
-	32175, -- Удар бури
-	32176, -- Удар бури (левая рука)
-	96103, -- Яростный выпад
-	85384, -- Яростный выпад (левая рука)
-	57794, -- Героический прыжок
-	52174, -- Героический прыжок
-	135299, -- Ледяная ловушка
-	121473, -- Теневой клинок
-	121474, -- Второй теневой клинок
-	114093, -- Хлещущий ветер (левая рука)
-	114089, -- Хлещущий ветер
-	115357, -- Свирепость бури
-	115360, -- Свирепость бури (левая рука)
-	127797, -- Вихрь урсола
-	102794, -- Вихрь урсола
-	50622, -- Вихрь клинков
-	122128, -- Божественная звезда (шп)
-	110745, -- Божественная звезда (не шп)
-	120696, -- Сияние (шп)
-	120692, -- Сияние (не шп)
-	115464, -- Целительная сфера
-	126526, -- Целительная сфера
-	132951, -- Осветительная ракета
-	107270, -- Танцующий журавль
-	137584, -- Бросок сюрикена
-	137585, -- Бросок сюрикена левой рукой
-	117993, -- Ци-полет (дамаг)
-	124040, -- Ци-полет (хил)
-	
-}
 local cross = "Interface\\TargetingFrame\\UI-RaidTargetingIcon_7"
 local skull = "Interface\\TargetingFrame\\UI-RaidTargetingIcon_8"
 local trinket = "Interface\\Icons\\inv_jewelry_trinketpvp_01"
@@ -117,12 +82,10 @@ local function ValueReverse(value) -- функция после нажатия C
 	if (t) then t = false else t = true end
 	return t
 end
-local TrGCDLoadFrame = CreateFrame("Frame", nil, UIParent)
-TrGCDLoadFrame:RegisterEvent("ADDON_LOADED")
-TrGCDLoadFrame:SetScript("OnEvent", TrufiGCDAddonLoaded)
+
 function TrufiGCDAddonLoaded(self, event, ...)
 	local arg1 = ...;
-	if (arg1 == "TrufiGCD" and event == "ADDON_LOADED") then 
+	if true then 
 		--Load options
 		TrGCDQueueOpt = {}
 		local TrGCDNullOptions = false -- настройки пустые?
@@ -164,10 +127,6 @@ function TrufiGCDAddonLoaded(self, event, ...)
 				TrGCDQueueOpt[i].width = TrufiGCDChSave["TrGCDQueueFr"][i]["width"]
 				TrGCDQueueOpt[i].speed = TrufiGCDChSave["TrGCDQueueFr"][i]["speed"]
 			end				
-		end
-		--Проверка на пустой Черный Список
-		if (TrufiGCDChSave["TrGCDBL"] == nil) then TrGCDBLDefaultSetting()
-		else TrGCDBL = TrufiGCDChSave["TrGCDBL"]
 		end
 		-- Проверка на пустые EnableIn
 		-- NEW MODE, TrufiGCDChSave["EnableIn"] - ["PvE"], ["Arena"], ["Bg"], ["World"] = true or false
@@ -361,100 +320,9 @@ function TrufiGCDAddonLoaded(self, event, ...)
 			TrGCDGUI.widthslider[i]:Show()
 		end
 		InterfaceOptions_AddCategory(TrGCDGUI)
-		--добавления вкладки Spell Black List
-		TrGCDGUI.BL = CreateFrame ("Frame", nil, UIParent, "OptionsBoxTemplate")
-		TrGCDGUI.BL:Hide()
-		TrGCDGUI.BL.name = "Blacklist"
-		TrGCDGUI.BL.parent = "TrufiGCD"
-		TrGCDGUI.BL.ScrollBD = CreateFrame ("Frame", nil, TrGCDGUI.BL)
-		TrGCDGUI.BL.ScrollBD:SetPoint("TOPLEFT", TrGCDGUI.BL, "TOPLEFT",10, -25)
-		TrGCDGUI.BL.ScrollBD:SetWidth(200)
-		TrGCDGUI.BL.ScrollBD:SetHeight(501)		
-		TrGCDGUI.BL.ScrollBD:SetBackdrop({bgFile = nil,
-			edgeFile = "Interface/Tooltips/UI-Tooltip-Border", 
-			tile = true, tileSize = 16, edgeSize = 16, 
-			insets = {left = 0, right = 0, top = 0, bottom = 0}})		
-		TrGCDGUI.BL.Scroll = CreateFrame ("ScrollFrame", nil, TrGCDGUI.BL)
-		TrGCDGUI.BL.Scroll:SetPoint("TOPLEFT", TrGCDGUI.BL, "TOPLEFT",10, -30)
-		TrGCDGUI.BL.Scroll:SetWidth(200)
-		TrGCDGUI.BL.Scroll:SetHeight(488)
-		TrGCDGUI.BL.Scroll.ScrollBar = CreateFrame("Slider", "TrGCDBLScroll", TrGCDGUI.BL.Scroll, "UIPanelScrollBarTemplate") 
-		TrGCDGUI.BL.Scroll.ScrollBar:SetPoint("TOPLEFT", TrGCDGUI.BL.Scroll, "TOPRIGHT", 1, -16) 
-		TrGCDGUI.BL.Scroll.ScrollBar:SetPoint("BOTTOMLEFT", TrGCDGUI.BL.Scroll, "BOTTOMRIGHT", 1, 16) 
-		TrGCDGUI.BL.Scroll.ScrollBar:SetMinMaxValues(1, 470) 
-		TrGCDGUI.BL.Scroll.ScrollBar:SetValueStep(1) 
-		TrGCDGUI.BL.Scroll.ScrollBar.Bg = TrGCDGUI.BL.Scroll.ScrollBar:CreateTexture(nil, "BACKGROUND") 
-		TrGCDGUI.BL.Scroll.ScrollBar.Bg:SetAllPoints(TrGCDGUI.BL.Scroll.ScrollBar) 
-		TrGCDGUI.BL.Scroll.ScrollBar.Bg:SetTexture(0, 0, 0, 0.4) 
-		TrGCDGUI.BL.Scroll.ScrollBar:SetValue(0) 
-		TrGCDGUI.BL.Scroll.ScrollBar:SetScript("OnValueChanged", function (self, value) 
-			self:GetParent():SetVerticalScroll(value) 
-		end) 
-		TrGCDGUI.BL.List = CreateFrame ("Frame", nil, TrGCDGUI.BL.Scroll)
-		--TrGCDGUI.BL.List:SetPoint("TOPLEFT", TrGCDGUI.BL.Scroll, "TOPLEFT",10, -35)
-		TrGCDGUI.BL.List:SetWidth(200)
-		TrGCDGUI.BL.List:SetHeight(958)
-		TrGCDGUI.BL.List.Text = TrGCDGUI.BL.List:CreateFontString(nil, "BACKGROUND")
-		TrGCDGUI.BL.List.Text:SetFont("Fonts\\FRIZQT__.TTF", 12)
-		TrGCDGUI.BL.List.Text:SetText("Blacklist")
-		TrGCDGUI.BL.List.Text:SetPoint("TOPLEFT", TrGCDGUI.BL.List, "TOPLEFT", 15, 15)
-		TrGCDGUI.BL.Spell = {}
-		TrGCDGUI.BL.TextSpell = TrGCDGUI.BL:CreateFontString(nil, "BACKGROUND")
-		TrGCDGUI.BL.TextSpell:SetFont("Fonts\\FRIZQT__.TTF", 12)
-		TrGCDGUI.BL.TextSpell:SetText("Select spell")
-		TrGCDGUI.BL.Delete = AddButton(TrGCDGUI.BL,"TOPLEFT",260,-130,22,100,"Delete")
-		TrGCDGUI.BL.TextSpell:SetPoint("TOPLEFT", TrGCDGUI.BL.Delete, "TOPLEFT", 5, 15)
-		for i=1,60 do
-			TrGCDGUI.BL.Spell[i] = AddButton(TrGCDGUI.BL.List,"TOP",0,(-(i-1)*16),15,192,_,11," ",true)
-			TrGCDGUI.BL.Spell[i]:Disable()
-			TrGCDGUI.BL.Spell[i].Number = i
-			TrGCDGUI.BL.Spell[i].Text:SetAllPoints(TrGCDGUI.BL.Spell[i])
-			TrGCDGUI.BL.Spell[i].Texture = TrGCDGUI.BL.Spell[i]:CreateTexture(nil, "BACKGROUND")
-			TrGCDGUI.BL.Spell[i].Texture:SetAllPoints(TrGCDGUI.BL.Spell[i])
-			TrGCDGUI.BL.Spell[i].Texture:SetTexture(255, 210, 0)
-			TrGCDGUI.BL.Spell[i].Texture:SetAlpha(0)
-			TrGCDGUI.BL.Spell[i]:SetScript("OnEnter", function (self) if (BLSpSel ~= self) then self.Texture:SetAlpha(0.3) end end)
-			TrGCDGUI.BL.Spell[i]:SetScript("OnLeave", function (self) if (BLSpSel ~= self) then self.Texture:SetAlpha(0) end end)			
-			TrGCDGUI.BL.Spell[i]:SetScript("OnClick", function (self) 
-				if (BLSpSel ~= nil) then BLSpSel.Texture:SetAlpha(0) end
-				BLSpSel = self 
-				self.Texture:SetAlpha(0.6) 
-				TrGCDGUI.BL.TextSpell:SetText(self.Text:GetText())
-			end)	
-		end	
-		TrGCDLoadBlackList()		
-		TrGCDGUI.BL.Delete:SetScript("OnClick", function () 
-			if (BLSpSel ~= nil) then
-				table.remove(TrGCDBL, BLSpSel.Number)
-				TrGCDGUI.BL.TextSpell:SetText("Select spell")
-				TrGCDLoadBlackList()
-			end
-		end) 
-		TrGCDGUI.BL.Scroll:SetScrollChild(TrGCDGUI.BL.List)
-		TrGCDGUI.BL.AddEdit = CreateFrame("EditBox", nil, TrGCDGUI.BL, "InputBoxTemplate")
-		TrGCDGUI.BL.AddEdit:SetWidth(200)
-		TrGCDGUI.BL.AddEdit:SetHeight(20)
-		TrGCDGUI.BL.AddEdit:SetPoint("TOPLEFT", TrGCDGUI.BL, "TOPLEFT", 265, -200)
-		TrGCDGUI.BL.AddEdit:SetAutoFocus(false)
-		TrGCDGUI.BL.AddButt = AddButton(TrGCDGUI.BL,"TOPLEFT",260,-225,22,100,"Add",12,"Enter spell name or spell ID")
-		TrGCDGUI.BL.AddButt.Text:SetPoint("TOPLEFT",TrGCDGUI.BL.AddButt,"TOPLEFT", 5, 40)
-		TrGCDGUI.BL.AddButt:SetScript("OnClick", function (self) TrGCDBLAddSpell(self) end)
-		TrGCDGUI.BL.AddEdit:SetScript("OnEnterPressed", function (self) TrGCDBLAddSpell(self) end)
-		TrGCDGUI.BL.AddEdit:SetScript("OnEscapePressed", function (self) self:ClearFocus() end)	
-		TrGCDGUI.BL.AddButt.Text2 = TrGCDGUI.BL.List:CreateFontString(nil, "BACKGROUND")
-		TrGCDGUI.BL.AddButt.Text2:SetFont("Fonts\\FRIZQT__.TTF", 11)
-		--TrGCDGUI.BL.AddButt.Text2:SetText("Blacklist can be loaded from the saved settings,\nbut does not restore the default.")
-		TrGCDGUI.BL.AddButt.Text2:SetPoint("BOTTOMLEFT", TrGCDGUI.BL.AddButt, "BOTTOMLEFT", 0, -35)
-		--кнопка загрузки настроек сохраненных в кэше
-		TrGCDGUI.BL.ButtonLoad = AddButton(TrGCDGUI.BL,"TOPRIGHT",-145,-30,22,100,"Load",10,"Load saving blacklist")
-		TrGCDGUI.BL.ButtonLoad:SetScript("OnClick", TrGCDBLLoadSetting) 
-		--кнопки сохранения настроек в кэш
-		TrGCDGUI.BL.ButtonSave = AddButton(TrGCDGUI.BL,"TOPRIGHT",-260,-30,22,100,"Save",10,"Save blacklist to cache")
-		TrGCDGUI.BL.ButtonSave:SetScript("OnClick", TrGCDBLSaveSetting) 
-		--кнопка восстановления стандартных настроек
-		TrGCDGUI.BL.ButtonRes = AddButton(TrGCDGUI.BL,"TOPRIGHT",-30,-30,22,100,"Default",10,"Restore default blacklist")
-		TrGCDGUI.BL.ButtonRes:SetScript("OnClick", function () TrGCDBLDefaultSetting() TrGCDLoadBlackList() end) 		
-		InterfaceOptions_AddCategory(TrGCDGUI.BL)
+
+		InterfaceOptions_AddCategory(blacklist:getSettingsFrame())
+
 		-- Creating event enter arena/bg event frame
 		TrGCDEnterEventFrame = CreateFrame("Frame", nil, UIParent)
 		TrGCDEnterEventFrame:RegisterEvent("PLAYER_ENTERING_BATTLEGROUND")
@@ -598,57 +466,6 @@ function TrGCDEnterEventHandler(self, event, ...) -- эвент, когда иг
 			else TrGCDEnable = false end
 		end
 	end
-end
-function TrGCDLoadBlackList() -- загрузка черного списка
-	for i=1,60 do
-		if (TrGCDBL[i] ~= nil) then
-			local spellname = GetSpellInfo(TrGCDBL[i])
-			if (spellname == nil) then spellname = TrGCDBL[i] end
-			TrGCDGUI.BL.Spell[i]:Enable()
-			TrGCDGUI.BL.Spell[i].Text:SetText(spellname)
-		else
-			TrGCDGUI.BL.Spell[i]:Disable()
-			TrGCDGUI.BL.Spell[i].Text:SetText(nil)
-			TrGCDGUI.BL.Spell[i].Texture:SetAlpha(0)
-		end
-	end
-end
-function TrGCDBLAddSpell(self)
-	if (TrGCDGUI.BL.AddEdit:GetText() ~= nil) then
-		local spellname = TrGCDGUI.BL.AddEdit:GetText()
-		if (#TrGCDBL < 60) then
-		--local spellicon = select(3, GetSpellInfo(TrGCDGUI.BL.AddEdit:GetText()))
-		--if (spellicon ~= nil) then
-			table.insert(TrGCDBL, spellname)
-			TrGCDLoadBlackList()
-			--TrGCDGUI.BL.AddEdit:SetText("")
-			TrGCDGUI.BL.AddEdit:ClearFocus()
-			--TrGCDGUI.BL.AddButt.Text2:SetText()
-		--else TrGCDGUI.BL.AddButt.Text2:SetText('Spell not find, please try again.') end
-		end
-	end
-end
-function TrGCDBLSaveSetting()
-	if (TrufiGCDGlSave == nil) then TrufiGCDGlSave = {} end
-	TrufiGCDGlSave["TrGCDBL"] = {}
-	for i=1,#TrGCDBL do	TrufiGCDGlSave["TrGCDBL"][i] = TrufiGCDChSave["TrGCDBL"][i]	end
-end
-function TrGCDBLLoadSetting()
-	if ((TrufiGCDChSave ~= nil) and (TrufiGCDGlSave["TrGCDQueueFr"] ~= nil)) then
-		for i=1,#TrufiGCDGlSave["TrGCDBL"] do TrufiGCDChSave["TrGCDBL"][i] = TrufiGCDGlSave["TrGCDBL"][i] end
-		if (#TrufiGCDGlSave["TrGCDBL"] < #TrufiGCDChSave["TrGCDBL"]) then 
-			for i=(#TrufiGCDGlSave["TrGCDBL"]+1),#TrufiGCDChSave["TrGCDBL"] do TrufiGCDChSave["TrGCDBL"][i] = nil end 
-		end
-		TrGCDLoadBlackList()
-	end
-end
-function TrGCDBLDefaultSetting()
-	if (TrufiGCDChSave == nil) then TrufiGCDChSave = {} end
-	TrufiGCDChSave["TrGCDBL"] = {}
-	TrGCDBL = TrufiGCDChSave["TrGCDBL"]
-	TrGCDBL[1] = 6603 --автоатака
-	TrGCDBL[2] = 75 --автовыстрел
-	TrGCDBL[3] = 7384 --превосходствo
 end
 function TrGCDSaveSettings()
 	if (TrufiGCDGlSave == nil) then TrufiGCDGlSave = {} end
@@ -1004,11 +821,11 @@ function TrGCDEventHandler(self, event, ...)
 	if (TrGCDEnable and t and TrGCDQueueOpt[i].enable) then
 		--print(arg5 .. " - " .. spellname)
 		local blt = true -- для открытого черного списка
-		local sblt = true -- для закрытого черного списка (внутри по ID)
 		TrGCDInsSp["time"][i] = GetTime()	
-		for l=1, #TrGCDBL do if ((TrGCDBL[l] == spellname) or (GetSpellInfo(TrGCDBL[l]) == spellname)) then blt = false end end -- проверка на черный список
-		for l=1, #InnerBL do if (InnerBL[l] == arg5) then sblt = false end end -- проверка на закрытый черный список
-		if ((spellicon ~= nil) and t and blt and sblt and (GetSpellLink(arg5) ~= nil)) then
+
+		if (blacklist:has(arg5)) then blt = false end -- проверка на черный список
+
+		if ((spellicon ~= nil) and t and blt and (GetSpellLink(arg5) ~= nil)) then
 			if (arg5 == 42292) then spellicon = trinket end --замена текстуры пвп тринкета
 				local IsChannel = UnitChannelInfo(arg1)--ченнелинг ли спелл
 			if (event == "UNIT_SPELLCAST_START") then
@@ -1123,3 +940,5 @@ function TrGCDUpdate(self)
 	end
 end
 
+
+TrufiGCDAddonLoaded()
