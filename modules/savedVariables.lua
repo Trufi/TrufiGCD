@@ -8,6 +8,10 @@ TrufiGCD:define('savedVariables', function()
         blacklist = 'TrGCDBL'
     }
 
+    function Test()
+        utils.log(characterSaves, true)
+    end
+
     return {
         getCommon = function(self, name)
             local finallyName = redirectionTable[name] or name

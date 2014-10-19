@@ -16,23 +16,38 @@ TrufiGCD:define('utils', function()
         return res
     end
 
-    utils.log = function(msg)
+    utils.log = function(msg, isDeep, name, _layerNum)
+        local offset = ''
+
+        if name ~= nil then
+            name = name .. ' = '
+        else
+            name = ''
+        end
+
+        _layerNum = _layerNum or 0
+        for i = 0, _layerNum do
+            offset = offset .. '  '
+        end
+
         if type(msg) == 'table' then
-            print('{')
+            print(offset .. name .. '{')
             for i, el in pairs(msg) do
                 local txt = el
 
-                if type(el) == 'function' then txt = 'function' end
-
-                print('  ' .. i .. ' = ' .. txt)
+                if isDeep and type(el) == 'table' then
+                    utils.log(el, true, i, _layerNum + 1)
+                else
+                    if type(el) == 'function' then txt = 'function'
+                    elseif type(el) == 'table' then txt = 'table' end
+                    print(offset .. '  ' .. i .. ' = ' .. tostring(txt))
+                end
             end
-            print('}')
+            print(offset .. '}')
         else
-            if type(msg) == 'function' then 
-                print('function')
-            else
-                print(msg)
-            end
+            if msg == nil then msg = 'nil'
+            elseif type(msg) == 'function' then msg = 'function' end
+            print(offset .. msg)
         end
     end
 

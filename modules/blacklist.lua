@@ -238,7 +238,7 @@ TrufiGCD:define('blacklist', function()
             if (list[i] ~= nil) then
                 local spellname = GetSpellInfo(list[i])
 
-                if spellname ~= nil then
+                if tonumber(list[i]) ~= nil and spellname ~= nil then
                     listSpells[i].topText:SetText(list[i] .. ' - ' .. spellname)
                 else
                     listSpells[i].topText:SetText(list[i])
