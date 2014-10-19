@@ -236,9 +236,15 @@ TrufiGCD:define('blacklist', function()
     local function initListFrame()
         for i = 1, 60 do
             if (list[i] ~= nil) then
-                local spellname = GetSpellInfo(list[i]) or list[i]
+                local spellname = GetSpellInfo(list[i])
+
+                if spellname ~= nil then
+                    listSpells[i].topText:SetText(list[i] .. ' - ' .. spellname)
+                else
+                    listSpells[i].topText:SetText(list[i])
+                end
+
                 listSpells[i]:Enable()
-                listSpells[i].topText:SetText(spellname)
             else
                 listSpells[i]:Disable()
                 listSpells[i].topText:SetText(nil)

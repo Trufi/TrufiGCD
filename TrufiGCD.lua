@@ -14,7 +14,6 @@ local DurTimeImprove = 0.0 --продолжительность ускоренн
 TrGCDCastSp = {} -- 0 - каст идет, 1 - каст прошел и не идет
 TrGCDCastSpBanTime = {} --время остановки каста
 TrGCDBL = {} -- черный список спеллов
-local BLSpSel = nil --выделенный спелл в блэклисте
 local cross = "Interface\\TargetingFrame\\UI-RaidTargetingIcon_7"
 local skull = "Interface\\TargetingFrame\\UI-RaidTargetingIcon_8"
 local trinket = "Interface\\Icons\\inv_jewelry_trinketpvp_01"
