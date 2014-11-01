@@ -20,6 +20,7 @@ Libs\LibStub\Libstub.lua
 modules\utils.lua
 modules\savedVariables.lua
 modules\blacklist.lua
+modules\unitFrame.lua
 
 # Addon
 TrufiGCD.lua

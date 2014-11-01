@@ -310,7 +310,7 @@ TrufiGCD:define('blacklist', function()
         topText = {
             size = 10,
             text = 'Save blacklist to cache'
-            }
+        }
     })
     saveSettingsButton:SetScript('OnClick', function()
         commonSaves = utils.clone(list)

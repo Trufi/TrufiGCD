@@ -2,6 +2,8 @@ TrufiGCD:define('trufigcd', function()
 	local blacklist = TrufiGCD:require('blacklist')
 	local utils = TrufiGCD:require('utils')
 
+	local unitFrame = TrufiGCD:require('unitFrame')
+
 	--sizeicon = 30 
 	--speed = sizeicon /1.6 --скорость перемотка
 	local TimeGcd = 1.6
