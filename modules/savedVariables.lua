@@ -1,36 +1,92 @@
 TrufiGCD:define('savedVariables', function()
     local utils = TrufiGCD:require('utils')
+    local EventEmitter = TrufiGCD:require('eventEmitter')
 
     local commonSaves = TrufiGCDGlSave or {}
     local characterSaves = TrufiGCDChSave or {}
 
+    -- new name to old names
     local redirectionTable = {
-        blacklist = 'TrGCDBL'
+        blacklist = 'TrGCDBL',
+        spellTooltip = {
+            enable = 'TooltipEnable',
+            showInChatId = 'TooltipSpellID'
+        }
     }
 
-    return {
-        getCommon = function(self, name)
-            local finallyName = redirectionTable[name] or name
+    local savedVariables = EventEmitter:new()
 
-            return utils.clone(commonSaves[finallyName], true)
-        end,
+    function savedVariables:getCommon(name)
+        local finallyName = redirectionTable[name] or name
+        local res
 
-        getCharacter = function(self, name)
-            local finallyName = redirectionTable[name] or name
+        if type(finallyName) == 'table' then
+            res = {}
 
-            return utils.clone(characterSaves[finallyName], true)
-        end,
-
-        setCommon = function(self, name, settings)
-            local finallyName = redirectionTable[name] or name
-
-            commonSaves[finallyName] = utils.clone(settings, true)
-        end,
-
-        setCharacter = function(self, name, settings)
-            local finallyName = redirectionTable[name] or name
-
-            characterSaves[finallyName] = utils.clone(settings, true)
+            table.foreach(finallyName, function(i, el)
+                res[i] = utils.clone(commonSaves[el], true)
+            end)
+        else
+            res = utils.clone(commonSaves[finallyName], true)
         end
-    }
+
+        return res
+    end
+
+    function savedVariables:getCharacter(name)
+        local finallyName = redirectionTable[name] or name
+        local res
+
+        if type(finallyName) == 'table' then
+            res = {}
+
+            table.foreach(finallyName, function(i, el)
+                res[i] = utils.clone(characterSaves[el], true)
+            end)
+        else
+            res = utils.clone(characterSaves[finallyName], true)
+        end
+
+        return res
+    end
+
+    function savedVariables:setCommon(name, settings)
+        local finallyName = redirectionTable[name] or name
+        local res
+
+        if type(finallyName) == 'table' then
+            res = {}
+
+            table.foreach(finallyName, function(i, el)
+                res[i] = utils.clone(settings[el], true)
+            end)
+        else
+            res = utils.clone(settings[finallyName], true)
+        end
+
+        commonSaves[finallyName] = res
+
+        self.emit('changeCommon')
+    end
+
+    function savedVariables:setCharacter(name, settings)
+        local finallyName = redirectionTable[name] or name
+        local res
+
+        if type(finallyName) == 'table' then
+            res = {}
+
+            table.foreach(finallyName, function(i, el)
+                res[i] = utils.clone(settings[el], true)
+            end)
+        else
+            res = utils.clone(settings[finallyName], true)
+        end
+
+        characterSaves[finallyName] = res
+
+        self.emit('change')
+    end
+
+    return savedVariables
 end)

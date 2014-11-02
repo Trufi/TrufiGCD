@@ -1,18 +1,25 @@
 TrufiGCD:define('spellTooltip', function()
     local utils = TrufiGCD:require('utils')
+    local savedVariables = TrufiGCD:require('savedVariables')
 
     local tooltip = {}
 
-    -- TODO: включен или нет из настроек, включен или нет вывод spellId в чат
+    local settings = savedVariables:getCharacter('spellTooltip')
 
-    GameTooltip_SetDefaultAnchor(GameTooltip)
+    -- update settings if player change it
+    savedVariables:on('change', function()
+        settings = savedVariables:getCharacter('spellTooltip')
+    end)
 
-    function tooltip:show(spellId)
-        if (self.spellId) then
+    function tooltip:show(spellId, frame)
+        if settings.enable and spellId and frame then
+            GameTooltip_SetDefaultAnchor(GameTooltip, frame)
             GameTooltip:SetSpellByID(spellId, false, false, true)
             GameTooltip:Show()
 
-            print(GetSpellLink(spellId) .. ' ID: ' .. spellId) end
+            if settings.showInChatId then
+                print(GetSpellLink(spellId) .. ' ID: ' .. spellId)
+            end
         end
     end
 
@@ -20,4 +27,5 @@ TrufiGCD:define('spellTooltip', function()
         GameTooltip:Hide()
     end
 
-end
+    return tooltip
+end)

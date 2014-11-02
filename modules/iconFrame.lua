@@ -44,6 +44,8 @@ TrufiGCD:define('iconFrame', function()
         -- mouse onLeave callback
         obj.onLeaveCallback = options.onLeaveCallback or (function() end)
 
+        self.__index = self
+
         local metatable = setmetatable(obj, self)
 
         metatable:createFrame()
@@ -74,7 +76,7 @@ TrufiGCD:define('iconFrame', function()
     end
 
     function Icon:onEnter()
-        spellTooltip:show(self.spellId)
+        spellTooltip:show(self.spellId, self.frame)
         obj.onEnterCallback()
     end
 

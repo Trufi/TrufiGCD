@@ -18,9 +18,12 @@ Libs\LibStub\Libstub.lua
 
 # Modules
 modules\utils.lua
+modules\eventEmitter.lua
 modules\savedVariables.lua
 modules\blacklist.lua
 modules\unitFrame.lua
+modules\iconFrame.lua
+modules\spellTooltip.lua
 
 # Addon
 TrufiGCD.lua
