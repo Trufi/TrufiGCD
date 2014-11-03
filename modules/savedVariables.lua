@@ -11,7 +11,8 @@ TrufiGCD:define('savedVariables', function()
         spellTooltip = {
             enable = 'TooltipEnable',
             showInChatId = 'TooltipSpellID'
-        }
+        },
+        unitFrame = 'TrGCDQueueFr'
     }
 
     local savedVariables = EventEmitter:new()
@@ -66,7 +67,7 @@ TrufiGCD:define('savedVariables', function()
 
         commonSaves[finallyName] = res
 
-        self.emit('changeCommon')
+        self:emit('changeCommon')
     end
 
     function savedVariables:setCharacter(name, settings)
@@ -85,7 +86,7 @@ TrufiGCD:define('savedVariables', function()
 
         characterSaves[finallyName] = res
 
-        self.emit('change')
+        self:emit('change')
     end
 
     return savedVariables

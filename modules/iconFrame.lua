@@ -1,8 +1,9 @@
-TrufiGCD:define('iconFrame', function()
+TrufiGCD:define('IconFrame', function()
     local utils = TrufiGCD:require('utils')
     local spellTooltip = TrufiGCD:require('spellTooltip')
+    local masqueHelper = TrufiGCD:require('masqueHelper')
 
-    local _idCounter = 0;
+    local _idCounter = 0
 
     local getUniqId = function()
         _idCounter = _idCounter + 1
@@ -25,8 +26,9 @@ TrufiGCD:define('iconFrame', function()
         -- size of frame in pixels
         obj.size = options.size
 
-        -- offset from start position at one direction
+        -- offset from start position in one direction
         obj.offset = 0
+        self.direction = options.direction or 'Left'
 
         obj.isShow = false
 
@@ -49,15 +51,17 @@ TrufiGCD:define('iconFrame', function()
         local metatable = setmetatable(obj, self)
 
         metatable:createFrame()
+        metatable:updateFramePosition()
 
         return metatable
     end
 
     function Icon:createFrame()
-        self.frame = createFrame('Button', nil, self.parentFrame)
+        self.frame = CreateFrame('Button', nil, self.parentFrame)
         self.frame:Hide()
-        self.frame:SetScript('OnEnter', self.onEnter)
-        self.frame:SetScript('OnLeave', self.onLeave)
+        self.frame:SetScript('OnEnter', function() self:onEnter() end)
+        self.frame:SetScript('OnLeave', function() self:onLeave() end)
+        --self.frame:SetPoint('LEFT', 0, 0)
 
         self.frame:SetWidth(self.size)
         self.frame:SetHeight(self.size)
@@ -66,28 +70,29 @@ TrufiGCD:define('iconFrame', function()
         self.frameTexture:SetAllPoints(self.frame)
 
         self.frameCanselTexture = self.frame:CreateTexture(nil, 'BORDER')
+        self.frameCanselTexture:SetAllPoints(self.frame)
         self.frameCanselTexture:SetTexture(crossTexture)
         --self.frameCanselTexture:SetAlpha(1)
         self.frameCanselTexture:Hide()
 
-        if Masque then
-            TrGCDMasqueIcons:AddButton(self.frame, {Icon = self.frameTexture})
-        end
+        masqueHelper:addIcon(self.frame, self.frameTexture)
     end
 
     function Icon:onEnter()
         spellTooltip:show(self.spellId, self.frame)
-        obj.onEnterCallback()
+        self:onEnterCallback()
     end
 
     function Icon:onLeave()
         spellTooltip:hide()
-        obj.onLeaveCallback()
+        self:onLeaveCallback()
     end
 
     function Icon:show()
         self.frame:Show()
+        self.frame:SetAlpha(1)
         self.isShow = true
+        self.frameCanselTexture:Hide()
     end
 
     function Icon:hide()
@@ -97,10 +102,39 @@ TrufiGCD:define('iconFrame', function()
 
     function Icon:setSize(size)
         self.size = size
+        self.frame:SetWidth(size)
+        self.frame:SetHeight(size)
     end
 
-    function Icon:setOffset(value)
-        self.offset = value
+    function Icon:updateFramePosition()
+        if self.direction == 'Left' then
+            self.frame:SetPoint('RIGHT', -self.offset, 0)
+        elseif self.direction == 'Right' then
+            self.frame:SetPoint('LEFT', self.offset, 0)
+        elseif self.direction == 'Up' then
+            self.frame:SetPoint('BOTTOM', 0, -self.offset)
+        else
+            self.frame:SetPoint('TOP', 0, self.offset)
+        end
+    end
+
+    function Icon:setDirection(str)
+        self.direction = str
+        self:updateFramePosition()
+    end
+
+    function Icon:setOffset(val)
+        self.offset = val
+        self:updateFramePosition()
+    end
+
+    function Icon:getOffset()
+        return self.offset
+    end
+
+    function Icon:changeOffset(val)
+        self.offset = self.offset + val
+        self:updateFramePosition()
     end
 
     function Icon:showCanselTexture()
@@ -111,8 +145,17 @@ TrufiGCD:define('iconFrame', function()
         self.frameCanselTexture:Hide()
     end
 
-    function Icon:setSpell(id)
+    function Icon:setSpell(id, texture)
         self.spellId = id
+        self.frameTexture:SetTexture(texture)
+    end
+
+    function Icon:setAlpha(val)
+        self.frame:SetAlpha(val)
+    end
+
+    function Icon:getId()
+        return self.id
     end
 
     return Icon

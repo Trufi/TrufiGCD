@@ -31,5 +31,10 @@ end
 local loadFrame = CreateFrame('Frame', nil, UIParent)
 loadFrame:RegisterEvent('ADDON_LOADED')
 loadFrame:SetScript('OnEvent', function(self, event, name) 
-    if name == 'TrufiGCD' and event == 'ADDON_LOADED' then loadAllDeps() end
+    if name == 'TrufiGCD' and event == 'ADDON_LOADED' then
+        loadAllDeps()
+
+        -- init main module
+        TrufiGCD:require('main')()
+    end
 end)

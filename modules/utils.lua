@@ -20,7 +20,7 @@ TrufiGCD:define('utils', function()
         local offset = ''
 
         if name ~= nil then
-            name = name .. ' = '
+            name = tostring(name) .. ' = '
         else
             name = ''
         end
@@ -49,6 +49,19 @@ TrufiGCD:define('utils', function()
             elseif type(msg) == 'function' then msg = 'function' end
             print(offset .. msg)
         end
+    end
+
+    utils.contain = function(collection, element)
+        local res = false
+
+        table.foreach(collection, function(i, el)
+            if el == element then
+                res = true
+                return false
+            end
+        end)
+
+        return res
     end
 
     return utils
