@@ -24,9 +24,9 @@ TrufiGCD:define('savedVariables', function()
         if type(finallyName) == 'table' then
             res = {}
 
-            table.foreach(finallyName, function(i, el)
+            for i, el in pairs(finallyName) do
                 res[i] = utils.clone(commonSaves[el], true)
-            end)
+            end
         else
             res = utils.clone(commonSaves[finallyName], true)
         end
@@ -41,9 +41,9 @@ TrufiGCD:define('savedVariables', function()
         if type(finallyName) == 'table' then
             res = {}
 
-            table.foreach(finallyName, function(i, el)
+            for i, el in pairs(finallyName) do
                 res[i] = utils.clone(characterSaves[el], true)
-            end)
+            end
         else
             res = utils.clone(characterSaves[finallyName], true)
         end
@@ -58,9 +58,9 @@ TrufiGCD:define('savedVariables', function()
         if type(finallyName) == 'table' then
             res = {}
 
-            table.foreach(finallyName, function(i, el)
+            for i, el in pairs(finallyName) do
                 res[i] = utils.clone(settings[el], true)
-            end)
+            end
         else
             res = utils.clone(settings[finallyName], true)
         end
@@ -77,9 +77,9 @@ TrufiGCD:define('savedVariables', function()
         if type(finallyName) == 'table' then
             res = {}
 
-            table.foreach(finallyName, function(i, el)
+            for i, el in pairs(finallyName) do
                 res[i] = utils.clone(settings[el], true)
-            end)
+            end
         else
             res = utils.clone(settings[finallyName], true)
         end

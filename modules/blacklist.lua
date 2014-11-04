@@ -49,7 +49,7 @@ TrufiGCD:define('blacklist', function()
     local commonSaves = nil
     local list = nil
 
-    function initSettings()
+    local function initSettings()
         commonSaves = savedVariables:getCommon('blacklist')
 
         if commonSaves == nil then

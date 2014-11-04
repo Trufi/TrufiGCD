@@ -47,14 +47,11 @@ TrufiGCD:define('UnitFrame', function()
         obj.text = options.text or 'None'
 
         -- count of next used icon
-        obj.indexIcon = 1
+        obj.indexIcon = obj.numberIcons + 1
 
         obj.speed = timeGcd / 1.6
 
         obj.iconsStack = {}
-
-        -- buffer in px between last icon and start position
-        obj.buffer = 0
 
         self.__index = self
 
@@ -157,10 +154,10 @@ TrufiGCD:define('UnitFrame', function()
     end
 
     function UnitFrame:updateIcons()
-        table.foreach(self.iconsFrames, function(i, el)
+        for i, el in pairs(self.iconsFrames) do
             el:setSize(self.sizeIcons)
             el:setDirection(self.direction)
-        end)
+        end
 
         masqueHelper:reskinIcons()
     end
@@ -170,7 +167,7 @@ TrufiGCD:define('UnitFrame', function()
     end
 
     function UnitFrame:showIcon()
-        self.indexIcon = (self.indexIcon + 1) % (self.numberIcons + 1) + 1
+        self.indexIcon = self.indexIcon % (self.numberIcons + 1) + 1
 
         local icon = self.iconsFrames[self.indexIcon]
         icon:setOffset(0)
@@ -191,10 +188,9 @@ TrufiGCD:define('UnitFrame', function()
 
     function UnitFrame:update(time)
         local buffer = math.min(self.iconsFrames[self.indexIcon]:getOffset(), self.sizeIcons)
-        local lastIconIsShow = self.iconsFrames[self.indexIcon].isShow
         local fastSpeed = self.speed * fastSpeedModificator * (#self.iconsStack + 1)
-        local offset
-        local fastSpeedDuration
+        local offset = nil
+        local fastSpeedDuration = nil
 
         if #self.iconsStack > 0 then
             fastSpeedDuration = math.min((self.sizeIcons - buffer) / fastSpeed, time)
@@ -208,28 +204,70 @@ TrufiGCD:define('UnitFrame', function()
             offset = fastSpeedDuration * fastSpeed
         end
 
-        if #self.iconsStack > 0 and (buffer >= self.sizeIcons or not lastIconIsShow) then
+        if #self.iconsStack > 0 and (buffer >= self.sizeIcons or not self.iconsFrames[self.indexIcon].isShow) then
             self:showIcon()
         end
 
-        table.foreach(self.iconsFrames, function(i, el)
-            if not el.isShow then return end
+        for i, el in pairs(self.iconsFrames) do
+            if el.isShow then
+                local currentOffset = el:getOffset() + offset
 
-            local currentOffset = el:getOffset() + offset
+                el:setOffset(currentOffset)
 
-            el:setOffset(currentOffset)
+                local dist = currentOffset - self.longSize + self.sizeIcons
 
-            local dist = currentOffset - self.longSize + self.sizeIcons
-
-            if dist > 0 then
-                local alpha = 1 - dist / self.sizeIcons
-                if alpha > 0 then
-                    el:setAlpha(alpha)
-                else
-                    el:hide()
+                if dist > 0 then
+                    local alpha = 1 - dist / self.sizeIcons
+                    if alpha > 0 then
+                        el:setAlpha(alpha)
+                    else
+                        el:hide()
+                    end
                 end
             end
-        end)
+        end
+    end
+
+    function UnitFrame:getState()
+        local state = {
+            isMoving = self.isMoving,
+            indexIcon = self.indexIcon,
+            iconsStack = utils.clone(self.iconsStack),
+            icons = {}
+        }
+
+        for i, el in pairs(self.iconsFrames) do
+            state.icons[i] = el:getState()
+        end
+
+        return state
+    end
+
+    function UnitFrame:setState(state)
+        self.isMoving = state.isMoving
+        self.iconsStack = state.iconsStack
+
+        local stateIconsLength = #state.icons
+        local index = state.indexIcon + 1
+        local lastInd = 1
+
+        -- convert state icons to self icons with a different length
+        for i = self.numberIcons + 1, 1, -1 do
+            -- get previous icon index
+            index = index - 1 + stateIconsLength
+            -- division with remainder for lua array index
+            index = (index - 1) % stateIconsLength + 1
+
+            self.iconsFrames[i]:setState(state.icons[index])
+
+            if self.iconsFrames[i].isShow then
+                lastInd = i
+            end
+        end
+
+        self.indexIcon = lastInd % (self.numberIcons + 1) + 1
+
+        self:update(0)
     end
 
     return UnitFrame

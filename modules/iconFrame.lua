@@ -34,9 +34,6 @@ TrufiGCD:define('IconFrame', function()
 
         obj.isCancelTextureShow = false
 
-        -- time when moving started
-        obj.startTime = 0
-
         -- spell id of current icon
         obj.spellId = nil
 
@@ -139,10 +136,12 @@ TrufiGCD:define('IconFrame', function()
 
     function Icon:showCanselTexture()
         self.frameCanselTexture:Show()
+        self.isCancelTextureShow = true
     end
 
     function Icon:hideCanselTexture()
         self.frameCanselTexture:Hide()
+        self.isCancelTextureShow = false
     end
 
     function Icon:setSpell(id, texture)
@@ -156,6 +155,39 @@ TrufiGCD:define('IconFrame', function()
 
     function Icon:getId()
         return self.id
+    end
+
+    function Icon:getState()
+        return {
+            offset = self.offset,
+            isShow = self.isShow,
+            isCancelTextureShow = self.isCancelTextureShow,
+            spellId = self.spellId,
+            texture = self.frameTexture:GetTexture()
+        }
+    end
+
+    function Icon:setState(state)
+        self.isShow = state.isShow
+
+        self:setOffset(state.offset)
+
+        if self.isShow then
+            self.frame:Show()
+            self.frame:SetAlpha(1)
+        else
+            self.frame:Hide()
+        end
+
+        self.isCancelTextureShow = state.isCancelTextureShow
+
+        if self.isCancelTextureShow then
+            self:showCanselTexture()
+        else
+            self:hideCanselTexture()
+        end
+
+        self.frameTexture:SetTexture(state.texture)
     end
 
     return Icon

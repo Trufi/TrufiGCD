@@ -42,13 +42,13 @@ TrufiGCD:define('eventEmitter', function()
         if self.events[name] then
             data = data or {}
 
-            table.foreach(self.events[name], function(i, el)
+            for i, el in pairs(self.events[name]) do
                 el.callback(data)
 
                 if el.once then
                     table.remove(self.events[name], el.id)
                 end
-            end)
+            end
         end
     end
 

@@ -13,19 +13,20 @@ TrufiGCD:define('Unit', function()
 
     local unitsNames = {
         'player',
-        -- 'party1', 'party2', 'party3', 'party4',
-        -- 'arena1', 'arena2', 'arena3', 'arena4', 'arena5',
-        -- 'target', 'focus'
+        'party1', 'party2', 'party3', 'party4',
+        'arena1', 'arena2', 'arena3', 'arena4', 'arena5',
+        'target', 'focus'
     }
 
     local trinketIcon = 'Interface\\Icons\\inv_jewelry_trinketpvp_01'
 
     -- settings
-    function loadSettings()
+    local function loadSettings()
         settings = {}
 
         settings.unitFrames = {}
-        table.foreach(savedVariables:getCharacter('unitFrame'), function(i, el)
+
+        for i, el in pairs(savedVariables:getCharacter('unitFrame')) do
             if unitsNames[i] then
                 settings.unitFrames[unitsNames[i]] = {
                     offset = {el.x, el.y},
@@ -37,7 +38,7 @@ TrufiGCD:define('Unit', function()
                     text = unitsNames[i]
                 }
             end
-        end)
+        end
     end
 
     loadSettings()
@@ -185,6 +186,20 @@ TrufiGCD:define('Unit', function()
         if not self.enable then return end
 
         self.unitFrame:update(time)
+    end
+
+    function Unit:getState()
+        return {
+            isSpellCasting = self.isSpellCasting,
+            canseledSpell = utils.clone(self.canseledSpell),
+            unitFrame = self.unitFrame:getState()
+        }
+    end
+
+    function Unit:setState(state)
+        self.isSpellCasting = state.isSpellCasting
+        self.canseledSpell = state.canseledSpell
+        self.unitFrame:setState(state.unitFrame)
     end
 
     return Unit

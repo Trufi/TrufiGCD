@@ -1,5 +1,5 @@
 TrufiGCD:define('utils', function() 
-    utils = {}
+    local utils = {}
 
     utils.clone = function(table, isDeep)
         if type(table) ~= 'table' then return end
@@ -52,16 +52,13 @@ TrufiGCD:define('utils', function()
     end
 
     utils.contain = function(collection, element)
-        local res = false
-
-        table.foreach(collection, function(i, el)
+        for i, el in pairs(collection) do
             if el == element then
-                res = true
-                return false
+                return true
             end
-        end)
+        end
 
-        return res
+        return false
     end
 
     return utils
