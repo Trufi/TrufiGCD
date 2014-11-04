@@ -12,79 +12,75 @@ TrufiGCD:define('savedVariables', function()
             enable = 'TooltipEnable',
             showInChatId = 'TooltipSpellID'
         },
-        unitFrame = 'TrGCDQueueFr'
+        unitFrame = 'TrGCDQueueFr',
+        all = {
+            tooltip = {
+                enable = 'TooltipEnable',
+                showInChatId = 'TooltipSpellID',
+                stopMove = 'TooltipStopMove'
+            },
+            unitFrame = 'TrGCDQueueFr',
+            enableLocations = 'EnableIn',
+            typeMovingIcon = 'ModScroll'
+        }
     }
 
     local savedVariables = EventEmitter:new()
 
-    function savedVariables:getCommon(name)
-        local finallyName = redirectionTable[name] or name
-        local res
+    -- get from settings
+    local function recurrentGet(name, saves)
+        local res = nil
 
-        if type(finallyName) == 'table' then
+        if type(name) == 'table' then
             res = {}
 
-            for i, el in pairs(finallyName) do
-                res[i] = utils.clone(commonSaves[el], true)
+            for i, el in pairs(name) do
+                res = recurrentGet(el, saves)
             end
         else
-            res = utils.clone(commonSaves[finallyName], true)
+            res = utils.clone(saves[name], true)
         end
 
         return res
+    end
+
+    function savedVariables:getCommon(name)
+        local finallyName = redirectionTable[name] or name
+
+        return recurrentGet(finallyName, commonSaves)
     end
 
     function savedVariables:getCharacter(name)
         local finallyName = redirectionTable[name] or name
-        local res
 
-        if type(finallyName) == 'table' then
-            res = {}
+        return recurrentGet(finallyName, characterSaves)
+    end
 
+    -- set to settings
+    local function recurrentSet(name, settings, saves)
+        if type(name) == 'table' then
             for i, el in pairs(finallyName) do
-                res[i] = utils.clone(characterSaves[el], true)
+                if settings[i] then
+                    recurrentSet(el, settings[i], saves)
+                end
             end
         else
-            res = utils.clone(characterSaves[finallyName], true)
+            saves[name] = utils.clone(settings, true)
         end
-
-        return res
     end
 
     function savedVariables:setCommon(name, settings)
         local finallyName = redirectionTable[name] or name
-        local res
 
-        if type(finallyName) == 'table' then
-            res = {}
-
-            for i, el in pairs(finallyName) do
-                res[i] = utils.clone(settings[el], true)
-            end
-        else
-            res = utils.clone(settings[finallyName], true)
-        end
-
-        commonSaves[finallyName] = res
+        recurrentSet(name, settings, commonSaves)
 
         self:emit('changeCommon')
     end
 
     function savedVariables:setCharacter(name, settings)
         local finallyName = redirectionTable[name] or name
-        local res
 
-        if type(finallyName) == 'table' then
-            res = {}
-
-            for i, el in pairs(finallyName) do
-                res[i] = utils.clone(settings[el], true)
-            end
-        else
-            res = utils.clone(settings[finallyName], true)
-        end
-
-        characterSaves[finallyName] = res
+        recurrentSet(name, settings, characterSaves)
 
         self:emit('change')
     end

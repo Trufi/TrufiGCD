@@ -120,7 +120,7 @@ TrufiGCD:define('blacklist', function()
         local button = CreateFrame('Button', nil, parent, options.template)
         button:SetWidth(options.width or 100)
         button:SetHeight(options.height or 22)
-        button:SetPoint(position, parent, position, offset[1], offset[2])
+        button:SetPoint(position, offset[1], offset[2])
         button:SetText(text)
         if options.enable == false then button:Disable() end
 

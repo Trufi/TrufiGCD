@@ -86,8 +86,6 @@ TrufiGCD:define('UnitFrame', function()
     end
 
     function UnitFrame:createIcons()
-        local i
-
         self.iconsFrames = {}
 
         for i = 1, self.numberIcons + 1 do
@@ -183,10 +181,14 @@ TrufiGCD:define('UnitFrame', function()
     end
 
     function UnitFrame:hideCansel(index)
-        self.iconsFrames[index]:hideCanselTexture()
+        -- TODO: if change target between fake cansel and hide cansel, new hide cansel not done
+        if self.iconsFrames[index] then
+            self.iconsFrames[index]:hideCanselTexture()
+        end
     end
 
     function UnitFrame:update(time)
+        local lastIconOffset = self.iconsFrames[self.indexIcon].isShow and self.iconsFrames[self.indexIcon]:getOffset() or self.sizeIcons
         local buffer = math.min(self.iconsFrames[self.indexIcon]:getOffset(), self.sizeIcons)
         local fastSpeed = self.speed * fastSpeedModificator * (#self.iconsStack + 1)
         local offset = nil
@@ -249,25 +251,34 @@ TrufiGCD:define('UnitFrame', function()
 
         local stateIconsLength = #state.icons
         local index = state.indexIcon + 1
-        local lastInd = 1
 
         -- convert state icons to self icons with a different length
         for i = self.numberIcons + 1, 1, -1 do
-            -- get previous icon index
-            index = index - 1 + stateIconsLength
-            -- division with remainder for lua array index
-            index = (index - 1) % stateIconsLength + 1
+            if state.icons[i] then
+                -- get previous icon index
+                index = index - 1 + stateIconsLength
+                -- division with remainder for lua array index
+                index = (index - 1) % stateIconsLength + 1
 
-            self.iconsFrames[i]:setState(state.icons[index])
-
-            if self.iconsFrames[i].isShow then
-                lastInd = i
+                self.iconsFrames[i]:setState(state.icons[index])
+            else
+                break
             end
         end
 
-        self.indexIcon = lastInd % (self.numberIcons + 1) + 1
+        self.indexIcon = self.numberIcons + 1
 
         self:update(0)
+    end
+
+    function UnitFrame:clear()
+        self.isMoving = true
+        self.iconsStack = {}
+        self.indexIcon = self.numberIcons + 1
+
+        for i, el in pairs(self.iconsFrames) do
+            el:hide()
+        end
     end
 
     return UnitFrame

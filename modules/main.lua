@@ -60,7 +60,7 @@ local function init()
     eventFrame:SetScript('OnEvent', eventHandler)
     eventFrame:SetScript('OnUpdate', onUpdate)
 
-    -- 
+    -- player events
     local playerEventFrame = CreateFrame('Frame', nil, UIParent)
     --playerEventFrame:RegisterEvent('PLAYER_ENTERING_BATTLEGROUND')
     playerEventFrame:RegisterEvent('PLAYER_ENTERING_WORLD')
@@ -84,9 +84,11 @@ local function init()
             end
         end
 
-        if not oldType then return end
-
-        units[typeName]:setState(units[oldType]:getState())
+        if oldType then 
+            units[typeName]:setState(units[oldType]:getState())
+        else
+            units[typeName]:clearFrame()
+        end
     end
 
     local function playerEventHandler(self, event)

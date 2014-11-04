@@ -90,6 +90,7 @@ TrufiGCD:define('IconFrame', function()
         self.frame:SetAlpha(1)
         self.isShow = true
         self.frameCanselTexture:Hide()
+        self.isCancelTextureShow = false
     end
 
     function Icon:hide()

@@ -202,5 +202,13 @@ TrufiGCD:define('Unit', function()
         self.unitFrame:setState(state.unitFrame)
     end
 
+    function Unit:clearFrame()
+        self.unitFrame:clear()
+    end
+
+    function Unit:showAnchorFrame()
+        self.unitFrame:clear()
+    end
+
     return Unit
 end)
