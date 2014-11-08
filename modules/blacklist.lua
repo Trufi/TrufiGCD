@@ -113,20 +113,20 @@ TrufiGCD:define('blacklist', function()
         end
     end
 
-    local function createButton(parent, position, offset, text, options)
+    local function createButton(parent, point, offset, text, options)
         options = options or {}
         options.template = options.template or 'UIPanelButtonTemplate'
 
         local button = CreateFrame('Button', nil, parent, options.template)
         button:SetWidth(options.width or 100)
         button:SetHeight(options.height or 22)
-        button:SetPoint(position, offset[1], offset[2])
+        button:SetPoint(point, offset[1], offset[2])
         button:SetText(text)
         if options.enable == false then button:Disable() end
 
         if options.topText and options.topText.text then
             local size = options.topText.size or 10
-            local pos = options.topText.position or 'TOP'
+            local pos = options.topText.point or 'TOP'
             local ofs = options.topText.offset or {0, 10}
 
             button.topText = button:CreateFontString(nil, 'BACKGROUND')
@@ -193,7 +193,7 @@ TrufiGCD:define('blacklist', function()
         topText = {
             text = 'Select spell',
             size = 12,
-            position = 'TOPLEFT',
+            point = 'TOPLEFT',
             offset = {5, 15}
         }
     })
@@ -205,7 +205,7 @@ TrufiGCD:define('blacklist', function()
             width = 192,
             height = 15,
             template = true,
-            topText = {text = '', position = 'CENTER', offset = {0, 0}},
+            topText = {text = '', point = 'CENTER', offset = {0, 0}},
             enable = false
         })
 
@@ -276,7 +276,7 @@ TrufiGCD:define('blacklist', function()
         topText = {
             size = 12,
             text = 'Enter spell name or spell ID',
-            position = 'TOPLEFT',
+            point = 'TOPLEFT',
             offset = {5, 40}
         }
     })

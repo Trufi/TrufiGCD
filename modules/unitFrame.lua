@@ -33,7 +33,7 @@ TrufiGCD:define('UnitFrame', function()
         obj.direction = options.direction or 'Left'
 
         -- position relative from parent
-        obj.position = options.position or 'CENTER'
+        obj.point = options.point or 'CENTER'
 
         -- offset in pixels
         obj.offset = options.offset or {0, 0}
@@ -67,7 +67,7 @@ TrufiGCD:define('UnitFrame', function()
     function UnitFrame:createFrame()
         self.frame = CreateFrame('Frame', nil, UIParent)
         self.frame:RegisterForDrag('LeftButton')
-        self.frame:SetPoint(self.position, self.offset[1], self.offset[2])
+        self.frame:SetPoint(self.point, self.offset[1], self.offset[2])
 
         self.frame:SetScript('OnDragStart', self.onDragStart)
         self.frame:SetScript('OnDragStop', self.nDragStop)

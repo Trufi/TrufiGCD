@@ -30,7 +30,7 @@ TrufiGCD:define('Unit', function()
             if unitsNames[i] then
                 settings.unitFrames[unitsNames[i]] = {
                     offset = {el.x, el.y},
-                    position = el.point,
+                    point = el.point,
                     direction = el.fade,
                     sizeIcons = el.size,
                     numberIcons = el.width,

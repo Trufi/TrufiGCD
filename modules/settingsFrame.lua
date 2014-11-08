@@ -27,7 +27,7 @@ TrufiGCD:define('settingsFrame', function()
             if unitsNames[i] then
                 res[unitsNames[i]] = {
                     offset = {el.x, el.y},
-                    position = el.point,
+                    point = el.point,
                     direction = el.fade,
                     sizeIcons = el.size,
                     numberIcons = el.width,
@@ -48,7 +48,7 @@ TrufiGCD:define('settingsFrame', function()
                 res[numberOfUnitsNames[el]] = {
                     x = el.offset[1],
                     y = el.offset[2],
-                    point = el.position,
+                    point = el.point,
                     fade = el.direction,
                     size = el.sizeIcons,
                     width = el.numberIcons,
@@ -82,7 +82,7 @@ TrufiGCD:define('settingsFrame', function()
     for i, el in pairs(unitsNames) do
         defaultSettings.unitFrame = {
             offset = {0, 0},
-            position = 'CENTER',
+            point = 'CENTER',
             sizeIcons = 30,
             numberIcons = '4',
             direction = 'Left',
@@ -112,20 +112,20 @@ TrufiGCD:define('settingsFrame', function()
 
     initSettings()
 
-    local function createButton(parent, position, offset, text, options)
+    local function createButton(parent, point, offset, text, options)
         options = options or {}
         options.template = options.template or 'UIPanelButtonTemplate'
 
         local button = CreateFrame('Button', nil, parent, options.template)
         button:SetWidth(options.width or 100)
         button:SetHeight(options.height or 22)
-        button:SetPoint(position, offset[1], offset[2])
+        button:SetPoint(point, offset[1], offset[2])
         button:SetText(text)
         if options.enable == false then button:Disable() end
 
         if options.topText and options.topText.text then
             local size = options.topText.size or 10
-            local pos = options.topText.position or 'TOP'
+            local pos = options.topText.point or 'TOP'
             local ofs = options.topText.offset or {0, 10}
 
             button.topText = button:CreateFontString(nil, 'BACKGROUND')
@@ -137,9 +137,9 @@ TrufiGCD:define('settingsFrame', function()
         return button
     end
 
-    local function createCheckbox(parent, position, offset, text, name, enable, tooltip)
+    local function createCheckbox(parent, point, offset, text, name, enable, tooltip)
         local button = CreateFrame('CheckButton', name, parent, 'ChatConfigCheckButtonTemplate')
-        button:SetPoint(position, offset[1], offset[2])
+        button:SetPoint(point, offset[1], offset[2])
         button:SetChecked(enable)
 
         _G[name .. 'Text']:SetText(text)
@@ -158,8 +158,8 @@ TrufiGCD:define('settingsFrame', function()
         return button
     end
 
---local function AddButton(parent,position,x,y,height,width,text,font,texttop,template) --шаблон кнопки
---local function createButton(parent, position, offset, text, options)
+--local function AddButton(parent,point,x,y,height,width,text,font,texttop,template) --шаблон кнопки
+--local function createButton(parent, point, offset, text, options)
 
     -- main settings frame
     local frame = CreateFrame('Frame', nil, UIParent, 'OptionsBoxTemplate')
