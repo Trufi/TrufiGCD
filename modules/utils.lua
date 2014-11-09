@@ -16,6 +16,19 @@ TrufiGCD:define('utils', function()
         return res
     end
 
+    utils.extend = function(a, b)
+        if type(a) ~= 'table' or type(b) ~= 'table' then return end
+
+        for i, el in pairs(b) do
+            if type(el) == 'table' then
+                a[i] = a[i] or {}
+                utils.extend(a[i], el)
+            else
+                a[i] = el
+            end
+        end
+    end
+
     utils.log = function(msg, isDeep, name, _layerNum)
         local offset = ''
 

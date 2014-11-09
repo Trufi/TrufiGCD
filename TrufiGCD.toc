@@ -17,10 +17,13 @@ TrufiGCD_luncher.lua
 Libs\LibStub\Libstub.lua
 
 # Modules
+modules\config.lua
 modules\utils.lua
 modules\eventEmitter.lua
 modules\masqueHelper.lua
 modules\savedVariables.lua
+modules\settings.lua
+modules\oldSettingsCheck.lua
 modules\blacklist.lua
 modules\spellTooltip.lua
 modules\iconFrame.lua
@@ -29,4 +32,4 @@ modules\unit.lua
 modules\main.lua
 
 # Addon
-TrufiGCD.lua
+#TrufiGCD.lua

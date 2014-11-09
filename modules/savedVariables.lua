@@ -47,19 +47,27 @@ TrufiGCD:define('savedVariables', function()
     function savedVariables:getCommon(name)
         local finallyName = redirectionTable[name] or name
 
-        return recurrentGet(finallyName, commonSaves)
+        if finallyName then
+            return recurrentGet(finallyName, commonSaves)
+        else
+            return utils.clone(commonSaves, true)
+        end
     end
 
     function savedVariables:getCharacter(name)
         local finallyName = redirectionTable[name] or name
 
-        return recurrentGet(finallyName, characterSaves)
+        if finallyName then
+            return recurrentGet(finallyName, characterSaves)
+        else
+            return utils.clone(characterSaves, true)
+        end
     end
 
     -- set to settings
     local function recurrentSet(name, settings, saves)
         if type(name) == 'table' then
-            for i, el in pairs(finallyName) do
+            for i, el in pairs(name) do
                 if settings[i] then
                     recurrentSet(el, settings[i], saves)
                 end
@@ -72,7 +80,7 @@ TrufiGCD:define('savedVariables', function()
     function savedVariables:setCommon(name, settings)
         local finallyName = redirectionTable[name] or name
 
-        recurrentSet(name, settings, commonSaves)
+        recurrentSet(finallyName, settings, commonSaves)
 
         self:emit('changeCommon')
     end
@@ -80,7 +88,11 @@ TrufiGCD:define('savedVariables', function()
     function savedVariables:setCharacter(name, settings)
         local finallyName = redirectionTable[name] or name
 
-        recurrentSet(name, settings, characterSaves)
+        if settings then
+            recurrentSet(name, settings, characterSaves)
+        else
+            characterSaves[name] = nil
+        end
 
         self:emit('change')
     end

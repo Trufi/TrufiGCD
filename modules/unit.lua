@@ -1,7 +1,7 @@
 TrufiGCD:define('Unit', function()
     local utils = TrufiGCD:require('utils')
     local UnitFrame = TrufiGCD:require('UnitFrame')
-    local savedVariables = TrufiGCD:require('savedVariables')
+    local settingsModule = TrufiGCD:require('settings')
     local blacklist = TrufiGCD:require('blacklist')
 
     local _idCounter = 0
@@ -21,28 +21,18 @@ TrufiGCD:define('Unit', function()
     local trinketIcon = 'Interface\\Icons\\inv_jewelry_trinketpvp_01'
 
     -- settings
+    local settings = nil
+
     local function loadSettings()
         settings = {}
 
-        settings.unitFrames = {}
+        settings.unitFrames = settingsModule:get('unitFrames')
 
-        for i, el in pairs(savedVariables:getCharacter('unitFrame')) do
-            if unitsNames[i] then
-                settings.unitFrames[unitsNames[i]] = {
-                    offset = {el.x, el.y},
-                    point = el.point,
-                    direction = el.fade,
-                    sizeIcons = el.size,
-                    numberIcons = el.width,
-                    enable = el.enable,
-                    text = unitsNames[i]
-                }
-            end
-        end
+        --utils.log(settings.unitFrames, true)
     end
 
     loadSettings()
-    savedVariables:on('change', loadSettings)
+    settingsModule:on('change', loadSettings)
 
     -- list of buff of instance spells
     local instanceSpellsBuff = {

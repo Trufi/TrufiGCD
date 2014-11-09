@@ -121,10 +121,19 @@ TrufiGCD:define('UnitFrame', function()
     function UnitFrame:changeOptions(options)
         options = options or {}
 
+        self.point = options.point or self.point
+
+        self.offset = options.offset or self.offset
+
+        self.stopMovingMouseOverIcon = options.stopMovingMouseOverIcon or self.stopMovingMouseOverIcon
+
+        self.text = options.text or self.text
+
         if options.direction or options.sizeIcons or options.numberIcons then
             self.direction = options.direction or self.direction
             self.sizeIcons = options.sizeIcons or self.sizeIcons
             self.numberIcons = options.numberIcons or self.numberIcons
+            self.longSize = self.numberIcons * self.sizeIcons
 
             self:updateSize()
             self:updateIcons()
