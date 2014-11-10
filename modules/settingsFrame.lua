@@ -3,12 +3,15 @@ TrufiGCD:define('settingsFrame', function()
     local settings = TrufiGCD:require('settings')
     local utils = TrufiGCD:require('utils')
     local units = TrufiGCD:require('units')
+    local config = TrufiGCD:require('config')
+
+    local settingsWidth = 600
 
     local function createButton(parent, point, offset, text, options)
         options = options or {}
         options.template = options.template or 'UIPanelButtonTemplate'
 
-        local button = CreateFrame('Button', nil, parent, options.template)
+        local button = CreateFrame('Button', options.name, parent, options.template)
         button:SetWidth(options.width or 100)
         button:SetHeight(options.height or 22)
         button:SetPoint(point, offset[1], offset[2])
@@ -116,30 +119,141 @@ TrufiGCD:define('settingsFrame', function()
     frameView.name = 'Frames'
     frameView.parent = 'TrufiGCD'
 
-    -- party button
-    local buttonParty = createButton(frameView, 'TOPLEFT', {20, -50}, '', {
-        width = 192,
-        height = 15,
-        template = 'OptionsFrameTabButtonTemplate',
-        topText = {text = '123', point = 'CENTER', offset = {0, 0}},
-        enable = false
-    })
+    -- create tabs
+    local frameTabs = CreateFrame('Frame', 'TrGCDViewTabsFrame', frameView)
+    frameTabs:SetPoint('TOPLEFT', 10, -100)
+    frameTabs:SetWidth(settingsWidth)
+    frameTabs:SetHeight(500)
 
-    buttonParty.Texture = buttonParty:CreateTexture(nil, 'BACKGROUND')
-    buttonParty.Texture:SetAllPoints(buttonParty)
-    buttonParty.Texture:SetTexture(255, 210, 0)
-    buttonParty.Texture:SetAlpha(0.5)
+    local buttonParty = CreateFrame('Button', 'TrGCDViewTabsFrameTab1', frameTabs, 'TabButtonTemplate')
+    buttonParty:SetPoint('TOPLEFT', 10, 0)
+    buttonParty:SetText('Party')
+    buttonParty:SetWidth(buttonParty:GetTextWidth() + 31);
+    PanelTemplates_TabResize(buttonParty, 0);
 
-    buttonParty:SetScript('OnEnter', function(self)
-        self.Texture:SetAlpha(0.3)
+    local buttonArena = CreateFrame('Button', 'TrGCDViewTabsFrameTab2', frameTabs, 'TabButtonTemplate')
+    buttonArena:SetPoint('TOPLEFT', buttonParty:GetWidth() + 15, 0)
+    buttonArena:SetText('Arena')
+    buttonArena:SetWidth(buttonArena:GetTextWidth() + 31);
+    PanelTemplates_TabResize(buttonArena, 0);
+
+    PanelTemplates_SetNumTabs(frameTabs, 2)
+    PanelTemplates_SetTab(frameTabs, 1)
+
+    local frameParty = CreateFrame('Frame', 'TrGCDViewTabsFramePage1', frameTabs, 'OptionsBoxTemplate')
+    frameParty:SetPoint('TOPLEFT', 0, -30)
+    frameParty:SetWidth(settingsWidth)
+    frameParty:SetHeight(400)
+
+    local frameArena = CreateFrame('Frame', 'TrGCDViewTabsFramePage2', frameTabs, 'OptionsBoxTemplate')
+    frameArena:SetPoint('TOPLEFT', 0, -30)
+    frameArena:SetWidth(settingsWidth)
+    frameArena:SetHeight(400)
+    frameArena:Hide()
+
+    buttonParty:SetScript('OnClick', function()
+        frameArena:Hide()
+        frameParty:Show()
+        PanelTemplates_SetTab(frameTabs, 1)
     end)
 
-    buttonParty:SetScript('OnLeave', function(self)
-        self.Texture:SetAlpha(0)
+    buttonArena:SetScript('OnClick', function()
+        frameParty:Hide()
+        frameArena:Show()
+        PanelTemplates_SetTab(frameTabs, 2)
     end)
+
+
+
+    local unitSettings = settings:get('unitFrames')
+
+    local FrameUnitSettings = {}
+
+    function FrameUnitSettings:new(options)
+        local obj = {}
+
+        obj.name = options.name
+        obj.parentFrame = options.parentFrame
+        obj.width = options.width
+        obj.height = options.height
+
+        -- common frame
+        obj.frame = CreateFrame('Frame', nil, obj.parentFrame)
+        obj.frame:SetPoint('TOPLEFT', options.offset[1], options.offset[2])
+        obj.frame:SetWidth(obj.width)
+        obj.frame:SetHeight(obj.height)
+
+        -- checkbox enable
+        obj.chboxEnable = CreateFrame('CheckButton', 'TrGCDChboxEnable' .. obj.name, obj.frame, 'OptionsSmallCheckButtonTemplate')
+        obj.chboxEnable:SetPoint('TOPLEFT', 10, -10)
+        obj.chboxEnable:SetChecked(unitSettings[obj.name].enable)
+        _G[obj.chboxEnable:GetName() .. 'Text']:SetText(options.text)
+        obj.chboxEnable:SetScript('OnClick', self.changeEnable)
+
+        -- dropdown menu of direction
+        obj.dropdownDirection = CreateFrame('Frame', 'TrGCDDropdownDirection' .. obj.name, obj.frame, 'UIDropDownMenuTemplate')
+        obj.dropdownDirection:SetPoint('TOPLEFT', 70, -10)
+        UIDropDownMenu_SetWidth(obj.dropdownDirection, 55)
+        UIDropDownMenu_SetText(obj.dropdownDirection, unitSettings[obj.name].direction)
+        UIDropDownMenu_Initialize(obj.dropdownDirection, function() self:dropdownDirectionInit() end)
+
+
+
+        self.__index = self
+
+        return setmetatable(obj, self)
+    end
+
+    function FrameUnitSettings:changeEnable()
+        unitSettings[unitName].enable = not unitSettings[unitName].enable
+
+        self:settingChanged()
+    end
+
+    function FrameUnitSettings:changeDropDownDirection()
+        -- TODO
+    end
+
+    function FrameUnitSettings:dropdownDirectionInit()
+        for i, el in pairs(config.directionsList) do
+            local info = UIDropDownMenu_CreateInfo()
+            info.text = el
+            info.menuList = i
+            info.func = self:changeDropDownDirection(i, el)
+
+            if i == 1 then info.notCheckable = true end
+
+            UIDropDownMenu_AddButton(info)
+        end
+    end
+
+    function FrameUnitSettings:settingChanged()
+        -- TODO
+    end
+
+    function createViewTabSettings(list, parentFrame)
+        local paddingTop = 10
+        local height = 50
+
+        for i, unitName in pairs(list) do
+            local frameUnit = FrameUnitSettings:new({
+                name = unitName,
+                text = config.unitText[unitName],
+                parentFrame = parentFrame,
+                width = settingsWidth,
+                height = height,
+                offset = {0, -paddingTop - (i - 1) * height}
+            })
+        end
+    end
+
+    -- create party settings
+    local partyList = {'player', 'party1', 'party2', 'party3', 'party4'}
+
+    createViewTabSettings(partyList, frameParty)
 
     InterfaceOptions_AddCategory(frameView)
 
     -- убрать потом
-    TrGCDGUITEST = frame
+    TrGCDGUITEST = frameView
 end)
