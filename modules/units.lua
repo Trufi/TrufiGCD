@@ -1,22 +1,11 @@
-TrufiGCD:define('Unit', function()
+TrufiGCD:define('units', function()
     local utils = TrufiGCD:require('utils')
     local UnitFrame = TrufiGCD:require('UnitFrame')
     local settingsModule = TrufiGCD:require('settings')
     local blacklist = TrufiGCD:require('blacklist')
+    local config = TrufiGCD:require('config')
 
     local _idCounter = 0
-
-    local getUniqId = function()
-        _idCounter = _idCounter + 1
-        return _idCounter
-    end
-
-    local unitsNames = {
-        'player',
-        'party1', 'party2', 'party3', 'party4',
-        'arena1', 'arena2', 'arena3', 'arena4', 'arena5',
-        'target', 'focus'
-    }
 
     local trinketIcon = 'Interface\\Icons\\inv_jewelry_trinketpvp_01'
 
@@ -56,7 +45,10 @@ TrufiGCD:define('Unit', function()
 
     function Unit:new(options)
         local obj = {}
-        obj.id = getUniqId()
+
+        _idCounter = _idCounter + 1
+
+        obj.id = _idCounter
 
         obj.typeName = options.typeName
 
@@ -196,9 +188,41 @@ TrufiGCD:define('Unit', function()
         self.unitFrame:clear()
     end
 
-    function Unit:showAnchorFrame()
-        self.unitFrame:clear()
+    local units = {}
+
+    units.list = {}
+
+    units.create = function()
+        for i, el in pairs(config.unitNames) do
+            units.list[el] = Unit:new({typeName = el})
+        end
     end
 
-    return Unit
+    units.showAnchorFrames = function()
+        for i, el in pairs(units.list) do
+            el.unitFrame:showAnchor()
+        end
+    end
+
+    units.hideAnchorFrames = function()
+        for i, el in pairs(units.list) do 
+            el.unitFrame:hideAnchor()
+        end
+    end
+
+    units.framesPositions = function()
+        local data = {}
+
+        for i, el in pairs(units.list) do
+            local point, ofsX, ofsY = el.unitFrame:getPoint()
+            data[i] = {
+                point = point,
+                offset = {ofsX, ofsY}
+            }
+        end
+
+        return data
+    end
+
+    return units
 end)

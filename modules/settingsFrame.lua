@@ -1,116 +1,8 @@
 TrufiGCD:define('settingsFrame', function()
     local savedVariables = TrufiGCD:require('savedVariables')
+    local settings = TrufiGCD:require('settings')
     local utils = TrufiGCD:require('utils')
-
-    local commonSaves = nil
-    local settings = nil
-
-    -- new <-> old settings
-    local unitsNames = {
-        'player',
-        'party1', 'party2', 'party3', 'party4',
-        'arena1', 'arena2', 'arena3', 'arena4', 'arena5',
-        'target', 'focus'
-    }
-
-    local numberOfUnitsNames = {
-        player = 1,
-        party1 = 2, party2 = 3, party3 = 4, party4 = 5,
-        arena1 = 6, arena2 = 7, arena3 = 8, arena4 = 9, arena5 = 10,
-        target = 11, focus = 12
-    }
-
-    local function convertUnitFramesToNewSettings(unitFrames)
-        local res = {}
-
-        for i, el in pairs(unitFrames) do
-            if unitsNames[i] then
-                res[unitsNames[i]] = {
-                    offset = {el.x, el.y},
-                    point = el.point,
-                    direction = el.fade,
-                    sizeIcons = el.size,
-                    numberIcons = el.width,
-                    enable = el.enable,
-                    text = unitsNames[i]
-                }
-            end
-        end
-
-        return res
-    end
-
-    local function convertUnitFramesToOldSettings(unitFrames)
-        local res = {}
-
-        for i, el in pairs(unitFrames) do
-            if numberOfUnitsNames[el] then
-                res[numberOfUnitsNames[el]] = {
-                    x = el.offset[1],
-                    y = el.offset[2],
-                    point = el.point,
-                    fade = el.direction,
-                    size = el.sizeIcons,
-                    width = el.numberIcons,
-                    enable = el.enable,
-                    text = numberOfUnitsNames[el]
-                }
-            end
-        end
-
-        return res
-    end
-
-    local defaultSettings = {
-        tooltip = {
-            enable = true,
-            showInChatId = false,
-            stopMove = false
-        },
-        enableLocations = {
-            Enable = true,
-            PvE = true,
-            Raid = true,
-            Arena = true,
-            Bg = true,
-            World = true
-        },
-        typeMovingIcon = true,
-        unitFrame = {}
-    }
-
-    for i, el in pairs(unitsNames) do
-        defaultSettings.unitFrame = {
-            offset = {0, 0},
-            point = 'CENTER',
-            sizeIcons = 30,
-            numberIcons = '4',
-            direction = 'Left',
-            text = el
-        }
-    end
-
-    local function initSettings()
-        commonSaves = savedVariables:getCommon('all')
-
-        if commonSaves == nil then
-            commonSaves = utils.clone(defaultSettings)
-            savedVariables:setCommon('all', commonSaves)
-        end
-
-        commonSaves.unitFrame = convertUnitFramesToNewSettings(commonSaves.unitFrame)
-
-        settings = savedVariables:getCharacter('all')
-
-        if settings == nil then 
-            settings = utils.clone(commonSaves)
-            savedVariables:setCharacter('all', settings)
-        end
-
-        settings.unitFrame = convertUnitFramesToNewSettings(settings.unitFrame)
-    end
-
-    initSettings()
+    local units = TrufiGCD:require('units')
 
     local function createButton(parent, point, offset, text, options)
         options = options or {}
@@ -158,49 +50,96 @@ TrufiGCD:define('settingsFrame', function()
         return button
     end
 
---local function AddButton(parent,point,x,y,height,width,text,font,texttop,template) --шаблон кнопки
---local function createButton(parent, point, offset, text, options)
-
     -- main settings frame
     local frame = CreateFrame('Frame', nil, UIParent, 'OptionsBoxTemplate')
-    frame:Hide()
     frame.name = 'TrufiGCD'
 
     -- show/hide anchors button and frame
-    -- local buttonShowAnchors = createButton(frame, 'TOPLEFT', {10, -30}, 'Show', 'Show/Hide anchors')
+    local buttonShowAnchors = createButton(frame, 'TOPLEFT', {10, -30}, 'Show', {topText = {text = 'Show/Hide anchors'}})
 
-    -- local isShowAnchors = false
+    -- frame after push show/hide button
+    local frameShowAnchors = CreateFrame('Frame', nil, UIParent)
+    frameShowAnchors:SetWidth(160)
+    frameShowAnchors:SetHeight(50)
+    frameShowAnchors:SetPoint('TOP', 0, -150)
+    frameShowAnchors:Hide()   
+    frameShowAnchors:RegisterForDrag('LeftButton')
+    frameShowAnchors:SetScript('OnDragStart', frameShowAnchors.StartMoving)
+    frameShowAnchors:SetScript('OnDragStop', frameShowAnchors.StopMovingOrSizing)
+    frameShowAnchors:SetMovable(true)
+    frameShowAnchors:EnableMouse(true)
 
-    -- function showHideAnchors()
-    --     if not isShowAnchors then
-    --         buttonShowAnchors:SetText('Hide')
-    --         TrGCDFixEnable:Show()
+    local frameShowAnchorsTexture = frameShowAnchors:CreateTexture(nil, 'BACKGROUND')
+    frameShowAnchorsTexture:SetAllPoints(frameShowAnchors)
+    frameShowAnchorsTexture:SetTexture(0, 0, 0)
+    frameShowAnchorsTexture:SetAlpha(0.5)
+--local function AddButton(parent,point,x,y,height,width,text,font,texttop,template) --шаблон кнопки
+--local function createButton(parent, point, offset, text, options)
+    local frameShowAnchorsButton = createButton(frameShowAnchors, 'BOTTOM', {0, 5}, 'Return to options', {
+        width = 150,
+        topText = {
+            size = 12,
+            text = 'TrufiGCD',
+            point = 'TOP',
+            offset = {0, 15}
+        }
+    })
+    frameShowAnchorsButton:SetScript('OnClick', function()
+        InterfaceOptionsFrame_OpenToCategory(frame)
+    end)
 
-    --         for i=1,12 do
-    --             if (TrGCDQueueOpt[i].enable) thenx
-    --                 TrGCDQueueFr[i].texture:SetAlpha(0.5)
-    --                 TrGCDQueueFr[i].text:SetAlpha(0.5)
-    --             end
-    --         end
-    --         main.showFramesAnchor()
-    --     else
-    --         TrGCDGUI.buttonfix:SetText("Show")
-    --         TrGCDFixEnable:Hide()
-    --         for i=1,12 do
-    --             if (TrGCDQueueOpt[i].enable) then
-    --                 TrGCDQueueFr[i]:SetMovable(false)
-    --                 TrGCDQueueFr[i]:EnableMouse(false)
-    --                 TrGCDQueueFr[i].texture:SetAlpha(0) 
-    --                 TrGCDQueueFr[i].text:SetAlpha(0)
-    --                 TrGCDQueueOpt[i].point, _, _, TrGCDQueueOpt[i].x, TrGCDQueueOpt[i].y = TrGCDQueueFr[i]:GetPoint()
-    --                 TrufiGCDChSave["TrGCDQueueFr"][i]["x"] = TrGCDQueueOpt[i].x
-    --                 TrufiGCDChSave["TrGCDQueueFr"][i]["y"] = TrGCDQueueOpt[i].y
-    --                 TrufiGCDChSave["TrGCDQueueFr"][i]["point"] = TrGCDQueueOpt[i].point
-    --                 TrufiGCDChSave["TrGCDQueueFr"][i]["enable"] = TrGCDQueueOpt[i].enable
-    --             end
-    --         end
-    --     end
-    -- end
+
+    local isShowAnchors = false
+
+    function showHideAnchors()
+        if not isShowAnchors then
+            buttonShowAnchors:SetText('Hide')
+            frameShowAnchors:Show()
+            units.showAnchorFrames()
+            isShowAnchors = true
+        else
+            buttonShowAnchors:SetText('Show')
+            frameShowAnchors:Hide()
+            units.hideAnchorFrames()
+            isShowAnchors = false
+
+            settings:set('unitFrames', units.framesPositions())
+        end
+    end
 
     buttonShowAnchors:SetScript('OnClick', showHideAnchors)
+
+    InterfaceOptions_AddCategory(frame)
+
+    -- settings of view
+    local frameView = CreateFrame('Frame', nil, UIParent, 'OptionsBoxTemplate')
+    frameView.name = 'Frames'
+    frameView.parent = 'TrufiGCD'
+
+    -- party button
+    local buttonParty = createButton(frameView, 'TOPLEFT', {20, -50}, '', {
+        width = 192,
+        height = 15,
+        template = 'OptionsFrameTabButtonTemplate',
+        topText = {text = '123', point = 'CENTER', offset = {0, 0}},
+        enable = false
+    })
+
+    buttonParty.Texture = buttonParty:CreateTexture(nil, 'BACKGROUND')
+    buttonParty.Texture:SetAllPoints(buttonParty)
+    buttonParty.Texture:SetTexture(255, 210, 0)
+    buttonParty.Texture:SetAlpha(0.5)
+
+    buttonParty:SetScript('OnEnter', function(self)
+        self.Texture:SetAlpha(0.3)
+    end)
+
+    buttonParty:SetScript('OnLeave', function(self)
+        self.Texture:SetAlpha(0)
+    end)
+
+    InterfaceOptions_AddCategory(frameView)
+
+    -- убрать потом
+    TrGCDGUITEST = frame
 end)

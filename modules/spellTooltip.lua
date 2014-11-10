@@ -1,14 +1,14 @@
 TrufiGCD:define('spellTooltip', function()
     local utils = TrufiGCD:require('utils')
-    local savedVariables = TrufiGCD:require('savedVariables')
+    local settingsModule = TrufiGCD:require('settings')
 
     local tooltip = {}
 
-    local settings = savedVariables:getCharacter('spellTooltip')
+    local settings = settingsModule:get('tooltip')
 
     -- update settings if player change it
-    savedVariables:on('change', function()
-        settings = savedVariables:getCharacter('spellTooltip')
+    settingsModule:on('change', function()
+        settings = settingsModule:get('tooltip')
     end)
 
     function tooltip:show(spellId, frame)

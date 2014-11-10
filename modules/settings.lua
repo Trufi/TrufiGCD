@@ -12,12 +12,6 @@ TrufiGCD:define('settings', function()
 
     local currentProfile = nil
 
-    function saveSettings()
-        savedVariables:setCommon('profiles', profiles)
-    end
-
-    settings:on('change', saveSettings)
-
     function getDefaultProfileData()
         local res = {
             tooltip = {
@@ -57,9 +51,11 @@ TrufiGCD:define('settings', function()
 
         if currentProfile and currentProfile.name == name then
             self:emit('change')
-        else
-            saveSettings()
         end
+    end
+
+    function settings:save()
+        savedVariables:setCommon('profiles', profiles)
     end
 
     function settings:setProfileData(name, data)
@@ -105,10 +101,10 @@ TrufiGCD:define('settings', function()
 
     -- set current profile from settings or some one from profiles
     if characterSaves.currentProfile and profiles[characterSaves.currentProfile] then
-        currentProfile = characterSaves.currentProfile
+        settings:setCurrentProfile(profiles[characterSaves.currentProfile])
     else
-        local i, el = next(profiles)
-        currentProfile = el
+        settings:setCurrentProfile(next(profiles))
+        settings:save()
     end
 
     return settings

@@ -69,20 +69,21 @@ TrufiGCD:define('UnitFrame', function()
         self.frame:RegisterForDrag('LeftButton')
         self.frame:SetPoint(self.point, self.offset[1], self.offset[2])
 
-        self.frame:SetScript('OnDragStart', self.onDragStart)
-        self.frame:SetScript('OnDragStop', self.nDragStop)
+        self.frame:SetScript('OnDragStart', self.frame.StartMoving)
+        self.frame:SetScript('OnDragStop', self.frame.StopMovingOrSizing)
 
         self.frameTexture = self.frame:CreateTexture(nil, 'BACKGROUND')
         self.frameTexture:SetAllPoints(self.frame)
         self.frameTexture:SetTexture(0, 0, 0)
         self.frameTexture:Hide()
-        --self.frameTexture:SetAlpha(0)
+        self.frameTexture:SetAlpha(0.6)
 
         self.frameText = self.frame:CreateFontString(nil, 'BACKGROUND')
         self.frameText:SetFont('Fonts\\FRIZQT__.TTF', 9)
         self.frameText:SetText(self.text)
         self.frameText:SetAllPoints(self.frame)
-        self.frameText:SetAlpha(0)
+        self.frameText:SetAlpha(0.6)
+        self.frameText:Hide()
     end
 
     function UnitFrame:createIcons()
@@ -288,6 +289,27 @@ TrufiGCD:define('UnitFrame', function()
         for i, el in pairs(self.iconsFrames) do
             el:hide()
         end
+    end
+
+    function UnitFrame:showAnchor()
+        self.frame:SetMovable(true)
+        self.frame:EnableMouse(true)
+
+        self.frameTexture:Show()
+        self.frameText:Show()
+    end
+
+    function UnitFrame:hideAnchor()
+        self.frame:SetMovable(false)
+        self.frame:EnableMouse(false)
+
+        self.frameTexture:Hide()
+        self.frameText:Hide()
+    end
+
+    function UnitFrame:getPoint()
+        local point, _, _, ofsX, ofsY = self.frame:GetPoint()
+        return point, ofsX, ofsY
     end
 
     return UnitFrame

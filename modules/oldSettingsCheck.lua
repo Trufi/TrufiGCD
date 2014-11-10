@@ -51,6 +51,7 @@ TrufiGCD:define('oldSettingsCheck', function()
         end
 
         settings:createProfile(UnitName('player') .. ' - ' .. GetRealmName(), newSaves)
+        settings:save()
 
         savedVariables:setCharacter('TrGCDBL', nil)
         savedVariables:setCharacter('TooltipEnable', nil)

@@ -1,25 +1,14 @@
 local function init()
     local utils = TrufiGCD:require('utils')
-    local Unit = TrufiGCD:require('Unit')
+    local config = TrufiGCD:require('config')
+    local units = TrufiGCD:require('units')
     local savedVariables = TrufiGCD:require('savedVariables')
 
     local isEnable = true
 
     local playerLocation = 'world'
 
-    local unitsNames = {
-        'player',
-        'party1', 'party2', 'party3', 'party4',
-        'arena1', 'arena2', 'arena3', 'arena4', 'arena5',
-        'target', 'focus'
-    }
-
-    -- create units
-    local units = {}
-
-    for i, el in pairs(unitsNames) do
-        units[el] = Unit:new({typeName = el})
-    end
+    units.create()
 
     -- events
     local eventFrame = CreateFrame('Frame', nil, UIParent)
@@ -34,9 +23,9 @@ local function init()
     local function eventHandler(self, event, unitType, _, _, _, spellId)
         if not isEnable then return end
 
-        if not utils.contain(unitsNames, unitType) then return end
+        if not utils.contain(config.unitNames, unitType) then return end
 
-        units[unitType]:eventsHandler(event, spellId)
+        units.list[unitType]:eventsHandler(event, spellId)
     end
 
     local minTimeInterval = 0.03
@@ -49,7 +38,7 @@ local function init()
         local interval = time - timeLastUpdate
 
         if interval > minTimeInterval then
-            for i, el in pairs(units) do
+            for i, el in pairs(units.list) do
                 el:update(interval)
             end
 
@@ -77,7 +66,7 @@ local function init()
     local function unitFrameChangeOwner(typeName)
         local oldType = nil
 
-        for i, el in pairs(unitsNames) do
+        for i, el in pairs(config.unitsNames) do
             if el ~= typeName and checkEquelsUnits(typeName, el) then
                 oldType = el
                 break
@@ -85,9 +74,9 @@ local function init()
         end
 
         if oldType then 
-            units[typeName]:setState(units[oldType]:getState())
+            units.list[typeName]:setState(units.list[oldType]:getState())
         else
-            units[typeName]:clearFrame()
+            units.list[typeName]:clearFrame()
         end
     end
 
