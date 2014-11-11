@@ -31,6 +31,7 @@ TrufiGCD:define('settings', function()
                 sizeIcons = 30,
                 numberIcons = 4,
                 enable = true,
+                transparencyIcons = 1,
                 text = el
             }
         end

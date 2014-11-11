@@ -32,27 +32,6 @@ TrufiGCD:define('settingsFrame', function()
         return button
     end
 
-    local function createCheckbox(parent, point, offset, text, name, enable, tooltip)
-        local button = CreateFrame('CheckButton', name, parent, 'ChatConfigCheckButtonTemplate')
-        button:SetPoint(point, offset[1], offset[2])
-        button:SetChecked(enable)
-
-        _G[name .. 'Text']:SetText(text)
-
-        button:SetScript('OnEnter', function(self)
-            if tooltip then
-                GameTooltip:SetOwner(self, 'ANCHOR_RIGHT')
-                GameTooltip:SetText(tooltip, nil, nil, nil, nil, 1)
-            end
-        end )
-
-        button:SetScript('OnLeave', function(self)
-            GameTooltip:Hide()
-        end)
-
-        return button
-    end
-
     -- main settings frame
     local frame = CreateFrame('Frame', nil, UIParent, 'OptionsBoxTemplate')
     frame.name = 'TrufiGCD'
@@ -165,6 +144,7 @@ TrufiGCD:define('settingsFrame', function()
 
 
 
+    local ignoreNextChangeSettings = false
     local unitSettings = settings:get('unitFrames')
 
     local FrameUnitSettings = {}
@@ -187,7 +167,7 @@ TrufiGCD:define('settingsFrame', function()
         obj.chboxEnable = CreateFrame('CheckButton', 'TrGCDChboxEnable' .. obj.name, obj.frame, 'OptionsSmallCheckButtonTemplate')
         obj.chboxEnable:SetPoint('TOPLEFT', 10, -10)
         obj.chboxEnable:SetChecked(unitSettings[obj.name].enable)
-        _G[obj.chboxEnable:GetName() .. 'Text']:SetText(options.text)
+        _G[obj.chboxEnable:GetName() .. 'Text']:SetText(config.unitText[unitName])
         obj.chboxEnable:SetScript('OnClick', self.changeEnable)
 
         -- dropdown menu of direction
@@ -197,21 +177,70 @@ TrufiGCD:define('settingsFrame', function()
         UIDropDownMenu_SetText(obj.dropdownDirection, unitSettings[obj.name].direction)
         UIDropDownMenu_Initialize(obj.dropdownDirection, function() self:dropdownDirectionInit() end)
 
+        -- size icons slider        
+        obj.sizeSlider = CreateFrame('Slider', 'TrGCDSizeSlider' .. obj.name, obj.frame, 'OptionsSliderTemplate')
+        obj.sizeSlider:SetWidth(170)
+        obj.sizeSlider:SetPoint('TOPLEFT', 190, -10)
+        _G[obj.sizeSlider:GetName() .. 'Low']:SetText('10')
+        _G[obj.sizeSlider:GetName() .. 'High']:SetText('100')
+        _G[obj.sizeSlider:GetName() .. 'Text']:SetText(unitSettings[obj.name].sizeIcons)
+        obj.sizeSlider:SetMinMaxValues(10,100)
+        obj.sizeSlider:SetValueStep(1)
+        obj.sizeSlider:SetValue(unitSettings[obj.name].sizeIcons)
+        obj.sizeSlider:SetScript('OnValueChanged', function(_, value) self:sizeSliderChanged(value) end)
+        obj.sizeSlider:Show()
 
+        -- number icons slider
+        obj.numberSlider = CreateFrame('Slider', 'TrGCDNumberIconsSlider' .. obj.name, obj.frame, 'OptionsSliderTemplate')
+        obj.numberSlider:SetWidth(100)
+        obj.numberSlider:SetPoint('TOPLEFT', 390, -10)
+        _G[obj.numberSlider:GetName() .. 'Low']:SetText('1')
+        _G[obj.numberSlider:GetName() .. 'High']:SetText('8')
+        _G[obj.numberSlider:GetName() .. 'Text']:SetText(unitSettings[obj.name].numberIcons)
+        obj.numberSlider:SetMinMaxValues(1,8)
+        obj.numberSlider:SetValueStep(1)
+        obj.numberSlider:SetValue(unitSettings[obj.name].numberIcons)
+        obj.numberSlider:SetScript('OnValueChanged', function (_,value) self:numberSliderChanged(value) end)
+        obj.numberSlider:Show()
+
+        -- transparency icons slider
+        obj.transparencySliders = CreateFrame('Slider', 'TrGCDTransparencyIconsSlider' .. obj.name, obj.frame, 'OptionsSliderTemplate')
+        obj.transparencySliders:SetWidth(100)
+        obj.transparencySliders:SetPoint('TOPLEFT', 450, -10)
+        _G[obj.transparencySliders:GetName() .. 'Low']:SetText('0')
+        _G[obj.transparencySliders:GetName() .. 'High']:SetText('100')
+        _G[obj.transparencySliders:GetName() .. 'Text']:SetText(unitSettings[obj.name].transparencyIcons)
+        obj.transparencySliders:SetMinMaxValues(0, 100)
+        obj.transparencySliders:SetValueStep(1)
+        obj.transparencySliders:SetValue(unitSettings[obj.name].transparencyIcons)
+        obj.transparencySliders:SetScript('OnValueChanged', function (_,value) self:transparencySliderChanged(value) end)
+        obj.transparencySliders:Show()
 
         self.__index = self
 
         return setmetatable(obj, self)
     end
 
+    function FrameUnitSettings:getSetting(name)
+        return unitSettings[self.name][name]
+    end
+
+    function FrameUnitSettings:setSetting(name, value)
+        unitSettings[self.name][name] = value
+    end
+
     function FrameUnitSettings:changeEnable()
-        unitSettings[unitName].enable = not unitSettings[unitName].enable
+        self:setSetting('enable', not self:getSetting('enable'))
 
         self:settingChanged()
     end
 
-    function FrameUnitSettings:changeDropDownDirection()
-        -- TODO
+    function FrameUnitSettings:changeDropDownDirection(itemIndex)
+        local direction = config.directionsList[itemIndex]
+        UIDropDownMenu_SetText(obj.dropdownDirection, direction)
+        self:setSetting('direction', direction)
+
+        self:settingChanged()
     end
 
     function FrameUnitSettings:dropdownDirectionInit()
@@ -219,7 +248,7 @@ TrufiGCD:define('settingsFrame', function()
             local info = UIDropDownMenu_CreateInfo()
             info.text = el
             info.menuList = i
-            info.func = self:changeDropDownDirection(i, el)
+            info.func = self:changeDropDownDirection(i)
 
             if i == 1 then info.notCheckable = true end
 
@@ -227,30 +256,157 @@ TrufiGCD:define('settingsFrame', function()
         end
     end
 
+    function FrameUnitSettings:sizeSliderChanged(value)
+        value = math.ceil(value)
+        _G[self.sizeSlider:GetName() .. 'Text']:SetText(value)
+        self:setSetting('sizeIcons', value)
+
+        self:settingChanged()
+    end
+
+    function FrameUnitSettings:numberSliderChanged(value)
+        value = math.ceil(value)
+        _G[self.numberSlider:GetName() .. 'Text']:SetText(value)
+        self:setSetting('numberIcons', value)
+
+        self:settingChanged()
+    end
+
+    function FrameUnitSettings:transparencySliderChanged(value)
+        value = math.ceil(value)
+        _G[self.transparencySlider:GetName() .. 'Text']:SetText(value)
+        self:setSetting('transparencyIcons', value / 100)
+
+        self:settingChanged()
+    end
+
     function FrameUnitSettings:settingChanged()
-        -- TODO
+        if self.onChange then
+            self.onChange()
+        end
+
+        ignoreNextChangeSettings = true
+        settings:set('unitFrames', unitSettings)
+    end
+
+    function FrameUnitSettings:updateViewFromSettings()
+        self.chboxEnable:SetChecked(self:getSetting('enable'))
+        UIDropDownMenu_SetText(self.dropdownDirection, self:getSetting('direction'))
+        self.sizeSlider:SetValue(self:getSetting('sizeIcons'))
+        self.numberSlider:SetValue(self:getSetting('numberIcons'))
+        self.transparencySliders:SetValue(self:getSetting('transparencyIcons'))
+    end
+
+
+    local listFrameUnitSettings = {}
+
+
+    local FrameChangeAllSettings = {}
+
+    function FrameChangeAllSettings:new(options)
+        options.name = options.unitList[1]
+
+        local obj = FrameUnitSettings:new(options)
+
+        for i, el in pairs(listFrameUnitSettings) do
+            el.onChange = function() self:disable() end
+        end
+
+        self.__index = self
+
+        return setmetatable(obj, self)
+    end
+
+    function FrameChangeAllSettings:settingChanged()
+        -- none
+    end
+
+    -- set settings to all units
+    function FrameChangeAllSettings:setSetting(name, value)
+        self:enable()
+
+        for i, el in pairs(self.unitList) do
+            listFrameUnitSettings[el]:setSettings(name, value)
+            listFrameUnitSettings[el]:updateViewFromSettings()
+        end
+
+        ignoreNextChangeSettings = true
+        settings:set('unitFrames', unitSettings)
+    end
+
+    function FrameChangeAllSettings:enable()
+        self.frame:SetAlpha(1)
+    end
+
+    function FrameChangeAllSettings:disable()
+        self.frame:SetAlpha(0.5)
+    end
+
+
+
+    function updateAllFrameUnitSettings()
+        for i, el in pairs(listFrameUnitSettings) do
+            el:updateViewFromSettings()
+        end
+    end
+
+    settings:on('change', function()
+        if ignoreNextChangeSettings then
+            ignoreNextChangeSettings = false
+        else
+            unitSettings = settings:get('unitFrames')
+            updateAllFrameUnitSettings()
+        end
+    end)
+
+    function createUpperOneText(parentFrame, text, ofsX, ofsY)
+        local frame = parentFrame:CreateFontString(nil, 'BACKGROUND')
+        frame:SetFont('Fonts\\FRIZQT__.TTF', 12)
+        frame:SetText('Enable')
+        frame:SetPoint('TOPLEFT', ofsX, ofsY)
+    end
+
+    function createUpperText(parentFrame)
+        createUpperOneText(parentFrame, 'Enable', 20, -10)
+        createUpperOneText(parentFrame, 'Fade', 105, -10)
+        createUpperOneText(parentFrame, 'Size icons', 245, -10)
+        createUpperOneText(parentFrame, 'Number of icons', 390, -10)
+        createUpperOneText(parentFrame, 'Transparency', 450, -10)
     end
 
     function createViewTabSettings(list, parentFrame)
-        local paddingTop = 10
+        local paddingTop = 50
         local height = 50
 
+        createUpperText(parentFrame)
+
         for i, unitName in pairs(list) do
-            local frameUnit = FrameUnitSettings:new({
+            listFrameUnitSettings[unitName] = FrameUnitSettings:new({
                 name = unitName,
-                text = config.unitText[unitName],
                 parentFrame = parentFrame,
                 width = settingsWidth,
                 height = height,
                 offset = {0, -paddingTop - (i - 1) * height}
             })
         end
+
+        -- add row that changed all frames
+        FrameUnitSettings:new({
+            unitList = list,
+            parentFrame = parentFrame,
+            width = settingsWidth,
+            height = height,
+            offset = {0, -10}
+        })
     end
 
     -- create party settings
     local partyList = {'player', 'party1', 'party2', 'party3', 'party4'}
-
     createViewTabSettings(partyList, frameParty)
+
+    -- create arena settings
+    local arenaList = {'arena1', 'arena2', 'arena3', 'arena4', 'arena5'}
+    createViewTabSettings(arenaList, frameArena)
 
     InterfaceOptions_AddCategory(frameView)
 
