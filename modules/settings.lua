@@ -77,6 +77,10 @@ TrufiGCD:define('settings', function()
         self:emit('change')
     end
 
+    function settings:getCurrentProfile()
+        return currentProfile
+    end
+
     function settings:get(settingsName)
         if settingsName then
             return currentProfile.data[settingsName]
@@ -93,6 +97,14 @@ TrufiGCD:define('settings', function()
         end
 
         self:emit('change')
+    end
+
+    function settings:getProfilesList()
+        local list = {}
+
+        for i, el in pairs(profiles) do
+            table.insert(list, el.name)
+        end
     end
 
     -- if profiles list null create default profile

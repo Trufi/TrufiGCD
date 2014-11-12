@@ -28,11 +28,13 @@ modules\oldSettingsCheck.lua
 
 modules\blacklist.lua
 modules\spellTooltip.lua
+
 modules\iconFrame.lua
 modules\unitFrame.lua
 modules\units.lua
 modules\main.lua
 
+modules\viewSettingsFrame.lua
 modules\settingsFrame.lua
 
 # Addon
