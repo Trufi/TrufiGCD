@@ -347,5 +347,5 @@ TrufiGCD:define('blacklist', function()
         return settingFrame
     end
 
-    return blacklist;
+    return blacklist
 end)

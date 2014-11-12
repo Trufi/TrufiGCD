@@ -1,14 +1,85 @@
 TrufiGCD:define('viewSettingsFrame', function()
-    local settingsModule = TrufiGCD:require('settings')
+    local settings = TrufiGCD:require('settings')
     local config = TrufiGCD:require('config')
     local utils = TrufiGCD:require('utils')
+    local units = TrufiGCD:require('units')
 
     local settingsWidth = 600
 
+
     -- settings of view
     local frameView = CreateFrame('Frame', nil, UIParent, 'OptionsBoxTemplate')
-    frameView.name = 'Frames'
+    frameView.name = 'View'
     frameView.parent = 'TrufiGCD'
+
+
+
+    -- show/hide anchors button and frame
+    local buttonShowAnchors = CreateFrame('Button', nil, frameView, 'UIPanelButtonTemplate')
+    buttonShowAnchors:SetWidth(100)
+    buttonShowAnchors:SetHeight(22)
+    buttonShowAnchors:SetPoint('TOPLEFT', 10, -30)
+    buttonShowAnchors:SetText('Show')
+
+    local buttonShowAnchorstopText = buttonShowAnchors:CreateFontString(nil, 'BACKGROUND')
+    buttonShowAnchorstopText:SetFont('Fonts\\FRIZQT__.TTF', 10)
+    buttonShowAnchorstopText:SetText('Show/Hide anchors')
+    buttonShowAnchorstopText:SetPoint('TOP', 0, 10)
+
+    -- frame after push show/hide button
+    local frameShowAnchors = CreateFrame('Frame', nil, UIParent)
+    frameShowAnchors:SetWidth(160)
+    frameShowAnchors:SetHeight(50)
+    frameShowAnchors:SetPoint('TOP', 0, -150)
+    frameShowAnchors:Hide()   
+    frameShowAnchors:RegisterForDrag('LeftButton')
+    frameShowAnchors:SetScript('OnDragStart', frameShowAnchors.StartMoving)
+    frameShowAnchors:SetScript('OnDragStop', frameShowAnchors.StopMovingOrSizing)
+    frameShowAnchors:SetMovable(true)
+    frameShowAnchors:EnableMouse(true)
+
+    local frameShowAnchorsTexture = frameShowAnchors:CreateTexture(nil, 'BACKGROUND')
+    frameShowAnchorsTexture:SetAllPoints(frameShowAnchors)
+    frameShowAnchorsTexture:SetTexture(0, 0, 0)
+    frameShowAnchorsTexture:SetAlpha(0.5)
+
+    local frameShowAnchorsButton = CreateFrame('Button', nil, frameShowAnchors, 'UIPanelButtonTemplate')
+    frameShowAnchorsButton:SetWidth(150)
+    frameShowAnchorsButton:SetHeight(22)
+    frameShowAnchorsButton:SetPoint('BOTTOM', 0, 5)
+    frameShowAnchorsButton:SetText('Return to options')
+
+    local frameShowAnchorsButtonText = frameShowAnchorsButton:CreateFontString(nil, 'BACKGROUND')
+    frameShowAnchorsButtonText:SetFont('Fonts\\FRIZQT__.TTF', 12)
+    frameShowAnchorsButtonText:SetText('TrufiGCD')
+    frameShowAnchorsButtonText:SetPoint('TOP', 0, 15)
+
+    frameShowAnchorsButton:SetScript('OnClick', function()
+        InterfaceOptionsFrame_OpenToCategory(frameView)
+    end)
+
+
+    local isShowAnchors = false
+
+    function showHideAnchors()
+        if not isShowAnchors then
+            buttonShowAnchors:SetText('Hide')
+            frameShowAnchors:Show()
+            units.showAnchorFrames()
+            isShowAnchors = true
+        else
+            buttonShowAnchors:SetText('Show')
+            frameShowAnchors:Hide()
+            units.hideAnchorFrames()
+            isShowAnchors = false
+
+            settings:set('unitFrames', units.framesPositions())
+        end
+    end
+
+    buttonShowAnchors:SetScript('OnClick', showHideAnchors)
+
+
 
     -- create tabs
     local frameTabs = CreateFrame('Frame', 'TrGCDViewTabsFrame', frameView)
@@ -103,7 +174,7 @@ TrufiGCD:define('viewSettingsFrame', function()
         self.dropdownDirection:SetPoint('TOPLEFT', 60, -10)
         UIDropDownMenu_SetWidth(self.dropdownDirection, 55)
         UIDropDownMenu_SetText(self.dropdownDirection, unitSettings[self.unitName].direction)
-        UIDropDownMenu_Initialize(self.dropdownDirection, function() self:dropdownDirectionInit() end)
+        UIDropDownMenu_Initialize(self.dropdownDirection, function(_self, level, menuList) self:dropdownDirectionInit(menuList) end)
 
         -- size icons slider        
         self.sizeSlider = CreateFrame('Slider', 'TrGCDSizeSlider' .. self.id, self.frame, 'OptionsSliderTemplate')
@@ -169,8 +240,9 @@ TrufiGCD:define('viewSettingsFrame', function()
     end
 
     function FrameUnitSettings:dropdownDirectionInit()
+        local info = UIDropDownMenu_CreateInfo()
+
         for i, el in pairs(config.directionsList) do
-            local info = UIDropDownMenu_CreateInfo()
             info.text = el
             info.menuList = i
             info.func = function() self:changeDropDownDirection(i) end

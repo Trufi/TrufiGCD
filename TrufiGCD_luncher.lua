@@ -25,7 +25,7 @@ function loadAllDeps()
         modules[modulesToLoad[i].name] = modulesToLoad[i].module()
     end
 
-    modulesToLoad = {}
+    modulesToLoad = nil
 end
 
 local loadFrame = CreateFrame('Frame', nil, UIParent)
