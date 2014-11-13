@@ -1,5 +1,6 @@
 TrufiGCD:define('settingsFrame', function()
     local viewSettingsFrame = TrufiGCD:require('viewSettingsFrame')
+    local profilesWidget = TrufiGCD:require('profilesWidget')
     local blacklistFrame = TrufiGCD:require('blacklistFrame')
     local settings = TrufiGCD:require('settings')
 
@@ -19,11 +20,18 @@ TrufiGCD:define('settingsFrame', function()
         settings:default()
     end
 
+    -- profile widget
+    local profileWidget = profilesWidget.full({
+        parentFrame = frame,
+        point = 'TOPLEFT',
+        offset = {50, -30}
+    })
+
     InterfaceOptions_AddCategory(frame)
 
     InterfaceOptions_AddCategory(viewSettingsFrame)
 
-    InterfaceOptions_AddCategory(viewSettingsFrame)
+    InterfaceOptions_AddCategory(blacklistFrame)
 
     -- убрать потом
     TrGCDGUITEST = viewSettingsFrame

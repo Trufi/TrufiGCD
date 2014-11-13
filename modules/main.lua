@@ -74,7 +74,7 @@ local function init()
     local function unitFrameChangeOwner(typeName)
         local oldType = nil
 
-        for i, el in pairs(config.unitsNames) do
+        for i, el in pairs(config.unitNames) do
             if el ~= typeName and checkEquelsUnits(typeName, el) then
                 oldType = el
                 break

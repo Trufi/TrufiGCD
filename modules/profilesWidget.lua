@@ -1,5 +1,5 @@
 TrufiGCD:define('profilesWidget', function()
-    local settingsModule = TrufiGCD:require('settings')
+    local settings = TrufiGCD:require('settings')
     local config = TrufiGCD:require('config')
     local utils = TrufiGCD:require('utils')
 
@@ -42,7 +42,7 @@ TrufiGCD:define('profilesWidget', function()
         self.frame = CreateFrame('Frame', nil, options.parentFrame)
         self.frame:SetPoint(options.point, options.offset[1], options.offset[2])
         self.frame:SetWidth(100)
-        setl.frame:SetHeight(30)
+        self.frame:SetHeight(30)
 
         self.frameDropdownCurrent = CreateFrame('Frame', 'TrGCDProfilesWidgetDropdown' .. self.id, self.frame, 'UIDropDownMenuTemplate')
         self.frameDropdownCurrent:SetPoint('TOPLEFT', 0, 0)
@@ -67,7 +67,7 @@ TrufiGCD:define('profilesWidget', function()
     end
 
     function WidgetSimple:menuItemOnClick(profileName)
-        if currentProfileName = profileName then return end
+        if currentProfileName == profileName then return end
 
         settings:setCurrentProfile(profileName)
     end
@@ -109,6 +109,7 @@ TrufiGCD:define('profilesWidget', function()
 
         -- delete confirm frame
         self.frameConfirmDelete = CreateFrame('Frame', 'TrGCDProfilesWidgetConfirm' .. self.id, options.parentFrame, 'OptionsBoxTemplate')
+        self.frameConfirmDelete:Hide()
         self.frameConfirmDelete:SetPoint('CENTER', 0, 0)
         self.frameConfirmDelete:SetWidth(230)
         self.frameConfirmDelete:SetHeight(60)
@@ -117,19 +118,19 @@ TrufiGCD:define('profilesWidget', function()
         self.textureConfirmDelete:SetTexture(0, 0, 0)
         self.textureConfirmDelete:SetAlpha(0.8)
 
-        self.textConfirmDelete = frameShowAnchorsButton:CreateFontString(nil, 'BACKGROUND')
+        self.textConfirmDelete = self.frameConfirmDelete:CreateFontString(nil, 'BACKGROUND')
         self.textConfirmDelete:SetFont('Fonts\\FRIZQT__.TTF', 12)
         self.textConfirmDelete:SetText('Confirm delete')
         self.textConfirmDelete:SetPoint('TOP', 0, 15)
 
-        self.buttonConfirmDeleteYes = CreateFrame('Button', nil, self.frame, 'UIPanelButtonTemplate')
+        self.buttonConfirmDeleteYes = CreateFrame('Button', nil, self.frameConfirmDelete, 'UIPanelButtonTemplate')
         self.buttonConfirmDeleteYes:SetWidth(100)
         self.buttonConfirmDeleteYes:SetHeight(22)
         self.buttonConfirmDeleteYes:SetPoint('TOP', 5, 30)
         self.buttonConfirmDeleteYes:SetText('Yes')
         self.buttonConfirmDeleteYes:SetScript('OnClick', function() self:deleteProfile() end)
 
-        self.buttonConfirmDeleteNo = CreateFrame('Button', nil, self.frame, 'UIPanelButtonTemplate')
+        self.buttonConfirmDeleteNo = CreateFrame('Button', nil, self.frameConfirmDelete, 'UIPanelButtonTemplate')
         self.buttonConfirmDeleteNo:SetWidth(100)
         self.buttonConfirmDeleteNo:SetHeight(22)
         self.buttonConfirmDeleteNo:SetPoint('TOP', -55, 30)
@@ -142,7 +143,7 @@ TrufiGCD:define('profilesWidget', function()
         self.buttonDelete:SetHeight(22)
         self.buttonDelete:SetPoint('TOPLEFT', 210, 0)
         self.buttonDelete:SetText('Delete')
-        self.buttonDelete::SetScript('OnClick', function() self:deleteOnClick() end)
+        self.buttonDelete:SetScript('OnClick', function() self:deleteOnClick() end)
 
         -- editbox
         self.exitboxNewProfile = CreateFrame('EditBox', nil, self.frame, 'InputBoxTemplate')
@@ -199,7 +200,7 @@ TrufiGCD:define('profilesWidget', function()
 
         if not name then return end
 
-        if utils.contain(profilesList, name) then name = name .. 'New'
+        if utils.contain(profilesList, name) then name = name .. 'New' end
 
         settings:createProfile(name, settings:get())
     end
@@ -209,7 +210,7 @@ TrufiGCD:define('profilesWidget', function()
 
         if not name then return end
 
-        if utils.contain(profilesList, name) then name = name .. 'Rename'
+        if utils.contain(profilesList, name) then name = name .. 'Rename' end
 
         settings:rename(name)
     end

@@ -34,6 +34,7 @@ modules\unitFrame.lua
 modules\units.lua
 modules\main.lua
 
+modules\profilesWidget.lua
 modules\blacklistFrame.lua
 modules\viewSettingsFrame.lua
 modules\settingsFrame.lua

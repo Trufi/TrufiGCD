@@ -189,6 +189,10 @@ TrufiGCD:define('units', function()
         end
     end
 
+    function Unit:changeOptions(options)
+        self.unitFrame:changeOptions(options)
+    end
+
     units.create = function()
         for i, el in pairs(config.unitNames) do
             units.list[el] = Unit:new({typeName = el})

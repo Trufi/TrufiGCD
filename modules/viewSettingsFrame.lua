@@ -1,4 +1,5 @@
 TrufiGCD:define('viewSettingsFrame', function()
+    local profilesWidget = TrufiGCD:require('profilesWidget')
     local settings = TrufiGCD:require('settings')
     local config = TrufiGCD:require('config')
     local utils = TrufiGCD:require('utils')

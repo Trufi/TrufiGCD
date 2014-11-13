@@ -20,7 +20,8 @@ TrufiGCD:define('settings', function()
                 stopMove = false
             },
             typeMovingIcon = true,
-            unitFrames = {}
+            unitFrames = {},
+            enable = true
         }
 
         for i, el in pairs(config.unitNames) do
@@ -109,6 +110,8 @@ TrufiGCD:define('settings', function()
         for i, el in pairs(profiles) do
             table.insert(list, el.name)
         end
+
+        return list
     end
 
     function settings:deleteProfile(name)
