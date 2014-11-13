@@ -12,7 +12,7 @@ TrufiGCD:define('settings', function()
 
     local currentProfile = nil
 
-    function getDefaultProfileData()
+    local function getDefaultProfileData()
         local res = {
             tooltip = {
                 enable = true,
@@ -39,7 +39,7 @@ TrufiGCD:define('settings', function()
         return res
     end
 
-    function setProfileData(name, data)
+    local function setProfileData(name, data)
         if not profiles[name] or type(data) ~= 'table' then return end
 
         utils.extend(profiles[name].data, data)

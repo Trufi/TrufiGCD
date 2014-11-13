@@ -72,7 +72,7 @@ TrufiGCD:define('viewSettingsFrame', function()
 
     local isShowAnchors = false
 
-    function showHideAnchors()
+    local function showHideAnchors()
         if not isShowAnchors then
             buttonShowAnchors:SetText('Hide')
             frameShowAnchors:Show()
@@ -382,7 +382,7 @@ TrufiGCD:define('viewSettingsFrame', function()
 
 
 
-    function updateAllFrameUnitSettings()
+    local function updateAllFrameUnitSettings()
         for i, el in pairs(listFrameUnitSettings) do
             el:updateViewFromSettings()
         end
@@ -397,14 +397,14 @@ TrufiGCD:define('viewSettingsFrame', function()
         end
     end)
 
-    function createUpperOneText(parentFrame, text, ofsX, ofsY)
+    local function createUpperOneText(parentFrame, text, ofsX, ofsY)
         local frame = parentFrame:CreateFontString(nil, 'BACKGROUND')
         frame:SetFont('Fonts\\FRIZQT__.TTF', 12)
         frame:SetText(text)
         frame:SetPoint('TOPLEFT', ofsX, ofsY)
     end
 
-    function createUpperText(parentFrame)
+    local function createUpperText(parentFrame)
         createUpperOneText(parentFrame, 'Enable', 20, -15)
         createUpperOneText(parentFrame, 'Direction', 85, -15)
         createUpperOneText(parentFrame, 'Size of icons', 210, -15)
@@ -412,7 +412,7 @@ TrufiGCD:define('viewSettingsFrame', function()
         createUpperOneText(parentFrame, 'Transparency', 490, -15)
     end
 
-    function createViewTabSettings(list, parentFrame)
+    local function createViewTabSettings(list, parentFrame)
         local paddingTop = 105
         local height = 60
 

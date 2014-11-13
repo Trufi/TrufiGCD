@@ -1,14 +1,9 @@
 TrufiGCD:define('IconFrame', function()
-    local utils = TrufiGCD:require('utils')
     local spellTooltip = TrufiGCD:require('spellTooltip')
     local masqueHelper = TrufiGCD:require('masqueHelper')
+    local utils = TrufiGCD:require('utils')
 
     local _idCounter = 0
-
-    local getUniqId = function()
-        _idCounter = _idCounter + 1
-        return _idCounter
-    end
 
     local crossTexture = 'Interface\\TargetingFrame\\UI-RaidTargetingIcon_7'
 
@@ -18,7 +13,9 @@ TrufiGCD:define('IconFrame', function()
         options = options or {}
 
         local obj = {}
-        obj.id = getUniqId()
+
+        _idCounter = _idCounter + 1
+        obj.id = _idCounter
 
         -- parent of frame, must be unitFrame
         obj.parentFrame = options.parentFrame

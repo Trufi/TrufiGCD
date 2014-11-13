@@ -1,7 +1,7 @@
 TrufiGCD:define('masqueHelper', function()
     local Masque = LibStub('Masque', true)
 
-    local icons
+    local icons = nil
 
     local masqueHelper = {}
 

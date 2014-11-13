@@ -1,9 +1,9 @@
 TrufiGCD:define('units', function()
-    local utils = TrufiGCD:require('utils')
-    local UnitFrame = TrufiGCD:require('UnitFrame')
     local settingsModule = TrufiGCD:require('settings')
+    local UnitFrame = TrufiGCD:require('UnitFrame')
     local blacklist = TrufiGCD:require('blacklist')
     local config = TrufiGCD:require('config')
+    local utils = TrufiGCD:require('utils')
 
     local _idCounter = 0
 
@@ -16,30 +16,10 @@ TrufiGCD:define('units', function()
         settings = {}
 
         settings.unitFrames = settingsModule:get('unitFrames')
-
-        --utils.log(settings.unitFrames, true)
     end
 
     loadSettings()
     settingsModule:on('change', loadSettings)
-
-    -- list of buff of instance spells
-    local instanceSpellsBuff = {
-        -- Pyroblast! - Pyroblast
-        [48108] = {11366},
-        -- Shooting Stars - Starsurge
-        [93400] = {78674},
-        -- Predatory Swiftness - Entangling Roots, Cyclone, Healing Touch, Rebirth
-        [69369] = {339, 33786, 5185, 20484},
-        -- Glyph of Mind Spike - Mind Blast
-        [81292] = {8092},
-        -- Surge of Darkness - Mind Spike
-        [87160] = {87160},
-        -- Surge of Light - Flash Heal
-        [114255] = {2061},
-        -- Shadowy Insight - Mind Blast
-        [124430] = {8092}
-    } 
 
     local Unit = {}
 
@@ -150,7 +130,7 @@ TrufiGCD:define('units', function()
         for i = 1, 20 do
             local buffId = select(11, UnitBuff(self.typeName, i))
 
-            if instanceSpellsBuff[buffId] ~= nil then
+            if config.instanceSpellBuffs[buffId] ~= nil then
                 self.buffForInstanceSpell = buffId
                 break
             end
@@ -159,7 +139,7 @@ TrufiGCD:define('units', function()
 
     function Unit:checkForInstanceBuff(spellId)
         if self.buffForInstanceSpell ~= nil then
-            return utils.contain(instanceSpellsBuff[self.buffForInstanceSpell], spellId)
+            return utils.contain(config.instanceSpellBuffs[self.buffForInstanceSpell], spellId)
         end
         return false
     end

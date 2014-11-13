@@ -1,10 +1,18 @@
 local function init()
-    local utils = TrufiGCD:require('utils')
-    local config = TrufiGCD:require('config')
-    local units = TrufiGCD:require('units')
     local savedVariables = TrufiGCD:require('savedVariables')
+    local settingsModule = TrufiGCD:require('settings')
+    local config = TrufiGCD:require('config')
+    local utils = TrufiGCD:require('utils')
+    local units = TrufiGCD:require('units')
 
-    local isEnable = true
+    local settings = nil
+
+    local function loadSettings()
+        settings = settingsModule:get()
+    end
+
+    loadSettings()
+    settingsModule:on('change', loadSettings)
 
     local playerLocation = 'world'
 
@@ -21,18 +29,18 @@ local function init()
     eventFrame:RegisterEvent('UNIT_AURA')
 
     local function eventHandler(self, event, unitType, _, _, _, spellId)
-        if not isEnable then return end
+        if not settings.enable then return end
 
         if not utils.contain(config.unitNames, unitType) then return end
 
         units.list[unitType]:eventsHandler(event, spellId)
     end
 
-    local minTimeInterval = 0.03
+    local minTimeInterval = config.minTimeInterval
     local timeLastUpdate = GetTime()
 
     local function onUpdate()
-        if not isEnable then return end
+        if not settings.enable then return end
 
         local time = GetTime()
         local interval = time - timeLastUpdate

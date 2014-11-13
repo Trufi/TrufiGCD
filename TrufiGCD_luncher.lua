@@ -18,7 +18,7 @@ TrufiGCD = {
     end
 }
 
-function loadAllDeps()
+local function loadAllDeps()
     addonIsLoad = true
 
     for i = 1, #modulesToLoad do

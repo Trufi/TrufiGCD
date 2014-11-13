@@ -1,17 +1,13 @@
 TrufiGCD:define('UnitFrame', function()
-    local utils = TrufiGCD:require('utils')
-    local IconFrame = TrufiGCD:require('IconFrame')
     local masqueHelper = TrufiGCD:require('masqueHelper')
+    local IconFrame = TrufiGCD:require('IconFrame')
+    local config = TrufiGCD:require('config')
+    local utils = TrufiGCD:require('utils')
 
-    local timeGcd = 1.6
-    local fastSpeedModificator = 3
+    local timeGcd = config.timeGcd
+    local fastSpeedModificator = config.fastSpeedModificator
 
     local _idCounter = 0
-
-    local getUniqId = function()
-        _idCounter = _idCounter + 1
-        return _idCounter
-    end
 
     local UnitFrame = {}
 
@@ -19,7 +15,9 @@ TrufiGCD:define('UnitFrame', function()
         options = options or {}
 
         local obj = {}
-        obj.id = getUniqId()
+
+        _idCounter = _idCounter + 1
+        obj.id = _idCounter
 
         -- capacity elements in frame
         obj.numberIcons = options.numberIcons or 3

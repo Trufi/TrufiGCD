@@ -10,7 +10,7 @@ TrufiGCD:define('profilesWidget', function()
     local currentProfileName = nil
     local profilesList = nil
 
-    function getDataFromSettings()
+    local function getDataFromSettings()
         currentProfileName = settings:get().name
         profilesList = settings:getProfilesList()
     end
