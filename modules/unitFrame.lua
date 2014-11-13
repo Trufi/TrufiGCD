@@ -49,6 +49,8 @@ TrufiGCD:define('UnitFrame', function()
 
         obj.speed = timeGcd / 1.6
 
+        obj.trinketIcon = nil
+
         obj.iconsStack = {}
 
         self.__index = self
@@ -169,6 +171,8 @@ TrufiGCD:define('UnitFrame', function()
     end
 
     function UnitFrame:addSpell(spellId, spellIcon)
+        if spellId == 42292 then spellIcon = self.trinketIcon end
+
         table.insert(self.iconsStack, {id = spellId, icon = spellIcon})
     end
 
@@ -308,6 +312,10 @@ TrufiGCD:define('UnitFrame', function()
     function UnitFrame:getPoint()
         local point, _, _, ofsX, ofsY = self.frame:GetPoint()
         return point, ofsX, ofsY
+    end
+
+    function UnitFrame:setTrinketIcon(icon)
+        self.trinketIcon = icon
     end
 
     return UnitFrame

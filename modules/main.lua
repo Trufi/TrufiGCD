@@ -86,6 +86,8 @@ local function init()
         else
             units.list[typeName]:clearFrame()
         end
+
+        units.list[typeName]:updateFraction()
     end
 
     local function playerEventHandler(self, event)

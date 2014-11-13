@@ -5,21 +5,34 @@ TrufiGCD:define('units', function()
     local config = TrufiGCD:require('config')
     local utils = TrufiGCD:require('utils')
 
-    local _idCounter = 0
-
-    local trinketIcon = 'Interface\\Icons\\inv_jewelry_trinketpvp_01'
-
     -- settings
     local settings = nil
+
+    local trinketIconAliance = 'Interface\\Icons\\inv_jewelry_trinketpvp_01'
+    local trinketIconHorde = 'Interface\\Icons\\inv_jewelry_trinketpvp_01'
+
+    local units = {}
+
+    units.list = {}
+
+    units.updateSettings = function()
+        for i, el in pairs(units.list) do
+            el:changeOptions(settings.unitFrames[i])
+        end
+    end
 
     local function loadSettings()
         settings = {}
 
         settings.unitFrames = settingsModule:get('unitFrames')
+
+        units.updateSettings()
     end
 
     loadSettings()
     settingsModule:on('change', loadSettings)
+
+    local _idCounter = 0
 
     local Unit = {}
 
@@ -47,6 +60,8 @@ TrufiGCD:define('units', function()
         self.__index = self
 
         metatable = setmetatable(obj, self)
+
+        metatable:updateFraction()
 
         return metatable
     end
@@ -125,8 +140,6 @@ TrufiGCD:define('units', function()
     end
 
     function Unit:buffSucceeded()
-        local i
-
         for i = 1, 20 do
             local buffId = select(11, UnitBuff(self.typeName, i))
 
@@ -168,9 +181,13 @@ TrufiGCD:define('units', function()
         self.unitFrame:clear()
     end
 
-    local units = {}
-
-    units.list = {}
+    function Unit:updateFraction()
+        if UnitFactionGroup(self.typeName) == 'Horde' then
+            self.unitFrame:setTrinketIcon(trinketIconHorde)
+        else
+            self.unitFrame:setTrinketIcon(trinketIconAliance)
+        end
+    end
 
     units.create = function()
         for i, el in pairs(config.unitNames) do
