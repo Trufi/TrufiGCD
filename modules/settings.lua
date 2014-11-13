@@ -39,6 +39,16 @@ TrufiGCD:define('settings', function()
         return res
     end
 
+    function setProfileData(name, data)
+        if not profiles[name] or type(data) ~= 'table' then return end
+
+        utils.extend(profiles[name].data, data)
+
+        if currentProfile.name == name then
+            self:emit('change')
+        end
+    end
+
     function settings:createProfile(name, data)
         local profile = {}
 
@@ -48,7 +58,7 @@ TrufiGCD:define('settings', function()
 
         profiles[name].data = getDefaultProfileData()
 
-        settings:setProfileData(name, data)
+        setProfileData(name, data)
 
         if currentProfile and currentProfile.name == name then
             self:emit('change')
@@ -59,14 +69,8 @@ TrufiGCD:define('settings', function()
         savedVariables:setCommon('profiles', profiles)
     end
 
-    function settings:setProfileData(name, data)
-        if not profiles[name] or type(data) ~= 'table' then return end
-
-        utils.extend(profiles[name].data, data)
-
-        if currentProfile.name == name then
-            self:emit('change')
-        end
+    function settings:load()
+        profiles = savedVariables:getCommon('profiles') or {}
     end
 
     function settings:setCurrentProfile(name)
@@ -107,9 +111,31 @@ TrufiGCD:define('settings', function()
         end
     end
 
+    function settings:deleteProfile(name)
+        if profiles[name] == name then
+            profiles[name] = nil
+            settings:setCurrentProfile(next(profiles))
+        else
+            profiles[name] = nil
+        end
+    end
+
+    function settings:rename(newName)
+        currentProfile.name = newName
+        profiles[name] = nil
+        profiles[newName] = currentProfile
+
+        self:emit('change')
+    end
+
+    function settings:default()
+        profiles = {}
+        self:createProfile(UnitName('player') .. ' - ' .. GetRealmName(), true)
+    end
+
     -- if profiles list null create default profile
     if not next(profiles) then
-        settings:createProfile(UnitName('player') .. ' - ' .. GetRealmName(), true)
+        settings:default()
     end
 
     -- set current profile from settings or some one from profiles

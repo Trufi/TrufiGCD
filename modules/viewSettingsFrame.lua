@@ -12,6 +12,17 @@ TrufiGCD:define('viewSettingsFrame', function()
     frameView.name = 'View'
     frameView.parent = 'TrufiGCD'
 
+    frameView.okay = function()
+        settings:save()
+    end
+
+    frameView.cancel = function()
+        settings:load()
+    end
+
+    frameView.default = function()
+        settings:default()
+    end
 
 
     -- show/hide anchors button and frame
@@ -79,6 +90,13 @@ TrufiGCD:define('viewSettingsFrame', function()
 
     buttonShowAnchors:SetScript('OnClick', showHideAnchors)
 
+
+    -- simple profile widget
+    local profileWidget = profilesWidget.simple({
+        parentFrame = frameView,
+        point = 'TOPLEFT',
+        offset = {150, -30}
+    })
 
 
     -- create tabs
