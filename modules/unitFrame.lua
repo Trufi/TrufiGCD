@@ -37,7 +37,7 @@ TrufiGCD:define('UnitFrame', function()
         obj.offset = options.offset or {0, 0}
 
         -- true if mouse is over icon, need to stoping moving (if this option is enable)
-        obj.stopMovingMouseOverIcon = options.stopMovingMouseOverIcon or true
+        obj.stopMovingMouseOverIcon = options.stopMove or true
 
         obj.isMoving = true
 
@@ -50,8 +50,6 @@ TrufiGCD:define('UnitFrame', function()
         obj.transparencyIcons = options.transparencyIcons or 1
 
         obj.speed = timeGcd / 1.6
-
-        obj.trinketIcon = nil
 
         obj.iconsStack = {}
 
@@ -95,8 +93,8 @@ TrufiGCD:define('UnitFrame', function()
             self.iconsFrames[i] = IconFrame:new({
                 parentFrame = self.frame,
                 size = self.sizeIcons,
-                onEnterCallback = self.mouseOverIcon,
-                onLeaveCallback = self.mouseLeaveIcon
+                onEnterCallback = function() self:mouseOverIcon() end,
+                onLeaveCallback = function() self:mouseLeaveIcon() end
             })
         end
     end
@@ -128,7 +126,7 @@ TrufiGCD:define('UnitFrame', function()
 
         self.offset = options.offset or self.offset
 
-        self.stopMovingMouseOverIcon = options.stopMovingMouseOverIcon or self.stopMovingMouseOverIcon
+        self.stopMovingMouseOverIcon = options.stopMove or self.stopMovingMouseOverIcon
 
         self.text = options.text or self.text
 
@@ -172,12 +170,21 @@ TrufiGCD:define('UnitFrame', function()
             el:setAlpha(self.transparencyIcons)
         end
 
+        if self.numberIcons > #self.iconsFrames then
+            for i = #self.iconsFrames, self.numberIcons do
+                self.iconsFrames[i] = IconFrame:new({
+                    parentFrame = self.frame,
+                    size = self.sizeIcons,
+                    onEnterCallback = function() self:mouseOverIcon() end,
+                    onLeaveCallback = function() self:mouseLeaveIcon() end
+                })
+            end
+        end
+
         masqueHelper:reskinIcons()
     end
 
     function UnitFrame:addSpell(spellId, spellIcon)
-        if spellId == 42292 then spellIcon = self.trinketIcon end
-
         table.insert(self.iconsStack, {id = spellId, icon = spellIcon})
     end
 
@@ -319,8 +326,12 @@ TrufiGCD:define('UnitFrame', function()
         return point, ofsX, ofsY
     end
 
-    function UnitFrame:setTrinketIcon(icon)
-        self.trinketIcon = icon
+    function UnitFrame:hide()
+        self.frame:Hide()
+    end
+
+    function UnitFrame:show()
+        self.frame:Show()
     end
 
     return UnitFrame

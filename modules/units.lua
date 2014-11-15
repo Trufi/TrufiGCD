@@ -55,13 +55,19 @@ TrufiGCD:define('units', function()
             iconId = 0
         }
 
-        obj.enable = settings.unitFrames[obj.typeName].enable or true
+        obj.enable = settings.unitFrames[obj.typeName].enable
+
+        if obj.enable == nil then
+            obj.enable = true
+        end
+
+        if not obj.enable then
+            obj.unitFrame:hide()
+        end
 
         self.__index = self
 
         metatable = setmetatable(obj, self)
-
-        metatable:updateFraction()
 
         return metatable
     end
@@ -76,6 +82,22 @@ TrufiGCD:define('units', function()
         elseif event == 'UNIT_AURA' then self:buffSucceeded() end
     end
 
+    function Unit:checkChangeIcon(spellId, spellIcon)
+        if spellId == 42292 then
+            if UnitFactionGroup(self.typeName) == 'Horde' then
+                return trinketIconHorde
+            else
+                return trinketIconAliance
+            end
+        end
+
+        return spellIcon
+    end
+
+    function Unit:addSpell(spellId, spellIcon)
+        self.unitFrame:addSpell(spellId, self:checkChangeIcon(spellId, spellIcon))
+    end
+
     function Unit:spellCastStart(spellId)
         local spellInfo, _, spellIcon, spellCastTime = GetSpellInfo(spellId)
         local spellLink = GetSpellLink(spellId)
@@ -85,7 +107,7 @@ TrufiGCD:define('units', function()
         self.isSpellCasting = true
         self.unitFrame:stopMoving()
 
-        self.unitFrame:addSpell(spellId, spellIcon)
+        self:addSpell(spellId, spellIcon)
     end
 
     function Unit:spellCastSucceeded(spellId)
@@ -114,7 +136,7 @@ TrufiGCD:define('units', function()
             end
 
             if spellCastTime <= 0 or spellFromBuff then
-                self.unitFrame:addSpell(spellId, spellIcon)
+                self:addSpell(spellId, spellIcon)
             end
         end
     end
@@ -181,15 +203,17 @@ TrufiGCD:define('units', function()
         self.unitFrame:clear()
     end
 
-    function Unit:updateFraction()
-        if UnitFactionGroup(self.typeName) == 'Horde' then
-            self.unitFrame:setTrinketIcon(trinketIconHorde)
-        else
-            self.unitFrame:setTrinketIcon(trinketIconAliance)
-        end
-    end
-
     function Unit:changeOptions(options)
+        if options.enable ~= nil then
+            self.enable = options.enable
+        end
+
+        if self.enable then
+            self.unitFrame:show()
+        else
+            self.unitFrame:hide()
+        end
+
         self.unitFrame:changeOptions(options)
     end
 

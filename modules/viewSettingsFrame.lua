@@ -118,7 +118,13 @@ TrufiGCD:define('viewSettingsFrame', function()
     buttonArena:SetWidth(buttonArena:GetTextWidth() + 31);
     PanelTemplates_TabResize(buttonArena, 0);
 
-    PanelTemplates_SetNumTabs(frameTabs, 2)
+    local buttonOther = CreateFrame('Button', 'TrGCDViewTabsFrameTab3', frameTabs, 'TabButtonTemplate')
+    buttonOther:SetPoint('TOPLEFT', buttonParty:GetWidth() + buttonArena:GetWidth() + 15 + 10, 0)
+    buttonOther:SetText('Other')
+    buttonOther:SetWidth(buttonOther:GetTextWidth() + 31);
+    PanelTemplates_TabResize(buttonOther, 0);
+
+    PanelTemplates_SetNumTabs(frameTabs, 3)
     PanelTemplates_SetTab(frameTabs, 1)
 
     local frameParty = CreateFrame('Frame', 'TrGCDViewTabsFramePage1', frameTabs, 'OptionsBoxTemplate')
@@ -132,16 +138,31 @@ TrufiGCD:define('viewSettingsFrame', function()
     frameArena:SetHeight(400)
     frameArena:Hide()
 
+    local frameOther = CreateFrame('Frame', 'TrGCDViewTabsFramePage3', frameTabs, 'OptionsBoxTemplate')
+    frameOther:SetPoint('TOPLEFT', 0, -30)
+    frameOther:SetWidth(settingsWidth)
+    frameOther:SetHeight(400)
+    frameOther:Hide()
+
     buttonParty:SetScript('OnClick', function()
         frameArena:Hide()
+        frameOther:Hide()
         frameParty:Show()
         PanelTemplates_SetTab(frameTabs, 1)
     end)
 
     buttonArena:SetScript('OnClick', function()
         frameParty:Hide()
+        frameOther:Hide()
         frameArena:Show()
         PanelTemplates_SetTab(frameTabs, 2)
+    end)
+
+    buttonOther:SetScript('OnClick', function()
+        frameParty:Hide()
+        frameArena:Hide()
+        frameOther:Show()
+        PanelTemplates_SetTab(frameTabs, 3)
     end)
 
 
@@ -445,6 +466,10 @@ TrufiGCD:define('viewSettingsFrame', function()
     -- create arena settings
     local arenaList = {'arena1', 'arena2', 'arena3', 'arena4', 'arena5'}
     createViewTabSettings(arenaList, frameArena)
+
+    -- create other settings
+    local otherList = {'target', 'focus'}
+    createViewTabSettings(otherList, frameOther)
 
     return frameView
 end)

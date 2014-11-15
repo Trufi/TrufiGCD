@@ -115,6 +115,7 @@ TrufiGCD:define('IconFrame', function()
 
     function Icon:setDirection(str)
         self.direction = str
+        self.frame:ClearAllPoints()
         self:updateFramePosition()
     end
 
