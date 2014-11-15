@@ -20,12 +20,66 @@ TrufiGCD:define('settingsFrame', function()
         settings:default()
     end
 
+    local tooltipSettings = nil
+
+    local function getDataFromSettings()
+        tooltipSettings = settings:get('tooltip')
+    end
+
+    getDataFromSettings()
+    settings:on('change', getDataFromSettings)
+
     -- profile widget
     local profileWidget = profilesWidget.full({
         parentFrame = frame,
         point = 'TOPLEFT',
         offset = {50, -30}
     })
+
+    -- tooltip settings
+    local frameTooltip = CreateFrame('Frame', nil, frame)
+    frameTooltip:SetWidth(500)
+    frameTooltip:SetHeight(500)
+    frameTooltip:SetPoint('TOPLEFT', 300, -400)
+
+    local textTooltip = frameTooltip:CreateFontString(nil, 'BACKGROUND')
+    textTooltip:SetFont('Fonts\\FRIZQT__.TTF', 12)
+    textTooltip:SetText('Tooltip:')
+    textTooltip:SetPoint('TOPLEFT', 0, 0)
+
+    local chboxTooltipEnable = CreateFrame('CheckButton', 'TrGCDTooltipEnable', frameTooltip, 'OptionsSmallCheckButtonTemplate')
+    chboxTooltipEnable:SetPoint('TOPLEFT', 0, -20)
+    chboxTooltipEnable:SetChecked(tooltipSettings.enable)
+    _G[chboxTooltipEnable:GetName() .. 'Text']:SetText('Enable')
+
+    local chboxTooltipIconMove = CreateFrame('CheckButton', 'TrGCDTooltipIconMove', frameTooltip, 'OptionsSmallCheckButtonTemplate')
+    chboxTooltipIconMove:SetPoint('TOPLEFT', 0, -50)
+    chboxTooltipIconMove:SetChecked(tooltipSettings.stopMove)
+    _G[chboxTooltipIconMove:GetName() .. 'Text']:SetText('Stop icons')
+
+    local chboxTooltipSpellId = CreateFrame('CheckButton', 'TrGCDTooltipSpellId', frameTooltip, 'OptionsSmallCheckButtonTemplate')
+    chboxTooltipSpellId:SetPoint('TOPLEFT', 0, -80)
+    chboxTooltipSpellId:SetChecked(tooltipSettings.showIdInChat)
+    _G[chboxTooltipSpellId:GetName() .. 'Text']:SetText('Spell ID')
+
+    function tooltipEnableOnclick()
+        tooltipSettings.enable = not tooltipSettings.enable
+        settings:set('tooltip', tooltipSettings)
+    end
+
+    function tooltipIconMoveOnclick()
+        tooltipSettings.stopMove = not tooltipSettings.stopMove
+        settings:set('tooltip', tooltipSettings)
+    end
+
+    function tooltipSpellIdOnclick()
+        tooltipSettings.showIdInChat = not tooltipSettings.showIdInChat
+        settings:set('tooltip', tooltipSettings)
+    end
+
+    chboxTooltipEnable:SetScript('OnClick', tooltipEnableOnclick)
+    chboxTooltipIconMove:SetScript('OnClick', tooltipIconMoveOnclick)
+    chboxTooltipSpellId:SetScript('OnClick', tooltipSpellIdOnclick)
 
     InterfaceOptions_AddCategory(frame)
 

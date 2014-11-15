@@ -47,6 +47,8 @@ TrufiGCD:define('UnitFrame', function()
         -- count of next used icon
         obj.indexIcon = obj.numberIcons + 1
 
+        obj.transparencyIcons = options.transparencyIcons or 1
+
         obj.speed = timeGcd / 1.6
 
         obj.trinketIcon = nil
@@ -130,6 +132,8 @@ TrufiGCD:define('UnitFrame', function()
 
         self.text = options.text or self.text
 
+        self.transparencyIcons  = options.transparencyIcons or self.transparencyIcons
+
         if options.direction or options.sizeIcons or options.numberIcons then
             self.direction = options.direction or self.direction
             self.sizeIcons = options.sizeIcons or self.sizeIcons
@@ -165,6 +169,7 @@ TrufiGCD:define('UnitFrame', function()
         for i, el in pairs(self.iconsFrames) do
             el:setSize(self.sizeIcons)
             el:setDirection(self.direction)
+            el:setAlpha(self.transparencyIcons)
         end
 
         masqueHelper:reskinIcons()
@@ -182,7 +187,7 @@ TrufiGCD:define('UnitFrame', function()
         local icon = self.iconsFrames[self.indexIcon]
         icon:setOffset(0)
         icon:setSpell(self.iconsStack[1].id, self.iconsStack[1].icon)
-        icon:show()
+        icon:show({alpha = self.transparencyIcons})
 
         table.remove(self.iconsStack, 1)
     end
@@ -231,7 +236,7 @@ TrufiGCD:define('UnitFrame', function()
                 local dist = currentOffset - self.longSize + self.sizeIcons
 
                 if dist > 0 then
-                    local alpha = 1 - dist / self.sizeIcons
+                    local alpha = self.transparencyIcons - dist / self.sizeIcons
                     if alpha > 0 then
                         el:setAlpha(alpha)
                     else

@@ -86,6 +86,10 @@ TrufiGCD:define('settings', function()
         return currentProfile
     end
 
+    function settings:getName()
+        return currentProfile.name
+    end
+
     function settings:get(settingsName)
         if settingsName then
             return currentProfile.data[settingsName]

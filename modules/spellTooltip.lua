@@ -17,7 +17,7 @@ TrufiGCD:define('spellTooltip', function()
             GameTooltip:SetSpellByID(spellId, false, false, true)
             GameTooltip:Show()
 
-            if settings.showInChatId then
+            if settings.showIdInChat then
                 print(GetSpellLink(spellId) .. ' ID: ' .. spellId)
             end
         end

@@ -230,10 +230,9 @@ TrufiGCD:define('viewSettingsFrame', function()
         _G[self.transparencySlider:GetName() .. 'Text']:SetText(unitSettings[self.unitName].transparencyIcons * 100)
         self.transparencySlider:SetMinMaxValues(0, 100)
         self.transparencySlider:SetValueStep(1)
-        self.transparencySlider:SetValue(unitSettings[self.unitName].transparencyIcons)
+        self.transparencySlider:SetValue(unitSettings[self.unitName].transparencyIcons * 100)
         self.transparencySlider:SetScript('OnValueChanged', function (_,value) self:transparencySliderChanged(value) end)
         self.transparencySlider:Show()
-
     end
 
     function FrameUnitSettings:getSetting(name)

@@ -10,13 +10,13 @@ TrufiGCD:define('savedVariables', function()
         blacklist = 'TrGCDBL',
         spellTooltip = {
             enable = 'TooltipEnable',
-            showInChatId = 'TooltipSpellID'
+            showIdInChat = 'TooltipSpellID'
         },
         unitFrame = 'TrGCDQueueFr',
         all = {
             tooltip = {
                 enable = 'TooltipEnable',
-                showInChatId = 'TooltipSpellID',
+                showIdInChat = 'TooltipSpellID',
                 stopMove = 'TooltipStopMove'
             },
             unitFrame = 'TrGCDQueueFr',
