@@ -183,6 +183,12 @@ TrufiGCD:define('profilesWidget', function()
         end
     end
 
+    function ProfileManager:menuItemOnClick(profileName)
+        if currentProfileName == profileName then return end
+
+        settings:setCurrentProfile(profileName)
+    end
+
     function ProfileManager:deleteProfile()
         settings:deleteProfile(currentProfileName)
     end

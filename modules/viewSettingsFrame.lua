@@ -367,7 +367,7 @@ TrufiGCD:define('viewSettingsFrame', function()
     end
 
     function FrameChangeAllSettings:settingChanged()
-        -- none
+        -- none, NOT CHANGE!
     end
 
     -- set settings to all units
