@@ -45,7 +45,9 @@ TrufiGCD:define('units', function()
 
         obj.typeName = options.typeName
 
-        obj.unitFrame = UnitFrame:new(settings.unitFrames[obj.typeName])
+        obj.unitFrame = UnitFrame:new(settings.unitFrames[obj.typeName], {
+            onDragStop = function() settingsModule:set('unitFrames', units.framesPositions()) end
+        })
 
         obj.isSpellCasting = false
 

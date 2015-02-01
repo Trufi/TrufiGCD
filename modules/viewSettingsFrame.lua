@@ -84,8 +84,6 @@ TrufiGCD:define('viewSettingsFrame', function()
             frameShowAnchors:Hide()
             units.hideAnchorFrames()
             isShowAnchors = false
-
-            settings:set('unitFrames', units.framesPositions())
         end
     end
 

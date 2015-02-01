@@ -11,7 +11,8 @@ TrufiGCD:define('UnitFrame', function()
 
     local UnitFrame = {}
 
-    function UnitFrame:new(options)
+    function UnitFrame:new(settings, options)
+        settings = settings or {}
         options = options or {}
 
         local obj = {}
@@ -20,38 +21,41 @@ TrufiGCD:define('UnitFrame', function()
         obj.id = _idCounter
 
         -- capacity elements in frame
-        obj.numberIcons = options.numberIcons or 3
+        obj.numberIcons = settings.numberIcons or 3
 
         -- size of icons frames in pixels
-        obj.sizeIcons = options.sizeIcons or 30
+        obj.sizeIcons = settings.sizeIcons or 30
 
         obj.longSize = obj.numberIcons * obj.sizeIcons
 
         -- direction of fade icons
-        obj.direction = options.direction or 'Left'
+        obj.direction = settings.direction or 'Left'
 
         -- position relative from parent
-        obj.point = options.point or 'CENTER'
+        obj.point = settings.point or 'CENTER'
 
         -- offset in pixels
-        obj.offset = options.offset or {0, 0}
+        obj.offset = settings.offset or {0, 0}
 
         -- true if mouse is over icon, need to stoping moving (if this option is enable)
-        obj.stopMovingMouseOverIcon = options.stopMove or true
+        obj.stopMovingMouseOverIcon = settings.stopMove or true
 
         obj.isMoving = true
 
         -- text which show in background
-        obj.text = options.text or 'None'
+        obj.text = settings.text or 'None'
 
         -- count of next used icon
         obj.indexIcon = obj.numberIcons + 1
 
-        obj.transparencyIcons = options.transparencyIcons or 1
+        obj.transparencyIcons = settings.transparencyIcons or 1
 
         obj.speed = timeGcd / 1.6
 
         obj.iconsStack = {}
+
+        -- stop move frame callback
+        obj.onDragStop = options.onDragStop or (function() end)
 
         self.__index = self
 
@@ -70,7 +74,10 @@ TrufiGCD:define('UnitFrame', function()
         self.frame:SetPoint(self.point, self.offset[1], self.offset[2])
 
         self.frame:SetScript('OnDragStart', self.frame.StartMoving)
-        self.frame:SetScript('OnDragStop', self.frame.StopMovingOrSizing)
+        self.frame:SetScript('OnDragStop', function(...)
+            self.frame.StopMovingOrSizing(...)
+            self.onDragStop()
+        end)
 
         self.frameTexture = self.frame:CreateTexture(nil, 'BACKGROUND')
         self.frameTexture:SetAllPoints(self.frame)

@@ -47,7 +47,11 @@ TrufiGCD:define('config', function()
         [114255] = {2061},
         -- Shadowy Insight - Mind Blast
         [124430] = {8092}
-    } 
+    }
+
+    config.icons = {
+        maxNumber = 8
+    }
 
     return config
 end)
