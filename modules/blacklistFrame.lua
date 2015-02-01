@@ -125,6 +125,8 @@ TrufiGCD:define('blacklistFrame', function()
 
     -- initialize list frame from blacklist
     local function initListFrame()
+        list = blacklist:getList()
+
         for i = 1, 60 do
             if (list[i] ~= nil) then
                 local spellname = GetSpellInfo(list[i])
@@ -148,7 +150,7 @@ TrufiGCD:define('blacklistFrame', function()
 
     deleteSpell:SetScript('OnClick', function()
         if (selectedSpell ~= nil) then
-            blacklist.remove(list[selectedSpell.Number])
+            blacklist:remove(list[selectedSpell.Number])
             deleteSpell.topText:SetText('Select spell')
             initListFrame()
         end
