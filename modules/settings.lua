@@ -72,6 +72,17 @@ TrufiGCD:define('settings', function()
 
     function settings:load()
         profiles = savedVariables:getCommon('profiles') or {}
+
+        -- TODO: choose profile from place manager
+        -- set current profile from settings or some one from profiles
+        if characterSaves.currentProfile and profiles[characterSaves.currentProfile] then
+            settings:setCurrentProfile(profiles[characterSaves.currentProfile])
+        else
+            settings:setCurrentProfile(next(profiles))
+        end
+        --
+
+        self:emit('change')
     end
 
     function settings:setCurrentProfile(name)
@@ -144,6 +155,8 @@ TrufiGCD:define('settings', function()
     if not next(profiles) then
         settings:default()
     end
+
+    -- TODO: choose profile from place manager
 
     -- set current profile from settings or some one from profiles
     if characterSaves.currentProfile and profiles[characterSaves.currentProfile] then
