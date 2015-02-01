@@ -285,9 +285,7 @@ TrufiGCD:define('viewSettingsFrame', function()
             info.text = el
             info.menuList = i
             info.func = function() self:changeDropDownDirection(i) end
-
-            if i == 1 then info.notCheckable = true end
-
+            info.notCheckable = true
             UIDropDownMenu_AddButton(info)
         end
     end

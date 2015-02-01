@@ -35,6 +35,8 @@ TrufiGCD:define('profilesWidget', function()
 
         metatable:create(options)
 
+        settings:on('change', function() metatable:update() end)
+
         return metatable
     end
 
@@ -52,6 +54,10 @@ TrufiGCD:define('profilesWidget', function()
         UIDropDownMenu_Initialize(self.frameDropdownCurrent, function() self:initMenu() end)
     end
 
+    function WidgetSimple:update()
+        UIDropDownMenu_SetText(self.frameDropdownCurrent, currentProfileName)
+    end
+
     function WidgetSimple:initMenu()
         local info = UIDropDownMenu_CreateInfo()
 
@@ -59,9 +65,7 @@ TrufiGCD:define('profilesWidget', function()
             info.text = el
             info.menuList = i
             info.func = function() self:menuItemOnClick(el) end
-
-            if el == currentProfileName then info.notCheckable = true end
-
+            info.notCheckable = true
             UIDropDownMenu_AddButton(info)
         end
     end

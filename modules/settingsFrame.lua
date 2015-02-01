@@ -3,6 +3,7 @@ TrufiGCD:define('settingsFrame', function()
     local profilesWidget = TrufiGCD:require('profilesWidget')
     local blacklistFrame = TrufiGCD:require('blacklistFrame')
     local settings = TrufiGCD:require('settings')
+    local utils = TrufiGCD:require('utils')
 
     -- main settings frame
     local frame = CreateFrame('Frame', nil, UIParent, 'OptionsBoxTemplate')

@@ -155,3 +155,5 @@ TrufiGCD:define('settings', function()
 
     return settings
 end)
+
+-- profiles -- [ world, bg, pve, arena ]
