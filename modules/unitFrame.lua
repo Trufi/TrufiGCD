@@ -139,9 +139,15 @@ TrufiGCD:define('UnitFrame', function()
             self.longSize = self.numberIcons * self.sizeIcons
 
             self:updateSize()
+            self:updateOffset()
             self:updateIcons()
         end
 
+    end
+
+    function UnitFrame:updateOffset()
+        self.frame:ClearAllPoints()
+        self.frame:SetPoint(self.point, self.offset[1], self.offset[2])
     end
 
     function UnitFrame:updateSize()
