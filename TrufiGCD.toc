@@ -23,6 +23,7 @@ modules\eventEmitter.lua
 modules\masqueHelper.lua
 
 modules\savedVariables.lua
+modules\profileSwitcher.lua
 modules\settings.lua
 modules\oldSettingsCheck.lua
 
@@ -38,6 +39,7 @@ modules\profilesWidget.lua
 modules\blacklistFrame.lua
 modules\viewSettingsFrame.lua
 modules\settingsFrame.lua
+modules\profileSwitcherFrame.lua
 
 # Addon
 #TrufiGCD.lua
