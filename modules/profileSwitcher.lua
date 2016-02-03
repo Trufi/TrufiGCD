@@ -19,9 +19,11 @@ TrufiGCD:define('profileSwitcher', function()
     settings:on('change', getDataFromSettings)
 
     function profileSwitcher:set(type, name)
+
     end
 
     function profileSwitcher:get(type)
+        
     end
 
 end)

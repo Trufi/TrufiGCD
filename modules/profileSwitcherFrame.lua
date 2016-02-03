@@ -20,7 +20,7 @@ TrufiGCD:define('profileSwitcherFrame', function()
 
     local Switcher = {}
 
-    function Switcher:new(options) {
+    function Switcher:new(options)
         options = options or {}
 
         local obj = {}
@@ -42,9 +42,9 @@ TrufiGCD:define('profileSwitcherFrame', function()
         metatable:create()
 
         return metatable
-    }
+    end
 
-    function Switcher:create() {
+    function Switcher:create()
         self.frame = CreateFrame('Frame', nil, frame)
         self.frame:SetPoint('TOPLEFT', self.offset[0], self.offset[1])
 
@@ -61,7 +61,7 @@ TrufiGCD:define('profileSwitcherFrame', function()
         UIDropDownMenu_SetWidth(self.frameDropdownCurrent, 200)
         UIDropDownMenu_SetText(self.frameDropdownCurrent, profileSwitcher.get(self.type))
         UIDropDownMenu_Initialize(self.frameDropdownCurrent, function() self:initMenu() end)
-    }
+    end
 
     function Switcher:initMenu()
         local info = UIDropDownMenu_CreateInfo()

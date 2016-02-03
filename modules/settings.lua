@@ -130,11 +130,12 @@ TrufiGCD:define('settings', function()
     end
 
     function settings:deleteProfile(name)
-        if profiles[name] == name then
+        if profiles[name] == currentProfile then
             profiles[name] = nil
             settings:setCurrentProfile(next(profiles))
         else
             profiles[name] = nil
+            self:emit('change')
         end
     end
 

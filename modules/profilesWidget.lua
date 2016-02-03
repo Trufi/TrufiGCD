@@ -199,6 +199,7 @@ TrufiGCD:define('profilesWidget', function()
     end
 
     function ProfileManager:deleteProfile()
+        self.frameConfirmDelete:Hide()
         settings:deleteProfile(currentProfileName)
     end
 
@@ -218,6 +219,7 @@ TrufiGCD:define('profilesWidget', function()
         if utils.contain(profilesList, name) then name = name .. 'New' end
 
         settings:createProfile(name, settings:get())
+        settings:setCurrentProfile(name)
     end
 
     function ProfileManager:renameOnClick()

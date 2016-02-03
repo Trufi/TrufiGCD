@@ -23,9 +23,9 @@ modules\eventEmitter.lua
 modules\masqueHelper.lua
 
 modules\savedVariables.lua
-modules\profileSwitcher.lua
 modules\settings.lua
 modules\oldSettingsCheck.lua
+modules\profileSwitcher.lua
 
 modules\blacklist.lua
 modules\spellTooltip.lua
