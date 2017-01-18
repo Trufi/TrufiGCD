@@ -61,7 +61,7 @@ TrufiGCD:define('blacklistFrame', function()
 
     local listScrollBarBackground = listScrollBar:CreateTexture(nil, "BACKGROUND")
     listScrollBarBackground:SetAllPoints(listScrollBar)
-    listScrollBarBackground:SetTexture(0, 0, 0, 0.4)
+    listScrollBarBackground:SetColorTexture(0, 0, 0, 0.4)
 
     listScrollBar:SetValue(0)
     listScrollBar:SetScript("OnValueChanged", function (self, value)
@@ -104,7 +104,7 @@ TrufiGCD:define('blacklistFrame', function()
 
         listSpells[i].Texture = listSpells[i]:CreateTexture(nil, 'BACKGROUND')
         listSpells[i].Texture:SetAllPoints(listSpells[i])
-        listSpells[i].Texture:SetTexture(255, 210, 0)
+        listSpells[i].Texture:SetColorTexture(255, 210, 0)
         listSpells[i].Texture:SetAlpha(0)
 
         listSpells[i]:SetScript('OnEnter', function(self)

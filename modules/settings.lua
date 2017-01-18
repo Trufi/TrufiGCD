@@ -44,10 +44,6 @@ TrufiGCD:define('settings', function()
         if not profiles[name] or type(data) ~= 'table' then return end
 
         utils.extend(profiles[name].data, data)
-
-        if currentProfile.name == name then
-            self:emit('change')
-        end
     end
 
     function settings:createProfile(name, data)

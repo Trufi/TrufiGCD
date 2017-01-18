@@ -81,7 +81,7 @@ TrufiGCD:define('UnitFrame', function()
 
         self.frameTexture = self.frame:CreateTexture(nil, 'BACKGROUND')
         self.frameTexture:SetAllPoints(self.frame)
-        self.frameTexture:SetTexture(0, 0, 0)
+        self.frameTexture:SetColorTexture(0, 0, 0)
         self.frameTexture:Hide()
         self.frameTexture:SetAlpha(0.6)
 
@@ -184,7 +184,7 @@ TrufiGCD:define('UnitFrame', function()
         end
 
         if self.numberIcons > #self.iconsFrames then
-            for i = #self.iconsFrames, self.numberIcons do
+            for i = #self.iconsFrames, self.numberIcons + 1 do
                 self.iconsFrames[i] = IconFrame:new({
                     parentFrame = self.frame,
                     size = self.sizeIcons,

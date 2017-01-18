@@ -52,7 +52,7 @@ TrufiGCD:define('viewSettingsFrame', function()
 
     local frameShowAnchorsTexture = frameShowAnchors:CreateTexture(nil, 'BACKGROUND')
     frameShowAnchorsTexture:SetAllPoints(frameShowAnchors)
-    frameShowAnchorsTexture:SetTexture(0, 0, 0)
+    frameShowAnchorsTexture:SetColorTexture(0, 0, 0)
     frameShowAnchorsTexture:SetAlpha(0.5)
 
     local frameShowAnchorsButton = CreateFrame('Button', nil, frameShowAnchors, 'UIPanelButtonTemplate')

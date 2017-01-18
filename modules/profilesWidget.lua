@@ -121,7 +121,7 @@ TrufiGCD:define('profilesWidget', function()
         self.frameConfirmDelete:SetHeight(60)
         self.textureConfirmDelete = self.frameConfirmDelete:CreateTexture(nil, 'BACKGROUND')
         self.textureConfirmDelete:SetAllPoints(self.frameConfirmDelete)
-        self.textureConfirmDelete:SetTexture(0, 0, 0)
+        self.textureConfirmDelete:SetColorTexture(0, 0, 0)
         self.textureConfirmDelete:SetAlpha(0.8)
 
         self.textConfirmDelete = self.frameConfirmDelete:CreateFontString(nil, 'BACKGROUND')
