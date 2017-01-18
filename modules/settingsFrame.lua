@@ -88,6 +88,6 @@ TrufiGCD:define('settingsFrame', function()
 
     InterfaceOptions_AddCategory(blacklistFrame)
 
-    -- убрать потом
+    -- TODO: убрать потом
     TrGCDGUITEST = viewSettingsFrame
 end)
