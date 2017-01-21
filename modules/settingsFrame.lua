@@ -2,6 +2,7 @@ TrufiGCD:define('settingsFrame', function()
     local viewSettingsFrame = TrufiGCD:require('viewSettingsFrame')
     local profilesWidget = TrufiGCD:require('profilesWidget')
     local blacklistFrame = TrufiGCD:require('blacklistFrame')
+    local profileSwitcherFrame = TrufiGCD:require('profileSwitcherFrame2')
     local settings = TrufiGCD:require('settings')
     local utils = TrufiGCD:require('utils')
 
@@ -88,6 +89,9 @@ TrufiGCD:define('settingsFrame', function()
 
     InterfaceOptions_AddCategory(blacklistFrame)
 
+    InterfaceOptions_AddCategory(profileSwitcherFrame)
+
     -- TODO: убрать потом
-    TrGCDGUITEST = viewSettingsFrame
+    -- TrGCDGUITEST = viewSettingsFrame
+    -- /run InterfaceOptionsFrame_OpenToCategory(TrGCDGUITEST)
 end)

@@ -38,8 +38,9 @@ modules\main.lua
 modules\profilesWidget.lua
 modules\blacklistFrame.lua
 modules\viewSettingsFrame.lua
-modules\settingsFrame.lua
 modules\profileSwitcherFrame.lua
+modules\profileSwitcherFrame2.lua
+modules\settingsFrame.lua
 
 # Addon
 #TrufiGCD.lua

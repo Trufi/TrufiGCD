@@ -4,6 +4,7 @@ TrufiGCD:define('profileSwitcherFrame', function()
     local utils = TrufiGCD:require('utils')
 
     local frame = CreateFrame('Frame', nil, UIParent)
+    frame.name = "profileSwitcher"
 
     local currentProfileName = nil
     local profilesList = nil
@@ -80,4 +81,19 @@ TrufiGCD:define('profileSwitcherFrame', function()
 
         profileSwitcher.set(self.type, profileName)
     end
+
+    -- local t = Switcher:new()
+
+    frame.okay = function()
+    end
+
+    frame.cancel = function()
+    end
+
+    frame.default = function()
+    end
+
+    frame.parent = 'TrufiGCD'
+
+    return frame
 end)
