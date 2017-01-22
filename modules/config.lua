@@ -51,6 +51,21 @@ TrufiGCD:define('config', function()
 
     config.icons = {
         maxNumber = 8
+    }    
+    
+    config.specs = {
+        [1] = '1',
+        [2] = '2',
+        [3] = '3',
+        [4] = '4'
+    }
+
+    config.places = {
+        WORLD = 'WORLD',
+        PARTY = 'PARTY',
+        RAID = 'RAID',
+        ARENA = 'ARENA',
+        BATTLEGROUND = 'BATTLEGROUND'
     }
 
     return config

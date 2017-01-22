@@ -2,22 +2,11 @@ TrufiGCD:define('profileSwitcher', function()
     local savedVariables = TrufiGCD:require('savedVariables')
     local EventEmitter = TrufiGCD:require('eventEmitter')
     local settings = TrufiGCD:require('settings')
+    local config = TrufiGCD:require('config')
     local utils = TrufiGCD:require('utils')
 
-    local SPECS = {
-        [1] = '1',
-        [2] = '2',
-        [3] = '3',
-        [4] = '4'
-    }
-
-    local PLACES = {
-        WORLD = 'WORLD',
-        PARTY = 'PARTY',
-        RAID = 'RAID',
-        ARENA = 'ARENA',
-        BATTLEGROUND = 'BATTLEGROUND'
-    }
+    local places = config.places
+    local specs = config.specs
 
     local currentProfileName = nil
     local profilesList = nil
@@ -43,7 +32,7 @@ TrufiGCD:define('profileSwitcher', function()
         obj.specConditions = {}
 
         -- TODO: а что если профиль переименуют?
-        obj.profileName = '123'
+        obj.profileName = currentProfileName
 
         self.__index = self
 
@@ -53,16 +42,16 @@ TrufiGCD:define('profileSwitcher', function()
     end
 
     function Rule:enableEverywhere()
-        self.placeConditions[PLACES.WORLD] = true
-        self.placeConditions[PLACES.PARTY] = true
-        self.placeConditions[PLACES.RAID] = true
-        self.placeConditions[PLACES.ARENA] = true
-        self.placeConditions[PLACES.BATTLEGROUND] = true
+        self.placeConditions[places.WORLD] = true
+        self.placeConditions[places.PARTY] = true
+        self.placeConditions[places.RAID] = true
+        self.placeConditions[places.ARENA] = true
+        self.placeConditions[places.BATTLEGROUND] = true
 
-        self.specConditions[SPECS[1]] = true
-        self.specConditions[SPECS[2]] = true
-        self.specConditions[SPECS[3]] = true
-        self.specConditions[SPECS[4]] = true
+        self.specConditions[specs[1]] = true
+        self.specConditions[specs[2]] = true
+        self.specConditions[specs[3]] = true
+        self.specConditions[specs[4]] = true
     end
 
     function Rule:getData()
@@ -79,26 +68,34 @@ TrufiGCD:define('profileSwitcher', function()
         self.profileName = data.profileName
     end
 
-    function Rule:getProfileName()
-        return self.profileName
-    end
-
     local rules = {}
+
+    local function getNextRuleId()
+        local maxId = 0
+
+        for id, _ in pairs(rules) do
+            if maxId < id then
+                maxId = id
+            end
+        end
+
+        return maxId + 1
+    end
 
     local function initRules()
         local list = savedVariables:getCharacter('profilesRules')
 
         if list == nil then
             list = {}
-            local tempRule = Rule:new(1)
+            local tempRule = Rule:new()
             tempRule:enableEverywhere()
-            list[1] = tempRule:getData()
+            list[tempRule.id] = tempRule:getData()
             savedVariables:setCharacter('profilesRules', list)
         end
 
         for id, data in pairs(list) do
-            local rule = Rule:new(id)
-            rules[id] = rule
+            local rule = Rule:new(getNextRuleId())
+            rules[rule.id] = rule
             rule:setData(data)
         end
     end
@@ -115,10 +112,12 @@ TrufiGCD:define('profileSwitcher', function()
         -- savedVariables:setCharacter('profilesRules', list)
     end
 
-    function profileSwitcher:createRule(id)
-        local rule = Rule:new(id)
+    function profileSwitcher:createRule()
+        local rule = Rule:new(getNextRuleId())
 
-        rules[id] = rule
+        rules[rule.id] = rule
+
+        self:emit('change')
 
         return rule
     end
