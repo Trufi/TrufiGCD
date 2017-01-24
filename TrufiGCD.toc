@@ -25,7 +25,7 @@ modules\masqueHelper.lua
 modules\savedVariables.lua
 modules\settings.lua
 modules\oldSettingsCheck.lua
-modules\profileSwitcher.lua
+modules\rules\profileSwitcher.lua
 
 modules\blacklist.lua
 modules\spellTooltip.lua
@@ -38,8 +38,8 @@ modules\main.lua
 modules\profilesWidget.lua
 modules\blacklistFrame.lua
 modules\viewSettingsFrame.lua
-modules\profileSwitcherFrame.lua
-modules\profileSwitcherFrame2.lua
+modules\rules\profileSwitcherFrame.lua
+modules\rules\profileSwitcherFrame2.lua
 modules\settingsFrame.lua
 
 # Addon
