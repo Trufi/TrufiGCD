@@ -48,7 +48,11 @@ local InnerBL = { --закрытый черный список, по ID
 	137585, -- Бросок сюрикена левой рукой
 	117993, -- Ци-полет (дамаг)
 	124040, -- Ци-полет (хил)
-	
+	198928, -- Cinderstorm shards (Fire Mage verified fix)
+	84721, -- Frozen Orb shards (Frost Mage verified fix)
+	222031, -- Chaos Strike 1 (DemonHunter unverified fix)
+	197125, -- Chaos Strike 2 (DemonHunter unverified fix)
+	199547, -- Chaos Strike 3 (DemonHunter unverified fix)	
 }
 local cross = "Interface\\TargetingFrame\\UI-RaidTargetingIcon_7"
 local skull = "Interface\\TargetingFrame\\UI-RaidTargetingIcon_8"
@@ -1024,6 +1028,7 @@ function TrGCDEventHandler(self, event, ...)
 				else
 					local b = false --висит ли багнутый бафф инстант каста
 					if ((TrGCDInsSp["spell"][i] == 48108) and (arg5 == 11366)) then b = true
+					elseif ((TrGCDInsSp["spell"][i] == 48108) and (arg5 == 2120)) then b = true						
 					elseif ((TrGCDInsSp["spell"][i] == 34936) and (arg5 == 29722)) then b = true
 					elseif ((TrGCDInsSp["spell"][i] == 93400) and (arg5 == 78674)) then b = true
 					elseif ((TrGCDInsSp["spell"][i] == 69369) and ((arg5 == 339) or (arg5 == 33786) or (arg5 == 5185) or (arg5 == 2637) or (arg5 == 20484)))then b = true 
