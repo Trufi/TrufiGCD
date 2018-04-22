@@ -522,6 +522,11 @@ function TrufiGCDAddonLoaded(self, event, ...)
 					TrGCDIcon[i][k].texture2:SetAlpha(1)
 					TrGCDIcon[i][k].texture2:Hide()
 					TrGCDIcon[i][k].texture2.show = false
+					TrGCDIcon[i][k].text = TrGCDIcon[i][k]:CreateFontString(nil, "BACKGROUND")
+					TrGCDIcon[i][k].text:SetFont("Fonts\\FRIZQT__.TTF", 9)
+					TrGCDIcon[i][k].text:SetText("")
+					TrGCDIcon[i][k].text:SetPoint("TOP", TrGCDIcon[i][k], "TOP", 0, 10)
+					TrGCDIcon[i][k].text:SetAlpha(1)
 					TrGCDIcon[i][k]:Hide()
 					TrGCDIcon[i][k].show = false
 					TrGCDIcon[i][k].x = 0
@@ -884,6 +889,7 @@ function TrGCDClear(i)
 		TrGCDQueueFirstI[i] = 1
 		TrGCDIcon[i][k].texture:SetTexture(nil)
 		TrGCDIcon[i][k].texture2:Hide()
+		TrGCDIcon[i][k].text:SetText("")
 		--TrGCDIcon[i][k]:SetPoint("LEFT", TrGCDQueueFr[i], "LEFT",0,0)
 	end
 end
@@ -914,6 +920,7 @@ function TrGCDPlayerTarFocDetect(k) -- чек есть ли цель или фо
 			elseif (TrGCDQueueOpt[k].fade == "Up") then TrGCDIcon[k][j]:SetPoint("BOTTOM", TrGCDQueueFr[k], "BOTTOM",0,-TrGCDIcon[k][j].x)
 			elseif (TrGCDQueueOpt[k].fade == "Down") then TrGCDIcon[k][j]:SetPoint("TOP", TrGCDQueueFr[k], "TOP",0,TrGCDIcon[k][j].x) end
 			TrGCDIcon[k][j].texture:SetTexture(TrGCDIcon[i][j].texture:GetTexture())
+			TrGCDIcon[k][j].text:SetText(TrGCDIcon[i][j].text:GetText())
 			TrGCDIcon[k][j].show = TrGCDIcon[i][j].show
 			TrGCDIcon[k][j]:SetAlpha(TrGCDIcon[i][j]:GetAlpha())
 			TrGCDIcon[k][j].TimeStart = TrGCDIcon[i][j].TimeStart
@@ -988,11 +995,12 @@ function TrGCDEventBuffHandler(self,event, ...) --запущена эвенто�
 		end
 	end
 end
-local function TrGCDAddGcdSpell(texture, i, spellid) -- добавление нового спелла в очередь
+local function TrGCDAddGcdSpell(texture, i, spellid, spellname) -- добавление нового спелла в очередь
 	if (TrGCDi[i] == 10) then TrGCDi[i] = 1 end
 	TrGCDAddSpQueue(TrGCDi[i], i)
 	TrGCDIcon[i][TrGCDi[i]].x = 0;
 	TrGCDIcon[i][TrGCDi[i]].texture:SetTexture(texture)
+	TrGCDIcon[i][TrGCDi[i]].text:SetText(spellname)
 	TrGCDIcon[i][TrGCDi[i]].show = false
 	TrGCDIcon[i][TrGCDi[i]]:SetAlpha(0)
 	TrGCDIcon[i][TrGCDi[i]]:Hide()
@@ -1017,7 +1025,7 @@ function TrGCDEventHandler(self, event, ...)
 				local IsChannel = UnitChannelInfo(arg1)--ченнелинг ли спелл
 			if (event == "UNIT_SPELLCAST_START") then
 				--print("cast " .. spellname)
-				TrGCDAddGcdSpell(spellicon, i, arg5)
+				TrGCDAddGcdSpell(spellicon, i, arg5, spellname)
 				TrGCDCastSp[i] = 0-- 0 - каст идет, 1 - каст прошел и не идет
 				TrGCDCastSpBanTime[i] = GetTime()
 
@@ -1042,7 +1050,7 @@ function TrGCDEventHandler(self, event, ...)
 						TrGCDIcon[i][TrGCDSpStop[i]].texture2:Hide()
 						TrGCDIcon[i][TrGCDSpStop[i]].texture2.show = false
 					end
-					if ((casttime <= 0) or b) then TrGCDAddGcdSpell(spellicon, i, arg5) end
+					if ((casttime <= 0) or b) then TrGCDAddGcdSpell(spellicon, i, arg5, spellname) end
 					--print("succeeded " .. spellname .. " - " ..TrGCDCastSp[i])
 				end
 			elseif ((event == "UNIT_SPELLCAST_STOP") and (TrGCDCastSp[i] == 0)) then
