@@ -95,7 +95,7 @@ TrufiGCD:define('profileSwitcher', function()
 
         if list == nil then
             list = {}
-            local tempRule = Rule:new()
+            local tempRule = Rule:new(0)
             tempRule:enableEverywhere()
             list[tempRule.id] = tempRule:getData()
             savedVariables:setCharacter('profilesRules', list)
@@ -109,8 +109,6 @@ TrufiGCD:define('profileSwitcher', function()
             rule:on('remove', function() profileSwitcher:removeRule(rule) end)
         end
     end
-
-    initRules()
 
     local function saveRules()
         local list = {}
@@ -129,6 +127,7 @@ TrufiGCD:define('profileSwitcher', function()
 
     currentProfileName = settings:getName()
     profilesList = settings:getProfilesList()
+    initRules()
     settings:on('change', getDataFromSettings)
 
     function profileSwitcher:createRule()

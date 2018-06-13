@@ -53,7 +53,7 @@ TrufiGCD:define('profileSwitcherFrame2', function()
 
     local FrameRule = {}
 
-    function FrameRule:new(rule, positionIndex) 
+    function FrameRule:new(rule, positionIndex)
         local obj = {}
         obj.rule = rule
         obj.positionIndex = positionIndex
