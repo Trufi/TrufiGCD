@@ -20,7 +20,7 @@ TrufiGCD:define('profileSwitcher', function()
         obj.placeConditions = {}
         obj.specConditions = {}
 
-        -- TODO: а что если профиль переименуют?
+        -- TODO: нужно брать первый из списка профилей
         obj.profileName = currentProfileName
 
         self.__index = self
@@ -52,6 +52,11 @@ TrufiGCD:define('profileSwitcher', function()
 
     function Rule:toggleSpec(spec)
         self.specConditions[spec] = not self.specConditions[spec]
+        self:emit('change')
+    end
+
+    function Rule:changeProfile(name)
+        self.profileName = name
         self:emit('change')
     end
 

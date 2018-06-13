@@ -38,11 +38,9 @@ TrufiGCD:define('profileSwitcherFrame2', function()
     frameRules:SetWidth(500)
     frameRules:SetHeight(500)
 
-    local currentProfileName = nil
     local profilesList = nil
 
     local function getDataFromSettings()
-        currentProfileName = settings:getName()
         profilesList = settings:getProfilesList()
     end
 
@@ -139,9 +137,8 @@ TrufiGCD:define('profileSwitcherFrame2', function()
     end
 
     function FrameRule:menuItemOnClick(profileName)
-        if currentProfileName == profileName then return end
-
-
+        self.rule:changeProfile(profileName)
+        UIDropDownMenu_SetText(self.dropdownProfile, profileName)
     end
 
     function FrameRule:onRemove()
