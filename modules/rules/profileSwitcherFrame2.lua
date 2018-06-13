@@ -163,6 +163,7 @@ TrufiGCD:define('profileSwitcherFrame2', function()
 
     function FrameRule:update(positionIndex)
         self.positionIndex = positionIndex
+        self.frame:Show()
         self.frame:SetPoint('TOPLEFT', 0, -self.positionIndex * 40)
     end
 
