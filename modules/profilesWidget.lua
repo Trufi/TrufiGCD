@@ -215,6 +215,7 @@ TrufiGCD:define('profilesWidget', function()
         local name = self.exitboxNewProfile:GetText()
 
         if not name then return end
+        if string.len(name) == 0 then return end
 
         if utils.contain(profilesList, name) then name = name .. 'New' end
 
@@ -226,6 +227,7 @@ TrufiGCD:define('profilesWidget', function()
         local name = self.exitboxNewProfile:GetText()
 
         if not name then return end
+        if string.len(name) == 0 then return end
 
         if utils.contain(profilesList, name) then name = name .. 'Rename' end
 
