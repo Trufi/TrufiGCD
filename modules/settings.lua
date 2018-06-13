@@ -48,12 +48,10 @@ TrufiGCD:define('settings', function()
 
     function settings:createProfile(name, data)
         local profile = {}
-
         profile.name = name
-
+        profile.uuid = utils.uuid()
+        profile.data = getDefaultProfileData()
         profiles[name] = profile
-
-        profiles[name].data = getDefaultProfileData()
 
         setProfileData(name, data)
 
