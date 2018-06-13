@@ -136,8 +136,8 @@ TrufiGCD:define('settings', function()
     end
 
     function settings:rename(newName)
+        profiles[currentProfile.name] = nil
         currentProfile.name = newName
-        profiles[name] = nil
         profiles[newName] = currentProfile
 
         self:emit('change')
