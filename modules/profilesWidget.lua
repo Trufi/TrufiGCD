@@ -149,6 +149,11 @@ TrufiGCD:define('profilesWidget', function()
         self.buttonDelete:SetPoint('TOPLEFT', 240, -3)
         self.buttonDelete:SetText('Delete')
         self.buttonDelete:SetScript('OnClick', function() self:deleteOnClick() end)
+        if utils.size(profilesList) <= 1 then
+            self.buttonDelete:Disable()
+        else
+            self.buttonDelete:Enable()
+        end
 
         -- editbox
         self.exitboxNewProfile = CreateFrame('EditBox', nil, self.frame, 'InputBoxTemplate')
@@ -189,6 +194,12 @@ TrufiGCD:define('profilesWidget', function()
 
     function ProfileManager:update()
         UIDropDownMenu_SetText(self.frameDropdownCurrent, currentProfile.name)
+
+        if utils.size(profilesList) <= 1 then
+            self.buttonDelete:Disable()
+        else
+            self.buttonDelete:Enable()
+        end
     end
 
     function ProfileManager:menuItemOnClick(profile)
@@ -206,6 +217,7 @@ TrufiGCD:define('profilesWidget', function()
     end
 
     function ProfileManager:deleteOnClick()
+        if utils.size(profilesList) <= 1 then return end
         self.frameConfirmDelete:Show()
     end
 

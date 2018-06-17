@@ -47,6 +47,17 @@ TrufiGCD:define('profileSwitcherFrame2', function()
         profilesList = settings:getProfilesList()
     end
 
+    local function getProfileName(id)
+        if not profilesList then return '-' end
+
+        local profile = profilesList[id]
+        if profile then
+            return profile.name
+        else
+            return '-'
+        end
+    end
+
     getDataFromSettings()
     settings:on('change', getDataFromSettings)
 
@@ -85,7 +96,7 @@ TrufiGCD:define('profileSwitcherFrame2', function()
         self.dropdownProfile:SetPoint('TOPLEFT', 10, 0)
 
         UIDropDownMenu_SetWidth(self.dropdownProfile, 100)
-        UIDropDownMenu_SetText(self.dropdownProfile, profilesList[self.rule.profileId].name)
+        UIDropDownMenu_SetText(self.dropdownProfile, getProfileName(self.rule.profileId))
         UIDropDownMenu_Initialize(self.dropdownProfile, function() self:initMenu() end)
 
         local marginBetween = 50
@@ -174,6 +185,7 @@ TrufiGCD:define('profileSwitcherFrame2', function()
         self.positionIndex = positionIndex
         self.frame:Show()
         self.frame:SetPoint('TOPLEFT', 0, -self.positionIndex * 40)
+        UIDropDownMenu_SetText(self.dropdownProfile, getProfileName(self.rule.profileId))
     end
 
     local function createUpperOneText(parentFrame, text, ofsX, ofsY)

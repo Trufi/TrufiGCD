@@ -77,7 +77,9 @@ TrufiGCD:define('settings', function()
     end
 
     function settings:deleteCurrentProfile()
-        -- TODO: check for last profile?
+        if utils.size(profiles) <= 1 then return end
+
+        profiles[currentProfile.id] = nil
         settings:setCurrentProfile(next(profiles))
     end
 

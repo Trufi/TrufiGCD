@@ -74,6 +74,16 @@ TrufiGCD:define('utils', function()
         return false
     end
 
+    utils.size = function(collection)
+        local size = 0
+
+        for i, el in pairs(collection) do
+            size = size + 1
+        end
+
+        return size
+    end
+
     utils.uuid = function()
         local template ='xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'
         return string.gsub(template, '[xy]', function(c)
