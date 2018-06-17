@@ -56,7 +56,7 @@ TrufiGCD:define('settings', function()
 
     function settings:save()
         savedVariables:setCommon('profiles', profiles)
-        savedVariables:getCharacter('profiles', generalSettings)
+        savedVariables:setCharacter('profiles', generalSettings)
     end
 
     function settings:load()

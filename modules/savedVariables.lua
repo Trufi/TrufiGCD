@@ -2,8 +2,10 @@ TrufiGCD:define('savedVariables', function()
     local utils = TrufiGCD:require('utils')
     local EventEmitter = TrufiGCD:require('eventEmitter')
 
-    local commonSaves = TrufiGCDGlSave or {}
-    local characterSaves = TrufiGCDChSave or {}
+    TrufiGCDGlSave = TrufiGCDGlSave or {}
+    TrufiGCDChSave = TrufiGCDChSave or {}
+    local commonSaves = TrufiGCDGlSave
+    local characterSaves = TrufiGCDChSave
 
     -- new name to old names
     local redirectionTable = {
