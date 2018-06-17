@@ -43,7 +43,7 @@ TrufiGCD:define('viewSettingsFrame', function()
     frameShowAnchors:SetWidth(160)
     frameShowAnchors:SetHeight(50)
     frameShowAnchors:SetPoint('TOP', 0, -150)
-    frameShowAnchors:Hide()   
+    frameShowAnchors:Hide()
     frameShowAnchors:RegisterForDrag('LeftButton')
     frameShowAnchors:SetScript('OnDragStart', frameShowAnchors.StartMoving)
     frameShowAnchors:SetScript('OnDragStop', frameShowAnchors.StopMovingOrSizing)
@@ -91,7 +91,7 @@ TrufiGCD:define('viewSettingsFrame', function()
 
 
     -- simple profile widget
-    local profileWidget = profilesWidget.simple({
+    local profileWidget = profilesWidget.full({
         parentFrame = frameView,
         point = 'TOPLEFT',
         offset = {150, -30}
@@ -163,10 +163,8 @@ TrufiGCD:define('viewSettingsFrame', function()
         PanelTemplates_SetTab(frameTabs, 3)
     end)
 
-
-
     local ignoreNextChangeSettings = false
-    local unitSettings = settings:get('unitFrames')
+    local unitSettings = settings:getProfileUnitFrames()
 
     local _idCounter = 0
 
@@ -214,7 +212,7 @@ TrufiGCD:define('viewSettingsFrame', function()
         UIDropDownMenu_SetText(self.dropdownDirection, unitSettings[self.unitName].direction)
         UIDropDownMenu_Initialize(self.dropdownDirection, function(_self, level, menuList) self:dropdownDirectionInit(menuList) end)
 
-        -- size icons slider        
+        -- size icons slider
         self.sizeSlider = CreateFrame('Slider', 'TrGCDSizeSlider' .. self.id, self.frame, 'OptionsSliderTemplate')
         self.sizeSlider:SetWidth(170)
         self.sizeSlider:SetPoint('TOPLEFT', 165, -15)
@@ -318,7 +316,7 @@ TrufiGCD:define('viewSettingsFrame', function()
         end
 
         ignoreNextChangeSettings = true
-        settings:set('unitFrames', unitSettings)
+        settings:setProfileUnitFrames(unitSettings)
     end
 
     function FrameUnitSettings:updateViewFromSettings()
@@ -377,7 +375,7 @@ TrufiGCD:define('viewSettingsFrame', function()
         end
 
         ignoreNextChangeSettings = true
-        settings:set('unitFrames', unitSettings)
+        settings:setProfileUnitFrames(unitSettings)
         self.disableApply = true
     end
 
@@ -409,7 +407,7 @@ TrufiGCD:define('viewSettingsFrame', function()
         if ignoreNextChangeSettings then
             ignoreNextChangeSettings = false
         else
-            unitSettings = settings:get('unitFrames')
+            unitSettings = settings:getProfileUnitFrames()
             updateAllFrameUnitSettings()
         end
     end)

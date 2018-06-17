@@ -82,7 +82,7 @@ TrufiGCD:define('profileSwitcherFrame2', function()
         self.dropdownProfile:SetPoint('TOPLEFT', 15, 0)
 
         UIDropDownMenu_SetWidth(self.dropdownProfile, 100)
-        UIDropDownMenu_SetText(self.dropdownProfile, self.rule.profileName)
+        UIDropDownMenu_SetText(self.dropdownProfile, profilesList[self.rule.profileId].name)
         UIDropDownMenu_Initialize(self.dropdownProfile, function() self:initMenu() end)
 
         self.specCheckboxes = {}
@@ -128,7 +128,7 @@ TrufiGCD:define('profileSwitcherFrame2', function()
         local info = UIDropDownMenu_CreateInfo()
 
         for i, el in pairs(profilesList) do
-            info.text = el
+            info.text = el.name
             info.menuList = i
             info.func = function() self:menuItemOnClick(el) end
             info.notCheckable = true
@@ -136,9 +136,9 @@ TrufiGCD:define('profileSwitcherFrame2', function()
         end
     end
 
-    function FrameRule:menuItemOnClick(profileName)
-        self.rule:changeProfile(profileName)
-        UIDropDownMenu_SetText(self.dropdownProfile, profileName)
+    function FrameRule:menuItemOnClick(profile)
+        self.rule:changeProfile(profile.id)
+        UIDropDownMenu_SetText(self.dropdownProfile, profile.name)
     end
 
     function FrameRule:onRemove()

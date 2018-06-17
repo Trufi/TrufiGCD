@@ -4,11 +4,11 @@ TrufiGCD:define('spellTooltip', function()
 
     local tooltip = {}
 
-    local settings = settingsModule:get('tooltip')
+    local settings = settingsModule:getGeneral('tooltip')
 
     -- update settings if player change it
     settingsModule:on('change', function()
-        settings = settingsModule:get('tooltip')
+        settings = settingsModule:getGeneral('tooltip')
     end)
 
     function tooltip:show(spellId, frame)

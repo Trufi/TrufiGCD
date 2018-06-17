@@ -8,7 +8,7 @@ TrufiGCD:define('profileSwitcher', function()
     local places = config.places
     local specs = config.specs
 
-    local currentProfileName = nil
+    local currentProfile = nil
     local profilesList = nil
 
     local Rule = EventEmitter:new()
@@ -21,7 +21,7 @@ TrufiGCD:define('profileSwitcher', function()
         obj.specConditions = {}
 
         -- TODO: нужно брать первый из списка профилей
-        obj.profileName = currentProfileName
+        obj.profileId = currentProfile.id
 
         self.__index = self
 
@@ -55,8 +55,8 @@ TrufiGCD:define('profileSwitcher', function()
         self:emit('change')
     end
 
-    function Rule:changeProfile(name)
-        self.profileName = name
+    function Rule:changeProfile(id)
+        self.profileId = id
         self:emit('change')
     end
 
@@ -64,14 +64,14 @@ TrufiGCD:define('profileSwitcher', function()
         return {
             placeConditions = self.placeConditions,
             specConditions = self.specConditions,
-            profileName = self.profileName
+            profileId = self.profileId
         }
     end
 
     function Rule:setData(data)
         self.placeConditions = data.placeConditions
         self.specConditions = data.specConditions
-        self.profileName = data.profileName
+        self.profileId = data.profileId
         self:emit('change')
     end
 
@@ -126,11 +126,12 @@ TrufiGCD:define('profileSwitcher', function()
     end
 
     local function getDataFromSettings()
+        currentProfile = settings:getCurrentProfile()
         profilesList = settings:getProfilesList()
         profileSwitcher:emit('change')
     end
 
-    currentProfileName = settings:getName()
+    currentProfile = settings:getCurrentProfile()
     profilesList = settings:getProfilesList()
     initRules()
     settings:on('change', getDataFromSettings)

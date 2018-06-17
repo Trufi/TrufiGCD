@@ -6,7 +6,7 @@ TrufiGCD:define('units', function()
     local utils = TrufiGCD:require('utils')
 
     -- settings
-    local settings = nil
+    local unitFramesSettings = nil
 
     local trinketIconAliance = 'Interface\\Icons\\inv_jewelry_trinketpvp_01'
     local trinketIconHorde = 'Interface\\Icons\\inv_jewelry_trinketpvp_01'
@@ -17,15 +17,12 @@ TrufiGCD:define('units', function()
 
     units.updateSettings = function()
         for i, el in pairs(units.list) do
-            el:changeOptions(settings.unitFrames[i])
+            el:changeOptions(unitFramesSettings[i])
         end
     end
 
     local function loadSettings()
-        settings = {}
-
-        settings.unitFrames = settingsModule:get('unitFrames')
-
+        unitFramesSettings = settingsModule:getProfileUnitFrames()
         units.updateSettings()
     end
 
@@ -45,7 +42,7 @@ TrufiGCD:define('units', function()
 
         obj.typeName = options.typeName
 
-        obj.unitFrame = UnitFrame:new(settings.unitFrames[obj.typeName], {
+        obj.unitFrame = UnitFrame:new(unitFramesSettings[obj.typeName], {
             onDragStop = function() settingsModule:set('unitFrames', units.framesPositions()) end
         })
 
@@ -57,7 +54,7 @@ TrufiGCD:define('units', function()
             iconId = 0
         }
 
-        obj.enable = settings.unitFrames[obj.typeName].enable
+        obj.enable = unitFramesSettings[obj.typeName].enable
 
         if obj.enable == nil then
             obj.enable = true
@@ -128,7 +125,7 @@ TrufiGCD:define('units', function()
         else
             local spellFromBuff = self:checkForInstanceBuff(spellId)
 
-            if isChannel then 
+            if isChannel then
                 self.isSpellCasting = true
                 self.unitFrame:stopMoving()
             end
@@ -232,7 +229,7 @@ TrufiGCD:define('units', function()
     end
 
     units.hideAnchorFrames = function()
-        for i, el in pairs(units.list) do 
+        for i, el in pairs(units.list) do
             el.unitFrame:hideAnchor()
         end
     end

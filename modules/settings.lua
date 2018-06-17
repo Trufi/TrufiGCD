@@ -4,28 +4,36 @@ TrufiGCD:define('settings', function()
     local config = TrufiGCD:require('config')
     local utils = TrufiGCD:require('utils')
 
-    local settings = EventEmitter:new()
-
     local profiles = savedVariables:getCommon('profiles') or {}
-
-    local characterSaves = savedVariables:getCharacter('profiles') or {}
 
     local currentProfile = nil
 
-    local function getDefaultProfileData()
-        local res = {
-            tooltip = {
-                enable = true,
-                showInChatId = false,
-                stopMove = false
-            },
-            typeMovingIcon = true,
-            unitFrames = {},
-            enable = true
-        }
+    local generalSettings = {
+        tooltip = {
+            enable = true,
+            showInChatId = false,
+            stopMove = false
+        },
+        typeMovingIcon = true,
+        enable = true
+    }
+
+    -- get general setting from character own settings
+    local characterSaves = savedVariables:getCharacter('profiles') or {}
+    if characterSaves.generalSettings then
+        utils.extend(generalSettings, characterSaves.generalSettings)
+    end
+
+    local settings = EventEmitter:new()
+
+    function settings:createProfile(name, unitFrames)
+        local profile = {}
+        profile.name = name
+        profile.id = utils.uuid()
+        profile.unitFrames = {}
 
         for i, el in pairs(config.unitNames) do
-            res.unitFrames[el] = {
+            profile.unitFrames[el] = {
                 offset = {0, 0},
                 point = 'CENTER',
                 direction = 'Left',
@@ -37,108 +45,75 @@ TrufiGCD:define('settings', function()
             }
         end
 
-        return res
-    end
-
-    local function setProfileData(name, data)
-        if not profiles[name] or type(data) ~= 'table' then return end
-
-        utils.extend(profiles[name].data, data)
-    end
-
-    function settings:createProfile(name, data)
-        local profile = {}
-        profile.name = name
-        profile.uuid = utils.uuid()
-        profile.data = getDefaultProfileData()
-        profiles[name] = profile
-
-        setProfileData(name, data)
-
-        if currentProfile and currentProfile.name == name then
-            self:emit('change')
+        if unitFrames then
+            utils.extend(profile.unitFrames, unitFrames)
         end
+
+        profiles[profile.id] = profile
+
+        return profile
     end
 
     function settings:save()
         savedVariables:setCommon('profiles', profiles)
+        savedVariables:getCharacter('profiles', generalSettings)
     end
 
     function settings:load()
         profiles = savedVariables:getCommon('profiles') or {}
 
         -- TODO: choose profile from place manager
-        -- set current profile from settings or some one from profiles
-        if characterSaves.currentProfile and profiles[characterSaves.currentProfile] then
-            settings:setCurrentProfile(profiles[characterSaves.currentProfile])
-        else
-            settings:setCurrentProfile(next(profiles))
-        end
-        --
-
-        self:emit('change')
-    end
-
-    function settings:setCurrentProfile(name)
-        if not profiles[name] then return end
-
-        currentProfile = profiles[name]
-
-        self:emit('change')
+        settings:setCurrentProfile(next(profiles))
     end
 
     function settings:getCurrentProfile()
         return currentProfile
     end
 
-    function settings:getName()
+    function settings:setCurrentProfile(id)
+        if not profiles[id] then return end
+        currentProfile = profiles[id]
+        self:emit('change')
+    end
+
+    function settings:deleteCurrentProfile()
+        -- TODO: check for last profile?
+        settings:setCurrentProfile(next(profiles))
+    end
+
+    function settings:getGeneral(settingsName)
+        return generalSettings[settingsName]
+    end
+
+    function settings:setGeneral(settingsName, value)
+        if type(value) == 'table' then
+            utils.extemd(generalSettings[settingsName], value)
+        else
+            generalSettings[settingsName] = value
+        end
+        self:emit('change')
+    end
+
+    function settings:getProfileName()
         return currentProfile.name
     end
 
-    function settings:get(settingsName)
-        if settingsName then
-            return currentProfile.data[settingsName]
-        else
-            return currentProfile.data
-        end
+    function settings:setProfileName(newName)
+        currentProfile.name = newName
+        self:emit('change')
     end
 
-    function settings:set(settingsName, data)
-        if data then
-            utils.extend(currentProfile.data[settingsName], data)
-        else
-            utils.extend(currentProfile.data, settingsName)
-        end
+    function settings:getProfileUnitFrames()
+        return currentProfile.unitFrames
+    end
 
+    function settings:setProfileUnitFrames(unitFrames)
+        utils.extend(currentProfile.unitFrames, unitFrames)
         self:emit('change')
     end
 
     function settings:getProfilesList()
-        local list = {}
-
-        for i, el in pairs(profiles) do
-            table.insert(list, el.name)
-        end
-
-        return list
-    end
-
-    function settings:deleteProfile(name)
-        if profiles[name] == currentProfile then
-            profiles[name] = nil
-            settings:setCurrentProfile(next(profiles))
-        else
-            profiles[name] = nil
-            self:emit('change')
-        end
-    end
-
-    function settings:rename(newName)
-        profiles[currentProfile.name] = nil
-        currentProfile.name = newName
-        profiles[newName] = currentProfile
-
-        self:emit('change')
+        return profiles
     end
 
     function settings:default()
@@ -152,16 +127,7 @@ TrufiGCD:define('settings', function()
     end
 
     -- TODO: choose profile from place manager
-
-    -- set current profile from settings or some one from profiles
-    if characterSaves.currentProfile and profiles[characterSaves.currentProfile] then
-        settings:setCurrentProfile(profiles[characterSaves.currentProfile])
-    else
-        settings:setCurrentProfile(next(profiles))
-        settings:save()
-    end
+    settings:setCurrentProfile(next(profiles))
 
     return settings
 end)
-
--- profiles -- [ world, bg, pve, arena ]

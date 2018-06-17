@@ -8,7 +8,9 @@ local function init()
     local settings = nil
 
     local function loadSettings()
-        settings = settingsModule:get()
+        settings = {
+            enable = settingsModule:getGeneral('enable')
+        }
     end
 
     loadSettings()
@@ -81,7 +83,7 @@ local function init()
             end
         end
 
-        if oldType then 
+        if oldType then
             units.list[typeName]:setState(units.list[oldType]:getState())
         else
             units.list[typeName]:clearFrame()
@@ -89,7 +91,7 @@ local function init()
     end
 
     local function playerEventHandler(self, event)
-        if event == 'PLAYER_ENTERING_WORLD' then 
+        if event == 'PLAYER_ENTERING_WORLD' then
             playerLocation = select(2, IsInInstance())
         elseif event == 'PLAYER_TARGET_CHANGED' then
             unitFrameChangeOwner('target')

@@ -25,7 +25,7 @@ TrufiGCD:define('settingsFrame', function()
     local tooltipSettings = nil
 
     local function getDataFromSettings()
-        tooltipSettings = settings:get('tooltip')
+        tooltipSettings = settings:getGeneral('tooltip')
     end
 
     getDataFromSettings()
@@ -66,17 +66,17 @@ TrufiGCD:define('settingsFrame', function()
 
     function tooltipEnableOnclick()
         tooltipSettings.enable = not tooltipSettings.enable
-        settings:set('tooltip', tooltipSettings)
+        settings:setGeneral('tooltip', tooltipSettings)
     end
 
     function tooltipIconMoveOnclick()
         tooltipSettings.stopMove = not tooltipSettings.stopMove
-        settings:set('tooltip', tooltipSettings)
+        settings:setGeneral('tooltip', tooltipSettings)
     end
 
     function tooltipSpellIdOnclick()
         tooltipSettings.showIdInChat = not tooltipSettings.showIdInChat
-        settings:set('tooltip', tooltipSettings)
+        settings:setGeneral('tooltip', tooltipSettings)
     end
 
     chboxTooltipEnable:SetScript('OnClick', tooltipEnableOnclick)

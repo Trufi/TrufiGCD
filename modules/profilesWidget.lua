@@ -7,11 +7,11 @@ TrufiGCD:define('profilesWidget', function()
 
     local _idCounter = 0
 
-    local currentProfileName = nil
+    local currentProfile = nil
     local profilesList = nil
 
     local function getDataFromSettings()
-        currentProfileName = settings:getName()
+        currentProfile = settings:getCurrentProfile()
         profilesList = settings:getProfilesList()
     end
 
@@ -50,19 +50,19 @@ TrufiGCD:define('profilesWidget', function()
         self.frameDropdownCurrent:SetPoint('TOPLEFT', 0, 0)
 
         UIDropDownMenu_SetWidth(self.frameDropdownCurrent, 200)
-        UIDropDownMenu_SetText(self.frameDropdownCurrent, currentProfileName)
+        UIDropDownMenu_SetText(self.frameDropdownCurrent, currentProfile.name)
         UIDropDownMenu_Initialize(self.frameDropdownCurrent, function() self:initMenu() end)
     end
 
     function WidgetSimple:update()
-        UIDropDownMenu_SetText(self.frameDropdownCurrent, currentProfileName)
+        UIDropDownMenu_SetText(self.frameDropdownCurrent, currentProfile.name)
     end
 
     function WidgetSimple:initMenu()
         local info = UIDropDownMenu_CreateInfo()
 
         for i, el in pairs(profilesList) do
-            info.text = el
+            info.text = el.name
             info.menuList = i
             info.func = function() self:menuItemOnClick(el) end
             info.notCheckable = true
@@ -70,10 +70,9 @@ TrufiGCD:define('profilesWidget', function()
         end
     end
 
-    function WidgetSimple:menuItemOnClick(profileName)
-        if currentProfileName == profileName then return end
-
-        settings:setCurrentProfile(profileName)
+    function WidgetSimple:menuItemOnClick(profile)
+        if currentProfile.id == profile.id then return end
+        settings:setCurrentProfile(profile.id)
     end
 
 
@@ -110,7 +109,7 @@ TrufiGCD:define('profilesWidget', function()
         self.frameDropdownCurrent:SetPoint('TOPLEFT', 0, 0)
 
         UIDropDownMenu_SetWidth(self.frameDropdownCurrent, 200)
-        UIDropDownMenu_SetText(self.frameDropdownCurrent, currentProfileName)
+        UIDropDownMenu_SetText(self.frameDropdownCurrent, currentProfile.name)
         UIDropDownMenu_Initialize(self.frameDropdownCurrent, function() self:initMenu() end)
 
         -- delete confirm frame
@@ -179,7 +178,7 @@ TrufiGCD:define('profilesWidget', function()
         local info = UIDropDownMenu_CreateInfo()
 
         for i, el in pairs(profilesList) do
-            info.text = el
+            info.text = el.name
             info.menuList = i
             info.func = function() self:menuItemOnClick(el) end
             info.notCheckable = true
@@ -189,18 +188,17 @@ TrufiGCD:define('profilesWidget', function()
     end
 
     function ProfileManager:update()
-        UIDropDownMenu_SetText(self.frameDropdownCurrent, currentProfileName)
+        UIDropDownMenu_SetText(self.frameDropdownCurrent, currentProfile.name)
     end
 
-    function ProfileManager:menuItemOnClick(profileName)
-        if currentProfileName == profileName then return end
-
-        settings:setCurrentProfile(profileName)
+    function ProfileManager:menuItemOnClick(profile)
+        if currentProfile.id == profile.id then return end
+        settings:setCurrentProfile(profile.id)
     end
 
     function ProfileManager:deleteProfile()
         self.frameConfirmDelete:Hide()
-        settings:deleteProfile(currentProfileName)
+        settings:deleteCurrentProfile()
     end
 
     function ProfileManager:closeFrameConfirm()
@@ -217,10 +215,11 @@ TrufiGCD:define('profilesWidget', function()
         if not name then return end
         if string.len(name) == 0 then return end
 
-        if utils.contain(profilesList, name) then name = name .. 'New' end
+        -- TODO: need to do smth?
+        -- if utils.contain(profilesList, name) then name = name .. 'New' end
 
-        settings:createProfile(name, settings:get())
-        settings:setCurrentProfile(name)
+        local profile = settings:createProfile(name, settings:getProfileUnitFrames())
+        settings:setCurrentProfile(profile.id)
     end
 
     function ProfileManager:renameOnClick()
@@ -229,9 +228,10 @@ TrufiGCD:define('profilesWidget', function()
         if not name then return end
         if string.len(name) == 0 then return end
 
-        if utils.contain(profilesList, name) then name = name .. 'Rename' end
+        -- TODO: need to do smth?
+        -- if utils.contain(profilesList, name) then name = name .. 'Rename' end
 
-        settings:rename(name)
+        settings:setProfileName(name)
     end
 
 
