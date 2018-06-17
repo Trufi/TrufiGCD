@@ -90,7 +90,7 @@ TrufiGCD:define('viewSettingsFrame', function()
     buttonShowAnchors:SetScript('OnClick', showHideAnchors)
 
 
-    -- simple profile widget
+    -- profile widget
     local profileWidget = profilesWidget.full({
         parentFrame = frameView,
         point = 'TOPLEFT',

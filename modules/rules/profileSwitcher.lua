@@ -95,17 +95,23 @@ TrufiGCD:define('profileSwitcher', function()
         return maxId + 1
     end
 
-    local function initRules()
+    local function defaultSavedRules()
+        local list = {}
+        local tempRule = Rule:new(0)
+        tempRule:enableEverywhere()
+        list[tempRule.id] = tempRule:getData()
+        return list
+    end
+
+    local function loadRules()
         local list = savedVariables:getCharacter('profilesRules')
 
         if list == nil then
-            list = {}
-            local tempRule = Rule:new(0)
-            tempRule:enableEverywhere()
-            list[tempRule.id] = tempRule:getData()
+            list = defaultSavedRules()
             savedVariables:setCharacter('profilesRules', list)
         end
 
+        rules = {}
         for id, data in pairs(list) do
             local rule = Rule:new(getNextRuleId())
             rules[rule.id] = rule
@@ -122,7 +128,7 @@ TrufiGCD:define('profileSwitcher', function()
             list[id] = rule:getData()
         end
 
-        -- savedVariables:setCharacter('profilesRules', list)
+        savedVariables:setCharacter('profilesRules', list)
     end
 
     local function getDataFromSettings()
@@ -133,7 +139,7 @@ TrufiGCD:define('profileSwitcher', function()
 
     currentProfile = settings:getCurrentProfile()
     profilesList = settings:getProfilesList()
-    initRules()
+    loadRules()
     settings:on('change', getDataFromSettings)
 
     function profileSwitcher:createRule()
@@ -156,6 +162,28 @@ TrufiGCD:define('profileSwitcher', function()
 
     function profileSwitcher:getRules()
         return rules
+    end
+
+    function profileSwitcher:load()
+        loadRules()
+        self:emit('change')
+    end
+
+    function profileSwitcher:save()
+        saveRules()
+    end
+
+    function profileSwitcher:default()
+        local list = defaultSavedRules()
+        rules = {}
+        for id, data in pairs(list) do
+            local rule = Rule:new(getNextRuleId())
+            rules[rule.id] = rule
+            rule:setData(data)
+            rule:on('change', function() profileSwitcher:emit('change') end)
+            rule:on('remove', function() profileSwitcher:removeRule(rule) end)
+        end
+        self:emit('change')
     end
 
     return profileSwitcher

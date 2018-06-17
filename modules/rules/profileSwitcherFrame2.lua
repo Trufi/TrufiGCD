@@ -14,12 +14,15 @@ TrufiGCD:define('profileSwitcherFrame2', function()
     frame.parent = 'TrufiGCD'
 
     frame.okay = function()
+        profileSwitcher:save()
     end
 
     frame.cancel = function()
+        profileSwitcher:load()
     end
 
     frame.default = function()
+        profileSwitcher:default()
     end
 
     local function addRule()
@@ -79,38 +82,47 @@ TrufiGCD:define('profileSwitcherFrame2', function()
         self.buttonRemove:SetScript('OnClick', function() self:onRemove() end)
 
         self.dropdownProfile = CreateFrame('Frame', 'TrGCDFrameRuleDropdownProfile' .. self.rule.id, self.frame, 'UIDropDownMenuTemplate')
-        self.dropdownProfile:SetPoint('TOPLEFT', 15, 0)
+        self.dropdownProfile:SetPoint('TOPLEFT', 10, 0)
 
         UIDropDownMenu_SetWidth(self.dropdownProfile, 100)
         UIDropDownMenu_SetText(self.dropdownProfile, profilesList[self.rule.profileId].name)
         UIDropDownMenu_Initialize(self.dropdownProfile, function() self:initMenu() end)
 
+        local marginBetween = 50
+        local offsetX = 155
+
         self.specCheckboxes = {}
-        local specOffsetX = 160
 
-        self.specCheckboxes[1] = self:createCheckbox('spec1' .. self.rule.id, self.rule.specConditions['1'], {specOffsetX, 0}, function() self:specOnClick('1') end)
-        self.specCheckboxes[2] = self:createCheckbox('spec2' .. self.rule.id, self.rule.specConditions['2'], {specOffsetX + 30, 0}, function() self:specOnClick('2') end)
-        self.specCheckboxes[3] = self:createCheckbox('spec3' .. self.rule.id, self.rule.specConditions['3'], {specOffsetX + 60, 0}, function() self:specOnClick('3') end)
-        self.specCheckboxes[4] = self:createCheckbox('spec4' .. self.rule.id, self.rule.specConditions['4'], {specOffsetX + 90, 0}, function() self:specOnClick('4') end)
+        self.specCheckboxes[1] = self:createCheckbox('spec1' .. self.rule.id, self.rule.specConditions['1'], {offsetX, 0}, function() self:specOnClick('1') end)
+        offsetX = offsetX + marginBetween
+        self.specCheckboxes[2] = self:createCheckbox('spec2' .. self.rule.id, self.rule.specConditions['2'], {offsetX, 0}, function() self:specOnClick('2') end)
+        offsetX = offsetX + marginBetween
+        self.specCheckboxes[3] = self:createCheckbox('spec3' .. self.rule.id, self.rule.specConditions['3'], {offsetX, 0}, function() self:specOnClick('3') end)
+        offsetX = offsetX + marginBetween
+        self.specCheckboxes[4] = self:createCheckbox('spec4' .. self.rule.id, self.rule.specConditions['4'], {offsetX, 0}, function() self:specOnClick('4') end)
 
+        offsetX = offsetX + 70
         self.placeCheckboxes = {}
-        local placeOffsetX = 300
 
         self.placeCheckboxes[places.WORLD] = self:createCheckbox('place1' .. self.rule.id, self.rule.placeConditions[places.WORLD],
-            {placeOffsetX, 0}, function() self:placeOnClick(places.WORLD) end)
+            {offsetX, 0}, function() self:placeOnClick(places.WORLD) end)
+        offsetX = offsetX + marginBetween
 
         self.placeCheckboxes[places.PARTY] = self:createCheckbox('place2' .. self.rule.id, self.rule.placeConditions[places.PARTY],
-            {placeOffsetX + 30, 0}, function() self:placeOnClick(places.PARTY) end)
+            {offsetX, 0}, function() self:placeOnClick(places.PARTY) end)
+        offsetX = offsetX + marginBetween
 
         self.placeCheckboxes[places.RAID] = self:createCheckbox('place3' .. self.rule.id, self.rule.placeConditions[places.RAID],
-            {placeOffsetX + 60, 0}, function() self:placeOnClick(places.RAID) end)
+            {offsetX, 0}, function() self:placeOnClick(places.RAID) end)
+        offsetX = offsetX + marginBetween
 
         self.placeCheckboxes[places.ARENA] = self:createCheckbox('place4' .. self.rule.id, self.rule.placeConditions[places.ARENA],
-            {placeOffsetX + 90, 0}, function() self:placeOnClick(places.ARENA) end)
+            {offsetX, 0}, function() self:placeOnClick(places.ARENA) end)
+        offsetX = offsetX + marginBetween
 
         self.placeCheckboxes[places.BATTLEGROUND] = self:createCheckbox('place5' .. self.rule.id,
             self.rule.placeConditions[places.BATTLEGROUND],
-            {placeOffsetX + 120, 0},
+            {offsetX, 0},
             function() self:placeOnClick(places.BATTLEGROUND) end)
     end
 
@@ -163,6 +175,47 @@ TrufiGCD:define('profileSwitcherFrame2', function()
         self.frame:Show()
         self.frame:SetPoint('TOPLEFT', 0, -self.positionIndex * 40)
     end
+
+    local function createUpperOneText(parentFrame, text, ofsX, ofsY)
+        local frame = parentFrame:CreateFontString(nil, 'BACKGROUND')
+        frame:SetFont('Fonts\\FRIZQT__.TTF', 11)
+        frame:SetText(text)
+        frame:SetPoint('TOPLEFT', ofsX, ofsY)
+        frame:SetJustifyH('MIDDLE')
+        frame:SetSize(50, 20)
+    end
+
+    local offsetY = 27
+    local offsetX = 142
+    local margin = 50
+
+    createUpperOneText(frameRules, 'Profile', 40, offsetY)
+
+    createUpperOneText(frameRules, 'Spec 1', offsetX, offsetY)
+    offsetX = offsetX + margin
+
+    createUpperOneText(frameRules, 'Spec 2', offsetX, offsetY)
+    offsetX = offsetX + margin
+
+    createUpperOneText(frameRules, 'Spec 3', offsetX, offsetY)
+    offsetX = offsetX + margin
+
+    createUpperOneText(frameRules, 'Spec 4', offsetX, offsetY)
+    offsetX = offsetX + 70
+
+    createUpperOneText(frameRules, config.placeText.WORLD, offsetX, offsetY)
+    offsetX = offsetX + margin
+
+    createUpperOneText(frameRules, config.placeText.PARTY, offsetX, offsetY)
+    offsetX = offsetX + margin
+
+    createUpperOneText(frameRules, config.placeText.RAID, offsetX, offsetY)
+    offsetX = offsetX + margin
+
+    createUpperOneText(frameRules, config.placeText.ARENA, offsetX, offsetY)
+    offsetX = offsetX + margin
+
+    createUpperOneText(frameRules, config.placeText.BATTLEGROUND, offsetX, offsetY)
 
     local function updateFrameRules()
         local rules = profileSwitcher.getRules()
