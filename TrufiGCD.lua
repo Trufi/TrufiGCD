@@ -1000,7 +1000,7 @@ local function TrGCDAddGcdSpell(texture, i, spellid) -- добавление н�
 	TrGCDi[i] = TrGCDi[i] + 1
 end
 function TrGCDEventHandler(self, event, ...)
-	local arg1, _, _, _, arg5 = ...; -- arg1 - who,  arg5 - spellID
+	local arg1, _, arg5 = ...; -- arg1 - who,  arg5 - spellID
 	local spellicon = select(3, GetSpellInfo(arg5))
 	local casttime = select(4, GetSpellInfo(arg5))/1000
 	local spellname = GetSpellInfo(arg5)
