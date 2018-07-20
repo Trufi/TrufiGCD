@@ -1000,24 +1000,24 @@ local function TrGCDAddGcdSpell(texture, i, spellid) -- добавление н�
 	TrGCDi[i] = TrGCDi[i] + 1
 end
 function TrGCDEventHandler(self, event, ...)
-	local arg1, _, _, _, arg5 = ...; -- arg1 - who,  arg5 - spellID
-	local spellicon = select(3, GetSpellInfo(arg5))
-	local casttime = select(4, GetSpellInfo(arg5))/1000
-	local spellname = GetSpellInfo(arg5)
+	local arg1, _, arg3 = ...; -- arg1 - who,  arg3 - spellID
+	local spellicon = select(3, GetSpellInfo(arg3))
+	local casttime = select(4, GetSpellInfo(arg3))/1000
+	local spellname = GetSpellInfo(arg3)
 	local i,t = TrGCDPlayerDetect(arg1) -- i - номер пользователя, t = true - если кто то из пати или на арене
 	if (TrGCDEnable and t and TrGCDQueueOpt[i].enable) then
-		--print(arg5 .. " - " .. spellname)
+		--print(arg3 .. " - " .. spellname)
 		local blt = true -- для открытого черного списка
 		local sblt = true -- для закрытого черного списка (внутри по ID)
 		TrGCDInsSp["time"][i] = GetTime()
 		for l=1, #TrGCDBL do if ((TrGCDBL[l] == spellname) or (GetSpellInfo(TrGCDBL[l]) == spellname)) then blt = false end end -- проверка на черный список
-		for l=1, #InnerBL do if (InnerBL[l] == arg5) then sblt = false end end -- проверка на закрытый черный список
-		if ((spellicon ~= nil) and t and blt and sblt and (GetSpellLink(arg5) ~= nil)) then
-			if (arg5 == 42292) then spellicon = trinket end --замена текстуры пвп тринкета
+		for l=1, #InnerBL do if (InnerBL[l] == arg3) then sblt = false end end -- проверка на закрытый черный список
+		if ((spellicon ~= nil) and t and blt and sblt and (GetSpellLink(arg3) ~= nil)) then
+			if (arg3 == 42292) then spellicon = trinket end --замена текстуры пвп тринкета
 				local IsChannel = UnitChannelInfo(arg1)--ченнелинг ли спелл
 			if (event == "UNIT_SPELLCAST_START") then
 				--print("cast " .. spellname)
-				TrGCDAddGcdSpell(spellicon, i, arg5)
+				TrGCDAddGcdSpell(spellicon, i, arg3)
 				TrGCDCastSp[i] = 0-- 0 - каст идет, 1 - каст прошел и не идет
 				TrGCDCastSpBanTime[i] = GetTime()
 
@@ -1027,15 +1027,15 @@ function TrGCDEventHandler(self, event, ...)
 					if (IsChannel == nil) then TrGCDCastSp[i] = 1 end
 				else
 					local b = false --висит ли багнутый бафф инстант каста
-					if ((TrGCDInsSp["spell"][i] == 48108) and (arg5 == 11366)) then b = true
-					elseif ((TrGCDInsSp["spell"][i] == 48108) and (arg5 == 2120)) then b = true
-					elseif ((TrGCDInsSp["spell"][i] == 34936) and (arg5 == 29722)) then b = true
-					elseif ((TrGCDInsSp["spell"][i] == 93400) and (arg5 == 78674)) then b = true
-					elseif ((TrGCDInsSp["spell"][i] == 69369) and ((arg5 == 339) or (arg5 == 33786) or (arg5 == 5185) or (arg5 == 2637) or (arg5 == 20484)))then b = true
-					elseif ((TrGCDInsSp["spell"][i] == 81292) and (arg5 == 8092)) then b = true
-					elseif ((TrGCDInsSp["spell"][i] == 87160) and (arg5 == 73510)) then b = true
-					elseif ((TrGCDInsSp["spell"][i] == 114255) and (arg5 == 2061)) then b = true
-					elseif ((TrGCDInsSp["spell"][i] == 124430) and (arg5 == 8092)) then b = true end
+					if ((TrGCDInsSp["spell"][i] == 48108) and (arg3 == 11366)) then b = true
+					elseif ((TrGCDInsSp["spell"][i] == 48108) and (arg3 == 2120)) then b = true
+					elseif ((TrGCDInsSp["spell"][i] == 34936) and (arg3 == 29722)) then b = true
+					elseif ((TrGCDInsSp["spell"][i] == 93400) and (arg3 == 78674)) then b = true
+					elseif ((TrGCDInsSp["spell"][i] == 69369) and ((arg3 == 339) or (arg3 == 33786) or (arg3 == 5185) or (arg3 == 2637) or (arg3 == 20484)))then b = true
+					elseif ((TrGCDInsSp["spell"][i] == 81292) and (arg3 == 8092)) then b = true
+					elseif ((TrGCDInsSp["spell"][i] == 87160) and (arg3 == 73510)) then b = true
+					elseif ((TrGCDInsSp["spell"][i] == 114255) and (arg3 == 2061)) then b = true
+					elseif ((TrGCDInsSp["spell"][i] == 124430) and (arg3 == 8092)) then b = true end
 					TrGCDCastSpBanTime[i] = GetTime()
 					if (IsChannel ~= nil) then TrGCDCastSp[i] = 0 end
 					if (((GetTime()-TrGCDSpStopTime[i]) < 1) and (TrGCDSpStopName[i] == spellname) and (b == false)) then
