@@ -1,5 +1,7 @@
 -- TrufiGCD stevemyz@gmail.com
 
+local isClassic = WOW_PROJECT_ID == WOW_PROJECT_CLASSIC
+
 --sizeicon = 30
 --speed = sizeicon /1.6 --скорость перемотка
 local TimeGcd = 1.6
@@ -554,7 +556,9 @@ function TrufiGCDAddonLoaded(self, event, ...)
 			TrGCDClear(11)
 			if (TrGCDQueueOpt[11].enable) then TrGCDPlayerTarFocDetect(11) end
 		end)
-		TrGCDQueueFr[12]:RegisterEvent("PLAYER_FOCUS_CHANGED")
+		if (not isClassic) then
+			TrGCDQueueFr[12]:RegisterEvent("PLAYER_FOCUS_CHANGED")
+		end
 		TrGCDQueueFr[12]:SetScript("OnEvent", function()
 			TrGCDClear(12)
 			if (TrGCDQueueOpt[12].enable) then TrGCDPlayerTarFocDetect(12) end
@@ -999,6 +1003,17 @@ local function TrGCDAddGcdSpell(texture, i, spellid) -- добавление н�
 	TrGCDIcon[i][TrGCDi[i]].spellID = spellid
 	TrGCDi[i] = TrGCDi[i] + 1
 end
+
+function TrGCDUnitChannelInfo(unit)
+	if not isClassic then
+	  return UnitChannelInfo(unit)
+	elseif UnitIsUnit(unit, "player") then
+	  return ChannelInfo()
+	else
+	  return false
+	end
+end
+
 function TrGCDEventHandler(self, event, who, _, spellId)
 	local spellicon = select(3, GetSpellInfo(spellId))
 	local casttime = select(4, GetSpellInfo(spellId)) / 1000
@@ -1012,8 +1027,8 @@ function TrGCDEventHandler(self, event, who, _, spellId)
 		for l=1, #TrGCDBL do if ((TrGCDBL[l] == spellname) or (GetSpellInfo(TrGCDBL[l]) == spellname)) then blt = false end end -- проверка на черный список
 		for l=1, #InnerBL do if (InnerBL[l] == spellId) then sblt = false end end -- проверка на закрытый черный список
 		if ((spellicon ~= nil) and t and blt and sblt and (GetSpellLink(spellId) ~= nil)) then
-			if (spellId == 42292) then spellicon = trinket end --замена текстуры пвп тринкета
-				local IsChannel = UnitChannelInfo(who)--ченнелинг ли спелл
+			if (spellId == 42292) then spellicon = trinket end --замена текстуры пвп тринкета				
+			local IsChannel = TrGCDUnitChannelInfo(who) -- check for channeling spell
 			if (event == "UNIT_SPELLCAST_START") then
 				--print("cast " .. spellname)
 				TrGCDAddGcdSpell(spellicon, i, spellId)
@@ -1045,7 +1060,7 @@ function TrGCDEventHandler(self, event, who, _, spellId)
 					--print("succeeded " .. spellname .. " - " ..TrGCDCastSp[i])
 				end
 			elseif ((event == "UNIT_SPELLCAST_STOP") and (TrGCDCastSp[i] == 0)) then
-				--print("stop " .. spellname)
+				-- print("stop " .. spellname)
 				TrGCDCastSp[i] = 1
 				TrGCDIcon[i][TrGCDi[i]-1].texture2:Show()
 				TrGCDIcon[i][TrGCDi[i]-1].texture2.show = true
@@ -1126,4 +1141,3 @@ function TrGCDUpdate(self)
 		TimeReset = GetTime()
 	end
 end
-
