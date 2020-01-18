@@ -30,7 +30,7 @@ local function init()
 
     eventFrame:RegisterEvent('UNIT_AURA')
 
-    local function eventHandler(self, event, unitType, _, _, _, spellId)
+    local function eventHandler(self, event, unitType, _, spellId)
         if not settings.enable then return end
 
         if not utils.contain(config.unitNames, unitType) then return end

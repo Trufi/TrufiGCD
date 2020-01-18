@@ -8,6 +8,7 @@ TrufiGCD:define('settings', function()
 
     local currentProfile = nil
 
+    -- general settings keeps values which won't be shared between profiles
     local generalSettings = {
         tooltip = {
             enable = true,
@@ -70,6 +71,7 @@ TrufiGCD:define('settings', function()
         return currentProfile
     end
 
+    -- смена профиля на выбранный (не сохранение)
     function settings:setCurrentProfile(id)
         if not profiles[id] then return end
         currentProfile = profiles[id]

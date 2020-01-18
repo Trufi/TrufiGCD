@@ -23,6 +23,7 @@ TrufiGCD:define('units', function()
 
     local function loadSettings()
         unitFramesSettings = settingsModule:getProfileUnitFrames()
+        --utils.log(unitFramesSettings['party3'], true)
         units.updateSettings()
     end
 
@@ -43,7 +44,9 @@ TrufiGCD:define('units', function()
         obj.typeName = options.typeName
 
         obj.unitFrame = UnitFrame:new(unitFramesSettings[obj.typeName], {
-            onDragStop = function() settingsModule:set('unitFrames', units.framesPositions()) end
+            onDragStop = function() 
+                settingsModule:setProfileUnitFrames(units.framesPositions())
+            end
         })
 
         obj.isSpellCasting = false
