@@ -60,7 +60,7 @@ TrufiGCD:define('utils', function()
         else
             if msg == nil then msg = 'nil'
             elseif type(msg) == 'function' then msg = 'function' end
-            print(offset .. msg)
+            print(offset .. tostring(msg))
         end
     end
 

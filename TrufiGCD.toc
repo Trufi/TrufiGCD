@@ -38,7 +38,7 @@ modules\main.lua
 modules\profilesWidget.lua
 modules\blacklistFrame.lua
 modules\viewSettingsFrame.lua
-modules\rules\profileSwitcherFrame2.lua
+modules\rules\profileSwitcherFrame.lua
 modules\settingsFrame.lua
 
 # Addon

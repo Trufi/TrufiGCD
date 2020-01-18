@@ -1,4 +1,5 @@
 local function init()
+    local profileSwitcher = TrufiGCD:require('profileSwitcher')
     local savedVariables = TrufiGCD:require('savedVariables')
     local settingsModule = TrufiGCD:require('settings')
     local config = TrufiGCD:require('config')
@@ -16,7 +17,8 @@ local function init()
     loadSettings()
     settingsModule:on('change', loadSettings)
 
-    local playerLocation = 'world'
+    local playerLocation = config.places['WORLD']
+    local playerSpecialization = config.specs[GetSpecialization()]
 
     units.create()
 
@@ -61,7 +63,8 @@ local function init()
 
     -- player events
     local playerEventFrame = CreateFrame('Frame', nil, UIParent)
-    --playerEventFrame:RegisterEvent('PLAYER_ENTERING_BATTLEGROUND')
+    playerEventFrame:RegisterEvent('PLAYER_ENTERING_BATTLEGROUND')
+    playerEventFrame:RegisterEvent('PLAYER_SPECIALIZATION_CHANGED')    
     playerEventFrame:RegisterEvent('PLAYER_ENTERING_WORLD')
     playerEventFrame:RegisterEvent('PLAYER_TARGET_CHANGED')
     playerEventFrame:RegisterEvent('PLAYER_FOCUS_CHANGED')
@@ -90,13 +93,32 @@ local function init()
         end
     end
 
+    local function updatePlayerPlace()
+        local _, instanceType = IsInInstance()
+
+        if instanceType == 'pvp' then playerLocation = config.places['BATTLEGROUND']
+        elseif instanceType == 'arena' then playerLocation = config.places['ARENA']
+        elseif instanceType == 'raid' then playerLocation = config.places['RAID']
+        elseif instanceType == 'party' then playerLocation = config.places['PARTY']
+        else playerLocation = config.places['WORLD'] end
+
+        profileSwitcher:updateCurrentSpecAndPlace(playerSpecialization, playerLocation)
+    end
+
+    local function updatePlayerSpec()
+        playerSpecialization = GetSpecialization()
+        profileSwitcher:updateCurrentSpecAndPlace(playerSpecialization, playerLocation)
+    end
+
     local function playerEventHandler(self, event)
-        if event == 'PLAYER_ENTERING_WORLD' then
-            playerLocation = select(2, IsInInstance())
+        if event == 'PLAYER_ENTERING_WORLD' or event == 'PLAYER_ENTERING_BATTLEGROUND' then
+            updatePlayerPlace()
         elseif event == 'PLAYER_TARGET_CHANGED' then
             unitFrameChangeOwner('target')
         elseif event == 'PLAYER_FOCUS_CHANGED' then
             unitFrameChangeOwner('focus')
+        elseif event == 'PLAYER_SPECIALIZATION_CHANGED' then
+            updatePlayerSpec()
         end
     end
 

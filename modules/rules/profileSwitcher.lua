@@ -8,6 +8,10 @@ TrufiGCD:define('profileSwitcher', function()
     local places = config.places
     local specs = config.specs
 
+    -- актуальные значения места и спеки, обнвовляются при каждом изменении
+    local playerPlace = config.places['WORLD']
+    local playerSpecialization = config.specs[GetSpecialization()]
+
     local currentProfile = nil
     local profilesList = nil
 
@@ -77,6 +81,11 @@ TrufiGCD:define('profileSwitcher', function()
 
     function Rule:remove()
         self:emit('remove')
+    end
+
+    -- проверка правила на удовлетворение текущего спека или места
+    function Rule:satisfy(spec, place)
+        return self.specConditions[spec] and self.placeConditions[place]
     end
 
     local rules = {}
@@ -185,6 +194,32 @@ TrufiGCD:define('profileSwitcher', function()
         end
         self:emit('change')
     end
+
+    function profileSwitcher:updateCurrentSpecAndPlace(spec, place)
+        playerPlace = place
+        playerSpecialization = spec
+        profileSwitcher:findAndSetCurrentProfile()
+    end
+
+    function profileSwitcher:findAndSetCurrentProfile()    
+        for _, rule in pairs(rules) do
+            if rule:satisfy(playerSpecialization, playerPlace) then
+                utils.log(rule.profileId)
+                settings:setCurrentProfile(rule.profileId)
+                return
+            end
+        end
+    end
+
+    -- function TrGCDSetSpec(spec)
+    --     playerSpecialization = config.specs[spec]
+    --     profileSwitcher:findAndSetCurrentProfile()
+    --     utils.log(spec)
+    -- end
+
+    -- function TrGCDFindCurrentProfile()
+    --     utils.log(profileSwitcher:findAndSetCurrentProfile())
+    -- end
 
     return profileSwitcher
 end)

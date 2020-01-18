@@ -2,7 +2,7 @@ TrufiGCD:define('settingsFrame', function()
     local viewSettingsFrame = TrufiGCD:require('viewSettingsFrame')
     local profilesWidget = TrufiGCD:require('profilesWidget')
     local blacklistFrame = TrufiGCD:require('blacklistFrame')
-    local profileSwitcherFrame = TrufiGCD:require('profileSwitcherFrame2')
+    local profileSwitcherFrame = TrufiGCD:require('profileSwitcherFrame')
     local settings = TrufiGCD:require('settings')
     local utils = TrufiGCD:require('utils')
 
