@@ -11,7 +11,7 @@ TrufiGCD:define('UnitFrame', function()
 
     local UnitFrame = {}
 
-    function UnitFrame:new(settings, options)
+    function UnitFrame:new(settings, generalSettings, options)
         settings = settings or {}
         options = options or {}
 
@@ -38,7 +38,7 @@ TrufiGCD:define('UnitFrame', function()
         obj.offset = settings.offset or {0, 0}
 
         -- true if mouse is over icon, need to stoping moving (if this option is enable)
-        obj.stopMovingMouseOverIcon = settings.stopMove or true
+        obj.stopMovingMouseOverIcon = generalSettings.stopMove
 
         obj.isMoving = true
 
@@ -126,14 +126,14 @@ TrufiGCD:define('UnitFrame', function()
         self.isMoving = false
     end
 
-    function UnitFrame:changeOptions(options)
+    function UnitFrame:changeOptions(options, generalSettings)
         options = options or {}
 
         self.point = options.point or self.point
 
         self.offset = options.offset or self.offset
 
-        self.stopMovingMouseOverIcon = options.stopMove or self.stopMovingMouseOverIcon
+        self.stopMovingMouseOverIcon = generalSettings.stopMove
 
         self.text = options.text or self.text
 

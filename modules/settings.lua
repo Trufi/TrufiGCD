@@ -12,7 +12,7 @@ TrufiGCD:define('settings', function()
     local generalSettings = {
         tooltip = {
             enable = true,
-            showInChatId = false,
+            showIdInChat = false,
             stopMove = false
         },
         typeMovingIcon = true,
@@ -21,8 +21,8 @@ TrufiGCD:define('settings', function()
 
     -- get general setting from character own settings
     local characterSaves = savedVariables:getCharacter('profiles') or {}
-    if characterSaves.generalSettings then
-        utils.extend(generalSettings, characterSaves.generalSettings)
+    if characterSaves then
+        utils.extend(generalSettings, characterSaves)
     end
 
     local settings = EventEmitter:new()
@@ -91,7 +91,7 @@ TrufiGCD:define('settings', function()
 
     function settings:setGeneral(settingsName, value)
         if type(value) == 'table' then
-            utils.extemd(generalSettings[settingsName], value)
+            utils.extend(generalSettings[settingsName], value)
         else
             generalSettings[settingsName] = value
         end

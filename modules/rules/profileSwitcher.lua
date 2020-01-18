@@ -211,15 +211,5 @@ TrufiGCD:define('profileSwitcher', function()
         end
     end
 
-    -- function TrGCDSetSpec(spec)
-    --     playerSpecialization = config.specs[spec]
-    --     profileSwitcher:findAndSetCurrentProfile()
-    --     utils.log(spec)
-    -- end
-
-    -- function TrGCDFindCurrentProfile()
-    --     utils.log(profileSwitcher:findAndSetCurrentProfile())
-    -- end
-
     return profileSwitcher
 end)
