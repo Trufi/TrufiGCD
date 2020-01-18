@@ -88,6 +88,7 @@ TrufiGCD:define('profileSwitcher', function()
         return self.specConditions[spec] and self.placeConditions[place]
     end
 
+    local rulesEnabled = false
     local rules = {}
 
     local profileSwitcher = EventEmitter:new()
@@ -105,39 +106,46 @@ TrufiGCD:define('profileSwitcher', function()
     end
 
     local function defaultSavedRules()
-        local list = {}
+        local savedData = {}
+        savedData.list = {}
         local tempRule = Rule:new(0)
         tempRule:enableEverywhere()
-        list[tempRule.id] = tempRule:getData()
-        return list
+        savedData.list[tempRule.id] = tempRule:getData()
+        savedData.enabled = false
+        return savedData
+    end
+
+    local function saveRules()
+        local savedData = {}
+        savedData.list = {}
+        savedData.enabled = rulesEnabled
+
+        for id, rule in pairs(rules) do
+            savedData.list[id] = rule:getData()
+        end
+
+        savedVariables:setCharacter('profilesRules', savedData)
     end
 
     local function loadRules()
-        local list = savedVariables:getCharacter('profilesRules')
+        local savedData = savedVariables:getCharacter('profilesRules') or {}
 
-        if list == nil then
-            list = defaultSavedRules()
-            savedVariables:setCharacter('profilesRules', list)
+        if savedData == nil then
+            savedData = defaultSavedRules()
         end
 
         rules = {}
-        for id, data in pairs(list) do
+        for id, data in pairs(savedData.list) do
             local rule = Rule:new(getNextRuleId())
             rules[rule.id] = rule
             rule:setData(data)
             rule:on('change', function() profileSwitcher:emit('change') end)
             rule:on('remove', function() profileSwitcher:removeRule(rule) end)
         end
-    end
 
-    local function saveRules()
-        local list = {}
+        rulesEnabled = savedData.enabled
 
-        for id, rule in pairs(rules) do
-            list[id] = rule:getData()
-        end
-
-        savedVariables:setCharacter('profilesRules', list)
+        saveRules()
     end
 
     local function getDataFromSettings()
@@ -173,6 +181,19 @@ TrufiGCD:define('profileSwitcher', function()
         return rules
     end
 
+    function profileSwitcher:isEnabled()
+        return rulesEnabled
+    end
+
+    function profileSwitcher:toggleEnabling()
+        rulesEnabled = not rulesEnabled
+        self:emit('change')
+    end
+
+    function profileSwitcher:getPlaceAndSpec()
+        return playerPlace, playerSpecialization
+    end
+
     function profileSwitcher:load()
         loadRules()
         self:emit('change')
@@ -201,10 +222,11 @@ TrufiGCD:define('profileSwitcher', function()
         profileSwitcher:findAndSetCurrentProfile()
     end
 
-    function profileSwitcher:findAndSetCurrentProfile()    
+    function profileSwitcher:findAndSetCurrentProfile()
+        if rulesEnabled == false then return end
+
         for _, rule in pairs(rules) do
             if rule:satisfy(playerSpecialization, playerPlace) then
-                utils.log(rule.profileId)
                 settings:setCurrentProfile(rule.profileId)
                 return
             end

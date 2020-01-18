@@ -10,7 +10,7 @@ TrufiGCD:define('profileSwitcherFrame', function()
     local settingsWidth = 600
 
     local frame = CreateFrame('Frame', nil, UIParent, 'OptionsBoxTemplate')
-    frame.name = 'profileSwitcher2'
+    frame.name = 'Profiles auto switching'
     frame.parent = 'TrufiGCD'
 
     frame.okay = function()
@@ -25,19 +25,39 @@ TrufiGCD:define('profileSwitcherFrame', function()
         profileSwitcher:default()
     end
 
+    local enablingCheckbox = CreateFrame('CheckButton', 'TrGCDFrameRuleEnablingChbox', frame, 'UICheckButtonTemplate')
+    enablingCheckbox:SetPoint('TOPLEFT', 10, -10)
+    enablingCheckbox:SetScript('OnClick', function() profileSwitcher:toggleEnabling() end)
+    _G[enablingCheckbox:GetName() .. 'Text']:SetText('Enable auto profiles switching regard to your specialization and location')
+    local function updateEnablingCheckbox()
+        enablingCheckbox:SetChecked(profileSwitcher:isEnabled())
+    end
+
+    local currentStateText = frame:CreateFontString(nil, 'BACKGROUND')
+    currentStateText:SetFont(STANDARD_TEXT_FONT, 10)
+    currentStateText:SetPoint('TOPLEFT', 15, -55)
+    local function updateStateText()
+        local place, spec = profileSwitcher.getPlaceAndSpec()
+        local _, specName = GetSpecializationInfo(spec)
+        if specName ~= nil then
+            currentStateText:SetText('Your current specialization : ' .. specName .. ' (Spec '.. spec .. '), location: ' .. place)
+        else
+            currentStateText:SetText('Your current specialization : Spec ' .. spec .. ', location: ' .. place)
+        end
+    end
+
     local function addRule()
         profileSwitcher:createRule()
     end
-
     local buttonAddRule = CreateFrame('Button', nil, frame, 'UIPanelButtonTemplate')
     buttonAddRule:SetWidth(100)
     buttonAddRule:SetHeight(22)
-    buttonAddRule:SetPoint('TOPLEFT', 10, -30)
+    buttonAddRule:SetPoint('TOPLEFT', 10, -85)
     buttonAddRule:SetText('Add rule')
     buttonAddRule:SetScript('OnClick', addRule)
 
     local frameRules = CreateFrame('Frame', nil, frame)
-    frameRules:SetPoint('TOPLEFT', 10, -100)
+    frameRules:SetPoint('TOPLEFT', 10, -150)
     frameRules:SetWidth(500)
     frameRules:SetHeight(500)
 
@@ -249,6 +269,19 @@ TrufiGCD:define('profileSwitcherFrame', function()
             end
             index = index + 1
         end
+
+        if profileSwitcher:isEnabled() then
+            buttonAddRule:SetAlpha(1)
+            frameRules:SetAlpha(1)
+            currentStateText:SetAlpha(1)
+        else
+            buttonAddRule:SetAlpha(0)
+            frameRules:SetAlpha(0)
+            currentStateText:SetAlpha(0)
+        end
+
+        updateStateText()
+        updateEnablingCheckbox()
     end
 
     updateFrameRules()

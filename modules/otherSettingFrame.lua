@@ -1,14 +1,10 @@
-TrufiGCD:define('settingsFrame', function()
-    local viewSettingsFrame = TrufiGCD:require('viewSettingsFrame')
-    local profilesWidget = TrufiGCD:require('profilesWidget')
-    local blacklistFrame = TrufiGCD:require('blacklistFrame')
-    local profileSwitcherFrame = TrufiGCD:require('profileSwitcherFrame')
+TrufiGCD:define('otherSettingFrame', function()
     local settings = TrufiGCD:require('settings')
     local utils = TrufiGCD:require('utils')
 
-    -- main settings frame
     local frame = CreateFrame('Frame', nil, UIParent, 'OptionsBoxTemplate')
-    frame.name = 'TrufiGCD'
+    frame.name = 'Other settings'
+    frame.parent = 'TrufiGCD'
 
     frame.okay = function()
         settings:save()
@@ -31,18 +27,11 @@ TrufiGCD:define('settingsFrame', function()
     getDataFromSettings()
     settings:on('change', getDataFromSettings)
 
-    -- profile widget
-    local profileWidget = profilesWidget.full({
-        parentFrame = frame,
-        point = 'TOPLEFT',
-        offset = {50, -30}
-    })
-
     -- tooltip settings
     local frameTooltip = CreateFrame('Frame', nil, frame)
     frameTooltip:SetWidth(500)
     frameTooltip:SetHeight(500)
-    frameTooltip:SetPoint('TOPLEFT', 300, -400)
+    frameTooltip:SetPoint('TOPLEFT', 20, -20)
 
     local textTooltip = frameTooltip:CreateFontString(nil, 'BACKGROUND')
     textTooltip:SetFont(STANDARD_TEXT_FONT, 12)
@@ -83,15 +72,5 @@ TrufiGCD:define('settingsFrame', function()
     chboxTooltipIconMove:SetScript('OnClick', tooltipIconMoveOnclick)
     chboxTooltipSpellId:SetScript('OnClick', tooltipSpellIdOnclick)
 
-    InterfaceOptions_AddCategory(frame)
-
-    InterfaceOptions_AddCategory(viewSettingsFrame)
-
-    InterfaceOptions_AddCategory(blacklistFrame)
-
-    InterfaceOptions_AddCategory(profileSwitcherFrame)
-
-    -- TODO: убрать потом
-    -- TrGCDGUITEST = viewSettingsFrame
-    -- /run InterfaceOptionsFrame_OpenToCategory(TrGCDGUITEST)
+    return frame
 end)

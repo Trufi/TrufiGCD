@@ -23,7 +23,7 @@ TrufiGCD:define('blacklistFrame', function()
             button.topText = button:CreateFontString(nil, 'BACKGROUND')
             button.topText:SetFont(STANDARD_TEXT_FONT, size)
             button.topText:SetText(options.topText.text)
-            button.topText:SetPoint(pos, button, pos, ofs[1], ofs[2])
+            button.topText:SetPoint(pos, ofs[1], ofs[2])
         end
 
         return button
@@ -32,51 +32,50 @@ TrufiGCD:define('blacklistFrame', function()
     -- add blacklist tab to addon settings
     local settingFrame = CreateFrame('Frame', nil, UIParent, 'OptionsBoxTemplate')
     settingFrame:Hide()
-    settingFrame.name = "Blacklist"
-    settingFrame.parent = "TrufiGCD"
+    settingFrame.name = 'Spells blocklist'
+    settingFrame.parent = 'TrufiGCD'
 
-    local listBorderFrame = CreateFrame("Frame", nil, settingFrame)
-    listBorderFrame:SetPoint("TOPLEFT", settingFrame, "TOPLEFT",10, -25)
+    local listBorderFrame = CreateFrame('Frame', nil, settingFrame)
+    listBorderFrame:SetPoint('TOPLEFT', settingFrame, 'TOPLEFT',10, -25)
     listBorderFrame:SetWidth(200)
     listBorderFrame:SetHeight(501)
     listBorderFrame:SetBackdrop({
         bgFile = nil,
-        edgeFile = "Interface/Tooltips/UI-Tooltip-Border",
+        edgeFile = 'Interface/Tooltips/UI-Tooltip-Border',
         tile = true,
         tileSize = 16,
         edgeSize = 16, 
         insets = {left = 0, right = 0, top = 0, bottom = 0}
     })
 
-    local listScrollFrame = CreateFrame("ScrollFrame", nil, settingFrame)
-    listScrollFrame:SetPoint("TOPLEFT", settingFrame, "TOPLEFT",10, -30)
+    local listScrollFrame = CreateFrame('ScrollFrame', nil, settingFrame)
+    listScrollFrame:SetPoint('TOPLEFT', settingFrame, 'TOPLEFT',10, -30)
     listScrollFrame:SetWidth(200)
     listScrollFrame:SetHeight(488)
 
-    local listScrollBar = CreateFrame("Slider", "TrGCDBLScroll", listScrollFrame, "UIPanelScrollBarTemplate")
-    listScrollBar:SetPoint("TOPLEFT", listScrollFrame, "TOPRIGHT", 1, -16)
-    listScrollBar:SetPoint("BOTTOMLEFT", listScrollFrame, "BOTTOMRIGHT", 1, 16)
+    local listScrollBar = CreateFrame('Slider', 'TrGCDBLScroll', listScrollFrame, 'UIPanelScrollBarTemplate')
+    listScrollBar:SetPoint('TOPLEFT', listScrollFrame, 'TOPRIGHT', 1, -16)
+    listScrollBar:SetPoint('BOTTOMLEFT', listScrollFrame, 'BOTTOMRIGHT', 1, 16)
     listScrollBar:SetMinMaxValues(1, 470)
     listScrollBar:SetValueStep(1)
 
-    local listScrollBarBackground = listScrollBar:CreateTexture(nil, "BACKGROUND")
+    local listScrollBarBackground = listScrollBar:CreateTexture(nil, 'BACKGROUND')
     listScrollBarBackground:SetAllPoints(listScrollBar)
     listScrollBarBackground:SetColorTexture(0, 0, 0, 0.4)
 
     listScrollBar:SetValue(0)
-    listScrollBar:SetScript("OnValueChanged", function (self, value)
+    listScrollBar:SetScript('OnValueChanged', function (self, value)
         self:GetParent():SetVerticalScroll(value)
     end)
 
-    local listFrame = CreateFrame("Frame", nil, listScrollFrame)
-    --listFrame:SetPoint("TOPLEFT", listScrollFrame, "TOPLEFT",10, -35)
+    local listFrame = CreateFrame('Frame', nil, listScrollFrame)
     listFrame:SetWidth(200)
     listFrame:SetHeight(958)
 
-    local listScrollText = listFrame:CreateFontString(nil, "BACKGROUND")
+    local listScrollText = settingFrame:CreateFontString(nil, 'BACKGROUND')
     listScrollText:SetFont(STANDARD_TEXT_FONT, 12)
-    listScrollText:SetText("Blacklist")
-    listScrollText:SetPoint("TOPLEFT", listFrame, "TOPLEFT", 15, 15)
+    listScrollText:SetText('Spells blocklist')
+    listScrollText:SetPoint('TOPLEFT', 15, -15)
 
     local listSpells = {}
 
@@ -190,7 +189,7 @@ TrufiGCD:define('blacklistFrame', function()
     local defaultSettingsButton = createButton(settingFrame, 'TOPRIGHT', {-30, -30}, 'Default', {
         topText = {
             size = 10,
-            text = 'Restore default blacklist'
+            text = 'Restore default blocklist'
         }
     })
 

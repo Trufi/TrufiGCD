@@ -1,4 +1,7 @@
 TrufiGCD:define('viewSettingsFrame', function()
+    local profileSwitcherFrame = TrufiGCD:require('profileSwitcherFrame')
+    local otherSettingFrame = TrufiGCD:require('otherSettingFrame')
+    local blacklistFrame = TrufiGCD:require('blacklistFrame')
     local profilesWidget = TrufiGCD:require('profilesWidget')
     local settings = TrufiGCD:require('settings')
     local config = TrufiGCD:require('config')
@@ -7,11 +10,9 @@ TrufiGCD:define('viewSettingsFrame', function()
 
     local settingsWidth = 600
 
-
     -- settings of view
     local frameView = CreateFrame('Frame', nil, UIParent, 'OptionsBoxTemplate')
-    frameView.name = 'View'
-    frameView.parent = 'TrufiGCD'
+    frameView.name = 'TrufiGCD'
 
     frameView.okay = function()
         settings:save()
@@ -24,7 +25,6 @@ TrufiGCD:define('viewSettingsFrame', function()
     frameView.default = function()
         settings:default()
     end
-
 
     -- show/hide anchors button and frame
     local buttonShowAnchors = CreateFrame('Button', nil, frameView, 'UIPanelButtonTemplate')
@@ -465,5 +465,8 @@ TrufiGCD:define('viewSettingsFrame', function()
     local otherList = {'target', 'focus'}
     createViewTabSettings(otherList, frameOther)
 
-    return frameView
+    InterfaceOptions_AddCategory(frameView)
+    InterfaceOptions_AddCategory(blacklistFrame)
+    InterfaceOptions_AddCategory(profileSwitcherFrame)
+    InterfaceOptions_AddCategory(otherSettingFrame)   
 end)
