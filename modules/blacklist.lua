@@ -8,14 +8,13 @@ TrufiGCD:define('blacklist', function()
         5374, -- Mutilate х3
         27576, -- Mutilate Off-Hand х3
         88263, -- Hammer of the Righteous х3
-        98057, -- Grand Crusader
         32175, -- Stormstrike
         32176, -- Stormstrike Off-Hand
         96103, -- Raging Blow
         85384, -- Raging Blow Off-Hand
         57794, -- Heroic Leap
         52174, -- Heroic Leap
-        135299, -- Ice Trap
+        135299, -- Tar Trap
         114093, -- Windlash Off-Hand
         114089, -- Windlash
         115357, -- Windstrike
@@ -29,10 +28,6 @@ TrufiGCD:define('blacklist', function()
         120692, -- Halo (not shadow priest)
         132951, -- Flare
         107270, -- Spinning Crane Kick
-        137584, -- Shuriken Toss
-        137585, -- Shuriken Toss Off-hand
-        117993, -- Chi Torpedo (damage)
-        124040, -- Chi Torpedo (heal)
         166646 -- Windwalking
     }
 
