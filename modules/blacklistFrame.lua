@@ -21,7 +21,7 @@ TrufiGCD:define('blacklistFrame', function()
             local ofs = options.topText.offset or {0, 10}
 
             button.topText = button:CreateFontString(nil, 'BACKGROUND')
-            button.topText:SetFont('Fonts\\FRIZQT__.TTF', size)
+            button.topText:SetFont(STANDARD_TEXT_FONT, size)
             button.topText:SetText(options.topText.text)
             button.topText:SetPoint(pos, button, pos, ofs[1], ofs[2])
         end
@@ -74,7 +74,7 @@ TrufiGCD:define('blacklistFrame', function()
     listFrame:SetHeight(958)
 
     local listScrollText = listFrame:CreateFontString(nil, "BACKGROUND")
-    listScrollText:SetFont("Fonts\\FRIZQT__.TTF", 12)
+    listScrollText:SetFont(STANDARD_TEXT_FONT, 12)
     listScrollText:SetText("Blacklist")
     listScrollText:SetPoint("TOPLEFT", listFrame, "TOPLEFT", 15, 15)
 

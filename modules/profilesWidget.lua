@@ -125,7 +125,7 @@ TrufiGCD:define('profilesWidget', function()
         self.textureConfirmDelete:SetAlpha(0.8)
 
         self.textConfirmDelete = self.frameConfirmDelete:CreateFontString(nil, 'BACKGROUND')
-        self.textConfirmDelete:SetFont('Fonts\\FRIZQT__.TTF', 12)
+        self.textConfirmDelete:SetFont(STANDARD_TEXT_FONT, 12)
         self.textConfirmDelete:SetText('Confirm delete')
         self.textConfirmDelete:SetPoint('TOP', 0, -10)
 

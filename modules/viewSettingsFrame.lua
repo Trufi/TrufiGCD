@@ -34,7 +34,7 @@ TrufiGCD:define('viewSettingsFrame', function()
     buttonShowAnchors:SetText('Show')
 
     local buttonShowAnchorstopText = buttonShowAnchors:CreateFontString(nil, 'BACKGROUND')
-    buttonShowAnchorstopText:SetFont('Fonts\\FRIZQT__.TTF', 10)
+    buttonShowAnchorstopText:SetFont(STANDARD_TEXT_FONT, 10)
     buttonShowAnchorstopText:SetText('Show/Hide anchors')
     buttonShowAnchorstopText:SetPoint('TOP', 0, 10)
 
@@ -62,7 +62,7 @@ TrufiGCD:define('viewSettingsFrame', function()
     frameShowAnchorsButton:SetText('Return to options')
 
     local frameShowAnchorsButtonText = frameShowAnchorsButton:CreateFontString(nil, 'BACKGROUND')
-    frameShowAnchorsButtonText:SetFont('Fonts\\FRIZQT__.TTF', 12)
+    frameShowAnchorsButtonText:SetFont(STANDARD_TEXT_FONT, 12)
     frameShowAnchorsButtonText:SetText('TrufiGCD')
     frameShowAnchorsButtonText:SetPoint('TOP', 0, 15)
 
@@ -414,7 +414,7 @@ TrufiGCD:define('viewSettingsFrame', function()
 
     local function createUpperOneText(parentFrame, text, ofsX, ofsY)
         local frame = parentFrame:CreateFontString(nil, 'BACKGROUND')
-        frame:SetFont('Fonts\\FRIZQT__.TTF', 12)
+        frame:SetFont(STANDARD_TEXT_FONT, 12)
         frame:SetText(text)
         frame:SetPoint('TOPLEFT', ofsX, ofsY)
     end

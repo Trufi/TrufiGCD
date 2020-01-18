@@ -86,7 +86,7 @@ TrufiGCD:define('UnitFrame', function()
         self.frameTexture:SetAlpha(0.6)
 
         self.frameText = self.frame:CreateFontString(nil, 'BACKGROUND')
-        self.frameText:SetFont('Fonts\\FRIZQT__.TTF', 9)
+        self.frameText:SetFont(STANDARD_TEXT_FONT, 9)
         self.frameText:SetText(self.text)
         self.frameText:SetAllPoints(self.frame)
         self.frameText:SetAlpha(0.6)

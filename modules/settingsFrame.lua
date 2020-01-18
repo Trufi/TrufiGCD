@@ -45,7 +45,7 @@ TrufiGCD:define('settingsFrame', function()
     frameTooltip:SetPoint('TOPLEFT', 300, -400)
 
     local textTooltip = frameTooltip:CreateFontString(nil, 'BACKGROUND')
-    textTooltip:SetFont('Fonts\\FRIZQT__.TTF', 12)
+    textTooltip:SetFont(STANDARD_TEXT_FONT, 12)
     textTooltip:SetText('Tooltip:')
     textTooltip:SetPoint('TOPLEFT', 0, 0)
 

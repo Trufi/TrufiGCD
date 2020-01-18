@@ -190,7 +190,7 @@ TrufiGCD:define('profileSwitcherFrame', function()
 
     local function createUpperOneText(parentFrame, text, ofsX, ofsY)
         local frame = parentFrame:CreateFontString(nil, 'BACKGROUND')
-        frame:SetFont('Fonts\\FRIZQT__.TTF', 11)
+        frame:SetFont(STANDARD_TEXT_FONT, 11)
         frame:SetText(text)
         frame:SetPoint('TOPLEFT', ofsX, ofsY)
         frame:SetJustifyH('MIDDLE')
