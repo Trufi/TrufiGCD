@@ -15,7 +15,7 @@ TrufiGCD:define('settings', function()
             showIdInChat = false,
             stopMove = false
         },
-        typeMovingIcon = true,
+        typeMovingIcon = 1,
         enable = true
     }
 

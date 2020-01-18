@@ -28,6 +28,7 @@ TrufiGCD:define('blacklist', function()
         120692, -- Halo (not shadow priest)
         132951, -- Flare
         107270, -- Spinning Crane Kick
+        228597, -- Frostbolt
         166646 -- Windwalking
     }
 
