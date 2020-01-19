@@ -33,30 +33,52 @@ TrufiGCD:define('profileSwitcherFrame', function()
         enablingCheckbox:SetChecked(profileSwitcher:isEnabled())
     end
 
-    local currentStateText = frame:CreateFontString(nil, 'BACKGROUND')
-    currentStateText:SetFont(STANDARD_TEXT_FONT, 10)
+    local hidingFrame = CreateFrame('Frame', nil, frame)
+    hidingFrame:SetPoint('TOPLEFT', 0, 0)
+    hidingFrame:SetWidth(500)
+    hidingFrame:SetHeight(500)
+
+    local currentStateText = hidingFrame:CreateFontString(nil, 'BACKGROUND')
+    currentStateText:SetFont(STANDARD_TEXT_FONT, 12)
     currentStateText:SetPoint('TOPLEFT', 15, -55)
     local function updateStateText()
         local place, spec = profileSwitcher.getPlaceAndSpec()
         local _, specName = GetSpecializationInfo(spec)
+        local profileName = settings:getProfileName()
         if specName ~= nil then
-            currentStateText:SetText('Your current specialization : ' .. specName .. ' (Spec '.. spec .. '), location: ' .. place)
+            currentStateText:SetText('Your current specialization : ' .. specName .. ' (Spec '.. spec .. '), location: ' .. place .. ', profile: ' .. profileName)
         else
-            currentStateText:SetText('Your current specialization : Spec ' .. spec .. ', location: ' .. place)
+            currentStateText:SetText('Your current specialization : Spec ' .. spec .. ', location: ' .. place .. ', profile: ' .. profileName)
         end
     end
+
+    local specTitleText = hidingFrame:CreateFontString(nil, 'BACKGROUND')
+    specTitleText:SetFont(STANDARD_TEXT_FONT, 14)
+    specTitleText:SetPoint('TOPLEFT', 200, -100)
+    specTitleText:SetText('Specializations')
+
+    local andTitleText = hidingFrame:CreateFontString(nil, 'BACKGROUND')
+    andTitleText:SetFont(STANDARD_TEXT_FONT, 14)
+    andTitleText:SetPoint('TOPLEFT', 350, -100)
+    andTitleText:SetText('AND')
+    andTitleText:SetTextColor(0, 1, 0, 1)
+
+    local placeTitleText = hidingFrame:CreateFontString(nil, 'BACKGROUND')
+    placeTitleText:SetFont(STANDARD_TEXT_FONT, 14)
+    placeTitleText:SetPoint('TOPLEFT', 450, -100)
+    placeTitleText:SetText('Locations')
 
     local function addRule()
         profileSwitcher:createRule()
     end
-    local buttonAddRule = CreateFrame('Button', nil, frame, 'UIPanelButtonTemplate')
+    local buttonAddRule = CreateFrame('Button', nil, hidingFrame, 'UIPanelButtonTemplate')
     buttonAddRule:SetWidth(100)
     buttonAddRule:SetHeight(22)
-    buttonAddRule:SetPoint('TOPLEFT', 10, -85)
+    buttonAddRule:SetPoint('TOPLEFT', 20, -95)
     buttonAddRule:SetText('Add rule')
     buttonAddRule:SetScript('OnClick', addRule)
 
-    local frameRules = CreateFrame('Frame', nil, frame)
+    local frameRules = CreateFrame('Frame', nil, hidingFrame)
     frameRules:SetPoint('TOPLEFT', 10, -150)
     frameRules:SetWidth(500)
     frameRules:SetHeight(500)
@@ -201,11 +223,24 @@ TrufiGCD:define('profileSwitcherFrame', function()
         self.frame:Hide()
     end
 
-    function FrameRule:update(positionIndex)
+    function FrameRule:update(rule, positionIndex)
+        self.rule = rule
         self.positionIndex = positionIndex
         self.frame:Show()
         self.frame:SetPoint('TOPLEFT', 0, -self.positionIndex * 40)
         UIDropDownMenu_SetText(self.dropdownProfile, getProfileName(self.rule.profileId))
+
+        self.specCheckboxes[1]:SetChecked(self.rule.specConditions['1'])
+        self.specCheckboxes[2]:SetChecked(self.rule.specConditions['2'])
+        self.specCheckboxes[3]:SetChecked(self.rule.specConditions['3'])
+        self.specCheckboxes[4]:SetChecked(self.rule.specConditions['4'])
+
+        self.placeCheckboxes[places.WORLD]:SetChecked(self.rule.placeConditions[places.WORLD])
+        self.placeCheckboxes[places.PARTY]:SetChecked(self.rule.placeConditions[places.PARTY])
+        self.placeCheckboxes[places.RAID]:SetChecked(self.rule.placeConditions[places.RAID])
+        self.placeCheckboxes[places.ARENA]:SetChecked(self.rule.placeConditions[places.ARENA])
+        self.placeCheckboxes[places.BATTLEGROUND]:SetChecked(self.rule.placeConditions[places.BATTLEGROUND])
+
     end
 
     local function createUpperOneText(parentFrame, text, ofsX, ofsY)
@@ -265,19 +300,15 @@ TrufiGCD:define('profileSwitcherFrame', function()
             if framesRules[id] == nil then
                 framesRules[id] = FrameRule:new(rule, index)
             else
-                framesRules[id]:update(index)
+                framesRules[id]:update(rule, index)
             end
             index = index + 1
         end
 
         if profileSwitcher:isEnabled() then
-            buttonAddRule:SetAlpha(1)
-            frameRules:SetAlpha(1)
-            currentStateText:SetAlpha(1)
+            hidingFrame:SetAlpha(1)
         else
-            buttonAddRule:SetAlpha(0)
-            frameRules:SetAlpha(0)
-            currentStateText:SetAlpha(0)
+            hidingFrame:SetAlpha(0)
         end
 
         updateStateText()

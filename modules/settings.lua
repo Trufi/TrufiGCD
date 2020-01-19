@@ -80,7 +80,7 @@ TrufiGCD:define('settings', function()
 
     -- changing current profile (not saving)
     function settings:setCurrentProfile(id)
-        if not profiles[id] then return end
+        if currentProfile and currentProfile.id == id or not profiles[id] then return end
         currentProfile = profiles[id]
         generalSettings.latestProfileId = id
         self:emit('change')

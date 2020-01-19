@@ -23,8 +23,6 @@ TrufiGCD:define('profileSwitcher', function()
         obj.id = id
         obj.placeConditions = {}
         obj.specConditions = {}
-
-        -- TODO: нужно брать первый из списка профилей
         obj.profileId = currentProfile.id
 
         self.__index = self
@@ -204,9 +202,9 @@ TrufiGCD:define('profileSwitcher', function()
     end
 
     function profileSwitcher:default()
-        local list = defaultSavedRules()
+        local savedData = defaultSavedRules()
         rules = {}
-        for id, data in pairs(list) do
+        for id, data in pairs(savedData.list) do
             local rule = Rule:new(getNextRuleId())
             rules[rule.id] = rule
             rule:setData(data)
