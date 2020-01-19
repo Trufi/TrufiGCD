@@ -149,12 +149,12 @@ TrufiGCD:define('profileSwitcher', function()
     end
 
     local function getDataFromSettings()
-        currentProfile = settings:getCurrentProfile()
+        currentProfile = settings:getCurrentProfileData()
         profilesList = settings:getProfilesList()
         profileSwitcher:emit('change')
     end
 
-    currentProfile = settings:getCurrentProfile()
+    currentProfile = settings:getCurrentProfileData()
     profilesList = settings:getProfilesList()
     loadRules()
     settings:on('change', getDataFromSettings)
@@ -232,6 +232,8 @@ TrufiGCD:define('profileSwitcher', function()
             end
         end
     end
+
+    profileSwitcher:on('change', function() profileSwitcher:findAndSetCurrentProfile() end)
 
     return profileSwitcher
 end)

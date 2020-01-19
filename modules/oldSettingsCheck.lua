@@ -35,22 +35,28 @@ TrufiGCD:define('oldSettingsCheck', function()
 
     -- convert old version character settings to settings profile Player name - Server name
     function oldCharacterSettingsToProfile()
-        local newSaves = {
-            blacklist = oldSaves['TrGCDBL'],
+        local newProfileData = {
+            unitFrames = unitFramesToNewSettings(oldSaves['TrGCDQueueFr']),
+            typeMovingIcon = 0
+        }
+        if oldSaves['ModScroll'] == false then
+            newProfileData.typeMovingIcon = 1
+        end
+
+        settings:createProfile(UnitName('player') .. ' - ' .. GetRealmName(), newSaves)
+
+        local blacklistSaves = oldSaves['TrGCDBL']
+        savedVariables:setCommon('blacklist', list)
+
+        local generalSaves = {
             tooltip = {
                 enable = oldSaves['TooltipEnable'],
                 showIdInChat = oldSaves['TooltipSpellID'],
                 stopMove = oldSaves['TooltipStopMove']
             },
-            unitFrames = unitFramesToNewSettings(oldSaves['TrGCDQueueFr']),
-            typeMovingIcon = 0
         }
+        settings:setGeneral('tooltip', generalSaves)
 
-        if oldSaves['ModScroll'] == false then
-            newSaves.typeMovingIcon = 1
-        end
-
-        settings:createProfile(UnitName('player') .. ' - ' .. GetRealmName(), newSaves)
         settings:save()
 
         savedVariables:setCharacter('TrGCDBL', nil)

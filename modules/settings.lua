@@ -15,8 +15,7 @@ TrufiGCD:define('settings', function()
             showIdInChat = false,
             stopMove = false
         },
-        typeMovingIcon = 1,
-        enable = true
+        latestProfileId = nil
     }
 
     -- get general setting from character own settings
@@ -25,12 +24,20 @@ TrufiGCD:define('settings', function()
         utils.extend(generalSettings, characterSaves)
     end
 
+    local function getlatestProfileIdId()
+        if generalSettings.latestProfileId and profiles[generalSettings.latestProfileId] then
+            return generalSettings.latestProfileId
+        end
+        return next(profiles)
+    end
+
     local settings = EventEmitter:new()
 
-    function settings:createProfile(name, unitFrames)
+    function settings:createProfile(name, data)
         local profile = {}
         profile.name = name
         profile.id = utils.uuid()
+        profile.typeMovingIcon = data.typeMovingIcon or 0;
         profile.unitFrames = {}
 
         for i, el in pairs(config.unitNames) do
@@ -46,8 +53,8 @@ TrufiGCD:define('settings', function()
             }
         end
 
-        if unitFrames then
-            utils.extend(profile.unitFrames, unitFrames)
+        if data.unitFrames then
+            utils.extend(profile.unitFrames, data.unitFrames)
         end
 
         profiles[profile.id] = profile
@@ -64,17 +71,18 @@ TrufiGCD:define('settings', function()
         profiles = savedVariables:getCommon('profiles') or {}
 
         -- TODO: choose profile from place manager
-        settings:setCurrentProfile(next(profiles))
+        settings:setCurrentProfile(getlatestProfileIdId())
     end
 
-    function settings:getCurrentProfile()
+    function settings:getCurrentProfileData()
         return currentProfile
     end
 
-    -- смена профиля на выбранный (не сохранение)
+    -- changing current profile (not saving)
     function settings:setCurrentProfile(id)
         if not profiles[id] then return end
         currentProfile = profiles[id]
+        generalSettings.latestProfileId = id
         self:emit('change')
     end
 
@@ -122,7 +130,7 @@ TrufiGCD:define('settings', function()
 
     function settings:default()
         profiles = {}
-        self:createProfile(UnitName('player') .. ' - ' .. GetRealmName(), true)
+        self:createProfile(UnitName('player') .. ' - ' .. GetRealmName(), {})
     end
 
     -- if profiles list null create default profile
@@ -130,8 +138,7 @@ TrufiGCD:define('settings', function()
         settings:default()
     end
 
-    -- TODO: choose profile from place manager
-    settings:setCurrentProfile(next(profiles))
+    settings:setCurrentProfile(getlatestProfileIdId())
 
     return settings
 end)

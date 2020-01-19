@@ -137,7 +137,7 @@ TrufiGCD:define('UnitFrame', function()
 
         self.text = options.text or self.text
 
-        self.transparencyIcons  = options.transparencyIcons or self.transparencyIcons
+        self.transparencyIcons = options.transparencyIcons or self.transparencyIcons
 
         if options.direction or options.sizeIcons or options.numberIcons then
             self.direction = options.direction or self.direction

@@ -11,7 +11,7 @@ TrufiGCD:define('profilesWidget', function()
     local profilesList = nil
 
     local function getDataFromSettings()
-        currentProfile = settings:getCurrentProfile()
+        currentProfile = settings:getCurrentProfileData()
         profilesList = settings:getProfilesList()
     end
 
@@ -231,7 +231,7 @@ TrufiGCD:define('profilesWidget', function()
         -- TODO: need to do smth?
         -- if utils.contain(profilesList, name) then name = name .. 'New' end
 
-        local profile = settings:createProfile(name, settings:getProfileUnitFrames())
+        local profile = settings:createProfile(name, settings:getCurrentProfileData())
         settings:setCurrentProfile(profile.id)
     end
 

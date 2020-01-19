@@ -466,7 +466,7 @@ TrufiGCD:define('viewSettingsFrame', function()
     createViewTabSettings(otherList, frameOther)
 
     InterfaceOptions_AddCategory(frameView)
-    InterfaceOptions_AddCategory(blacklistFrame)
     InterfaceOptions_AddCategory(profileSwitcherFrame)
+    InterfaceOptions_AddCategory(blacklistFrame)
     InterfaceOptions_AddCategory(otherSettingFrame)   
 end)
