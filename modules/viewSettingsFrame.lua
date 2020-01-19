@@ -30,7 +30,7 @@ TrufiGCD:define('viewSettingsFrame', function()
     local buttonShowAnchors = CreateFrame('Button', nil, frameView, 'UIPanelButtonTemplate')
     buttonShowAnchors:SetWidth(100)
     buttonShowAnchors:SetHeight(22)
-    buttonShowAnchors:SetPoint('TOPLEFT', 10, -30)
+    buttonShowAnchors:SetPoint('TOPLEFT', 45, -45)
     buttonShowAnchors:SetText('Show')
 
     local buttonShowAnchorstopText = buttonShowAnchors:CreateFontString(nil, 'BACKGROUND')
@@ -89,14 +89,12 @@ TrufiGCD:define('viewSettingsFrame', function()
 
     buttonShowAnchors:SetScript('OnClick', showHideAnchors)
 
-
     -- profile widget
     local profileWidget = profilesWidget.full({
         parentFrame = frameView,
         point = 'TOPLEFT',
-        offset = {150, -30}
+        offset = {207, -13}
     })
-
 
     -- create tabs
     local frameTabs = CreateFrame('Frame', 'TrGCDViewTabsFrame', frameView)

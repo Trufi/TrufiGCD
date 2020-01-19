@@ -102,13 +102,13 @@ TrufiGCD:define('profilesWidget', function()
     function ProfileManager:create(options)
         self.frame = CreateFrame('Frame', nil, options.parentFrame)
         self.frame:SetPoint(options.point, options.offset[1], options.offset[2])
-        self.frame:SetWidth(400)
+        self.frame:SetWidth(350)
         self.frame:SetHeight(300)
 
         self.frameDropdownCurrent = CreateFrame('Frame', 'TrGCDProfilesWidgetDropdown' .. self.id, self.frame, 'UIDropDownMenuTemplate')
-        self.frameDropdownCurrent:SetPoint('TOPLEFT', 0, 0)
+        self.frameDropdownCurrent:SetPoint('TOPLEFT', -5, -10)
 
-        UIDropDownMenu_SetWidth(self.frameDropdownCurrent, 200)
+        UIDropDownMenu_SetWidth(self.frameDropdownCurrent, 150)
         UIDropDownMenu_SetText(self.frameDropdownCurrent, currentProfile.name)
         UIDropDownMenu_Initialize(self.frameDropdownCurrent, function() self:initMenu() end)
 
@@ -147,7 +147,7 @@ TrufiGCD:define('profilesWidget', function()
         self.buttonDelete = CreateFrame('Button', nil, self.frame, 'UIPanelButtonTemplate')
         self.buttonDelete:SetWidth(100)
         self.buttonDelete:SetHeight(22)
-        self.buttonDelete:SetPoint('TOPLEFT', 240, -3)
+        self.buttonDelete:SetPoint('TOPLEFT', 185, -13)
         self.buttonDelete:SetText('Delete')
         self.buttonDelete:SetScript('OnClick', function() self:deleteOnClick() end)
         if utils.size(profilesList) <= 1 then
@@ -158,16 +158,16 @@ TrufiGCD:define('profilesWidget', function()
 
         -- editbox
         self.exitboxNewProfile = CreateFrame('EditBox', nil, self.frame, 'InputBoxTemplate')
-        self.exitboxNewProfile:SetWidth(210)
+        self.exitboxNewProfile:SetWidth(160)
         self.exitboxNewProfile:SetHeight(20)
-        self.exitboxNewProfile:SetPoint('TOPLEFT', 23, -40)
+        self.exitboxNewProfile:SetPoint('TOPLEFT', 18, -45)
         self.exitboxNewProfile:SetAutoFocus(false)
 
         -- create new button
         self.buttonCreateNew = CreateFrame('Button', nil, self.frame, 'UIPanelButtonTemplate')
         self.buttonCreateNew:SetWidth(100)
         self.buttonCreateNew:SetHeight(22)
-        self.buttonCreateNew:SetPoint('TOPLEFT', 240, -40)
+        self.buttonCreateNew:SetPoint('TOPLEFT', 185, -45)
         self.buttonCreateNew:SetText('Create new')
         self.buttonCreateNew:SetScript('OnClick', function() self:createOnClick() end)
 
@@ -175,9 +175,29 @@ TrufiGCD:define('profilesWidget', function()
         self.buttonRename = CreateFrame('Button', nil, self.frame, 'UIPanelButtonTemplate')
         self.buttonRename:SetWidth(100)
         self.buttonRename:SetHeight(22)
-        self.buttonRename:SetPoint('TOPLEFT', 350, -40)
+        self.buttonRename:SetPoint('TOPLEFT', 295, -45)
         self.buttonRename:SetText('Rename')
         self.buttonRename:SetScript('OnClick', function() self:renameOnClick() end)
+
+        -- title
+        local titleText = self.frame:CreateFontString(nil, 'BACKGROUND')
+        titleText:SetFont(STANDARD_TEXT_FONT, 14)
+        titleText:SetPoint('TOPLEFT', 322, -17)
+        titleText:SetText('Profile')
+
+        local borderFrame = CreateFrame('Frame', nil, self.frame)
+        borderFrame:SetPoint('TOPLEFT', 0, 0)
+        borderFrame:SetWidth(403)
+        borderFrame:SetHeight(78)
+        borderFrame:SetBackdrop({
+            bgFile = nil,
+            edgeFile = 'Interface/Tooltips/UI-Tooltip-Border',
+            tile = true,
+            tileSize = 16,
+            edgeSize = 16, 
+            insets = {left = 0, right = 0, top = 0, bottom = 0}
+        })
+        borderFrame:SetBackdropBorderColor(0.4, 0.4, 0.4)
     end
 
     function ProfileManager:initMenu()

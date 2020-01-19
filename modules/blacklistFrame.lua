@@ -36,7 +36,7 @@ TrufiGCD:define('blacklistFrame', function()
     settingFrame.parent = 'TrufiGCD'
 
     local listBorderFrame = CreateFrame('Frame', nil, settingFrame)
-    listBorderFrame:SetPoint('TOPLEFT', settingFrame, 'TOPLEFT',10, -25)
+    listBorderFrame:SetPoint('TOPLEFT', 10, -25)
     listBorderFrame:SetWidth(200)
     listBorderFrame:SetHeight(501)
     listBorderFrame:SetBackdrop({
@@ -47,9 +47,10 @@ TrufiGCD:define('blacklistFrame', function()
         edgeSize = 16, 
         insets = {left = 0, right = 0, top = 0, bottom = 0}
     })
+    listBorderFrame:SetBackdropBorderColor(0.4, 0.4, 0.4)
 
     local listScrollFrame = CreateFrame('ScrollFrame', nil, settingFrame)
-    listScrollFrame:SetPoint('TOPLEFT', settingFrame, 'TOPLEFT',10, -30)
+    listScrollFrame:SetPoint('TOPLEFT', 10, -30)
     listScrollFrame:SetWidth(200)
     listScrollFrame:SetHeight(488)
 
@@ -161,7 +162,7 @@ TrufiGCD:define('blacklistFrame', function()
     local addSpellEditbox = CreateFrame('EditBox', nil, settingFrame, 'InputBoxTemplate')
     addSpellEditbox:SetWidth(200)
     addSpellEditbox:SetHeight(20)
-    addSpellEditbox:SetPoint('TOPLEFT', settingFrame, 'TOPLEFT', 265, -200)
+    addSpellEditbox:SetPoint('TOPLEFT', 265, -200)
     addSpellEditbox:SetAutoFocus(false)
 
     local addSpellButton = createButton(settingFrame, 'TOPLEFT', {260, -225}, 'Add', {
