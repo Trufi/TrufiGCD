@@ -107,6 +107,15 @@ TrufiGCD:define('profileSwitcher', function()
         return maxId + 1
     end
 
+    local function ruleOnChange()
+        profileSwitcher:findAndSetCurrentProfile()
+        profileSwitcher:emit('change')
+    end
+
+    local function ruleOnRemove()
+        profileSwitcher:removeRule(rule)
+    end
+
     local function defaultSavedRules()
         local savedData = {}
         savedData.list = {}
@@ -141,8 +150,8 @@ TrufiGCD:define('profileSwitcher', function()
             local rule = Rule:new(getNextRuleId())
             rules[rule.id] = rule
             rule:setData(data)
-            rule:on('change', function() profileSwitcher:emit('change') end)
-            rule:on('remove', function() profileSwitcher:removeRule(rule) end)
+            rule:on('change', ruleOnChange)
+            rule:on('remove', ruleOnRemove)
         end
 
         rulesEnabled = savedData.enabled
@@ -166,8 +175,8 @@ TrufiGCD:define('profileSwitcher', function()
 
         rules[rule.id] = rule
 
-        rule:on('change', function() self:emit('change') end)
-        rule:on('remove', function() self:removeRule(rule) end)
+        rule:on('change', ruleOnChange)
+        rule:on('remove', ruleOnRemove)
 
         self:emit('change')
 
@@ -176,6 +185,7 @@ TrufiGCD:define('profileSwitcher', function()
 
     function profileSwitcher:removeRule(rule)
         rules[rule.id] = nil
+        self:findAndSetCurrentProfile()
         self:emit('change')
     end
 
@@ -212,9 +222,10 @@ TrufiGCD:define('profileSwitcher', function()
             local rule = Rule:new(getNextRuleId())
             rules[rule.id] = rule
             rule:setData(data)
-            rule:on('change', function() profileSwitcher:emit('change') end)
-            rule:on('remove', function() profileSwitcher:removeRule(rule) end)
+            rule:on('change', ruleOnChange)
+            rule:on('remove', ruleOnRemove)
         end
+        self:findAndSetCurrentProfile()
         self:emit('change')
     end
 
@@ -236,8 +247,6 @@ TrufiGCD:define('profileSwitcher', function()
             end
         end
     end
-
-    profileSwitcher:on('change', function() profileSwitcher:findAndSetCurrentProfile() end)
 
     return profileSwitcher
 end)

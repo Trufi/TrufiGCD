@@ -102,13 +102,16 @@ local function init()
     end
 
     local function updatePlayerSpec()
-        playerSpecialization = GetSpecialization()
+        playerSpecialization = config.specs[GetSpecialization()]
         profileSwitcher:updateCurrentSpecAndPlace(playerSpecialization, playerLocation)
     end
 
     local function playerEventHandler(self, event)
         if event == 'PLAYER_ENTERING_WORLD' or event == 'PLAYER_ENTERING_BATTLEGROUND' then
             updatePlayerPlace()
+
+            -- after first PLAYER_ENTERING_WORLD events needs to update spec
+            updatePlayerSpec()
         elseif event == 'PLAYER_TARGET_CHANGED' then
             unitFrameChangeOwner('target')
         elseif event == 'PLAYER_FOCUS_CHANGED' then
