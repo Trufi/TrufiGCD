@@ -43,7 +43,7 @@ TrufiGCD:define('oldSettingsCheck', function()
             newProfileData.typeMovingIcon = 1
         end
 
-        settings:createProfile(UnitName('player') .. ' - ' .. GetRealmName(), newSaves)
+        settings:createProfile(UnitName('player') .. ' - ' .. GetRealmName(), newProfileData)
 
         local blacklistSaves = oldSaves['TrGCDBL']
         savedVariables:setCommon('blacklist', list)

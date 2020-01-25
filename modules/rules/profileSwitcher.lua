@@ -10,7 +10,11 @@ TrufiGCD:define('profileSwitcher', function()
 
     -- актуальные значения места и спеки, обнвовляются при каждом изменении
     local playerPlace = config.places['WORLD']
+    
     local playerSpecialization = config.specs[GetSpecialization()]
+    if playerSpecialization == nil then
+        playerSpecialization = config.specs[1]
+    end
 
     local currentProfile = nil
     local profilesList = nil
@@ -126,7 +130,7 @@ TrufiGCD:define('profileSwitcher', function()
     end
 
     local function loadRules()
-        local savedData = savedVariables:getCharacter('profilesRules') or {}
+        local savedData = savedVariables:getCharacter('profilesRules')
 
         if savedData == nil then
             savedData = defaultSavedRules()
@@ -216,7 +220,9 @@ TrufiGCD:define('profileSwitcher', function()
 
     function profileSwitcher:updateCurrentSpecAndPlace(spec, place)
         playerPlace = place
-        playerSpecialization = spec
+        if spec ~= nil then
+            playerSpecialization = spec
+        end
         profileSwitcher:findAndSetCurrentProfile()
     end
 

@@ -33,8 +33,6 @@ local function init()
     eventFrame:RegisterEvent('UNIT_AURA')
 
     local function eventHandler(self, event, unitType, _, spellId)
-        if not settings.enable then return end
-
         if not utils.contain(config.unitNames, unitType) then return end
 
         units.list[unitType]:eventsHandler(event, spellId)
@@ -44,8 +42,6 @@ local function init()
     local timeLastUpdate = GetTime()
 
     local function onUpdate()
-        if not settings.enable then return end
-
         local time = GetTime()
         local interval = time - timeLastUpdate
 
