@@ -63,6 +63,7 @@ TrufiGCD:define('UnitFrame', function()
 
         metatable:createFrame()
         metatable:createIcons()
+        metatable:updateIcons()
         metatable:updateSize()
 
         return metatable
