@@ -372,7 +372,7 @@ function TrufiGCDAddonLoaded(self, event, ...)
 		TrGCDGUI.BL:Hide()
 		TrGCDGUI.BL.name = "Blacklist"
 		TrGCDGUI.BL.parent = "TrufiGCD"
-		TrGCDGUI.BL.ScrollBD = CreateFrame ("Frame", nil, TrGCDGUI.BL)
+		TrGCDGUI.BL.ScrollBD = CreateFrame ("Frame", nil, TrGCDGUI.BL, BackdropTemplateMixin and "BackdropTemplate")
 		TrGCDGUI.BL.ScrollBD:SetPoint("TOPLEFT", TrGCDGUI.BL, "TOPLEFT",10, -25)
 		TrGCDGUI.BL.ScrollBD:SetWidth(200)
 		TrGCDGUI.BL.ScrollBD:SetHeight(501)
