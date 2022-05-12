@@ -58,6 +58,7 @@ local InnerBL = { --закрытый черный список, по ID
 	227255, -- Spirit Bomb periodical
 	225919, -- Fracture double hit
 	225921, -- Fracture part 2
+	228478, -- Soul Cleave part 2
 }
 local cross = "Interface\\TargetingFrame\\UI-RaidTargetingIcon_7"
 local skull = "Interface\\TargetingFrame\\UI-RaidTargetingIcon_8"
