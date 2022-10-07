@@ -176,7 +176,7 @@ function TrufiGCDAddonLoaded(self, event, ...)
 		else TrGCDBL = TrufiGCDChSave["TrGCDBL"]
 		end
 		-- Проверка на пустые EnableIn
-		-- NEW MODE, TrufiGCDChSave["EnableIn"] - ["PvE"], ["Arena"], ["Bg"], ["World"] = true or false
+		-- NEW MODE, TrufiGCDChSave["EnableIn"] - ["PvE"], ["Arena"], ["Bg"], ["World"], ["Combat only"] = true or false
 		TrGCDNullOptions = false
 		if (TrufiGCDChSave["EnableIn"] == nil) then
 			TrGCDNullOptions = true
@@ -185,6 +185,7 @@ function TrufiGCDAddonLoaded(self, event, ...)
 			elseif (TrufiGCDChSave["EnableIn"]["Arena"] == nil) then TrGCDNullOptions = true
 			elseif (TrufiGCDChSave["EnableIn"]["Bg"] == nil) then TrGCDNullOptions = true
 			elseif (TrufiGCDChSave["EnableIn"]["World"] == nil) then TrGCDNullOptions = true
+			elseif (TrufiGCDChSave["EnableIn"]["Combat only"] == nil) then TrGCDNullOptions = true
 			elseif (TrufiGCDChSave["EnableIn"]["Enable"] == nil) then TrGCDNullOptions = true
 			end
 		end
@@ -194,6 +195,7 @@ function TrufiGCDAddonLoaded(self, event, ...)
 			TrufiGCDChSave["EnableIn"]["Arena"] = true
 			TrufiGCDChSave["EnableIn"]["Bg"] = true
 			TrufiGCDChSave["EnableIn"]["World"] = true
+			TrufiGCDChSave["EnableIn"]["Combat only"] = false
 			TrufiGCDChSave["EnableIn"]["Enable"] = true
 		end
 		-- проверка на пустой ModScroll VERSION 1.5
@@ -244,6 +246,11 @@ function TrufiGCDAddonLoaded(self, event, ...)
 		TrGCDGUI.CheckEnableIn.Text:SetFont("Fonts\\FRIZQT__.TTF", 12)
 		TrGCDGUI.CheckEnableIn.Text:SetText("Enable in:")
 		TrGCDGUI.CheckEnableIn.Text:SetPoint("TOPRIGHT", TrGCDGUI, "TOPRIGHT",-53, -175)
+		TrGCDGUI.CheckEnableIn[6] = AddCheckButton(TrGCDGUI, "TOPRIGHT",-90,-110,"Combat only","trgcdcheckenablein6",TrufiGCDChSave["EnableIn"]["Combat only"])
+		TrGCDGUI.CheckEnableIn[6]:SetScript("OnClick", function ()
+			TrufiGCDChSave["EnableIn"]["Combat only"] = ValueReverse(TrufiGCDChSave["EnableIn"]["Combat only"])
+			TrGCDCheckToEnableAddon(6)
+		end)
 		TrGCDGUI.CheckEnableIn[0] = AddCheckButton(TrGCDGUI, "TOPRIGHT",-90,-140,"Enable addon","trgcdcheckenablein0",TrufiGCDChSave["EnableIn"]["Enable"])
 		TrGCDGUI.CheckEnableIn[0]:SetScript("OnClick", function ()
 			TrufiGCDChSave["EnableIn"]["Enable"] = ValueReverse(TrufiGCDChSave["EnableIn"]["Enable"])
@@ -465,6 +472,8 @@ function TrufiGCDAddonLoaded(self, event, ...)
 		TrGCDEnterEventFrame = CreateFrame("Frame", nil, UIParent)
 		TrGCDEnterEventFrame:RegisterEvent("PLAYER_ENTERING_BATTLEGROUND")
 		TrGCDEnterEventFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
+		TrGCDEnterEventFrame:RegisterEvent("PLAYER_REGEN_DISABLED")
+		TrGCDEnterEventFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
 		TrGCDEnterEventFrame:SetScript("OnEvent", TrGCDEnterEventHandler)
 		-- Creating event spell frame
 		TrGCDEventFrame = CreateFrame("Frame", nil, UIParent)
@@ -566,7 +575,7 @@ function TrufiGCDAddonLoaded(self, event, ...)
 	end
 end
 function TrGCDCheckToEnableAddon(t) -- проверяет галки EnableIn и от этого уже включен ли аддон
-	if (TrufiGCDChSave["EnableIn"]["Enable"] == false) then TrGCDEnable = false
+	if (TrufiGCDChSave["EnableIn"]["Enable"] == false) or (TrufiGCDChSave["EnableIn"]["Combat only"]) then TrGCDEnable = false
 	elseif (PlayerDislocation == 1) then TrGCDEnable = TrufiGCDChSave["EnableIn"]["World"]
 	elseif (PlayerDislocation == 2) then TrGCDEnable = TrufiGCDChSave["EnableIn"]["PvE"]
 	elseif (PlayerDislocation == 3) then TrGCDEnable = TrufiGCDChSave["EnableIn"]["Arena"]
@@ -574,14 +583,38 @@ function TrGCDCheckToEnableAddon(t) -- проверяет галки EnableIn и
 	elseif (PlayerDislocation == 5) then TrGCDEnable = TrufiGCDChSave["EnableIn"]["Raid"]
 	end
 	if (t ~= nil) then
-		if ((PlayerDislocation == t) or (t == 0)) then
+		if ((PlayerDislocation == t) or (t == 0) or (t == 6)) then
 			for i=1,12 do TrGCDClear(i) end
 		end
 	end
 end
 function TrGCDEnterEventHandler(self, event, ...) -- эвент, когда игрок заходит на бг, арену, пве, или наоборот выходит
 	local _, PlayerLocation = IsInInstance()
-	if (event == "PLAYER_ENTERING_BATTLEGROUND") then
+
+	if (event == "PLAYER_REGEN_DISABLED") and (TrufiGCDChSave["EnableIn"]["Combat only"]) then -- Entering combat, specific for each zone
+		if (PlayerLocation == "arena") then
+			PlayerDislocation = 3
+			if (TrufiGCDChSave["EnableIn"]["Arena"]) then TrGCDEnable = true
+			else TrGCDEnable = false end
+		elseif (PlayerLocation == "pvp") then
+			PlayerDislocation = 4
+			if (TrufiGCDChSave["EnableIn"]["Bg"]) then TrGCDEnable = true
+			else TrGCDEnable = false end
+		elseif (PlayerLocation == "party") then
+			PlayerDislocation = 2
+			if (TrufiGCDChSave["EnableIn"]["PvE"]) then TrGCDEnable = true
+			else TrGCDEnable = false end
+		elseif (PlayerLocation == "raid") then
+			PlayerDislocation = 5
+			if (TrufiGCDChSave["EnableIn"]["Raid"]) then TrGCDEnable = true
+			else TrGCDEnable = false end
+		elseif ((PlayerLocation ~= "arena") or (PlayerLocation ~= "pvp")) then
+			PlayerDislocation = 1
+			if (TrufiGCDChSave["EnableIn"]["World"]) then TrGCDEnable = true
+			else TrGCDEnable = false end
+		end
+	elseif (event == "PLAYER_REGEN_ENABLED") and (TrufiGCDChSave["EnableIn"]["Combat only"]) then TrGCDEnable = false -- Ending combat
+	elseif (event == "PLAYER_ENTERING_BATTLEGROUND") and not (TrufiGCDChSave["EnableIn"]["Combat only"]) then -- if not Combat only, try to load at locations
 		if (PlayerLocation == "arena") then
 			PlayerDislocation = 3
 			if (TrufiGCDChSave["EnableIn"]["Arena"]) then TrGCDEnable = true
@@ -591,7 +624,7 @@ function TrGCDEnterEventHandler(self, event, ...) -- эвент, когда иг
 			if (TrufiGCDChSave["EnableIn"]["Bg"]) then TrGCDEnable = true
 			else TrGCDEnable = false end
 		end
-	elseif (event == "PLAYER_ENTERING_WORLD") then
+	elseif (event == "PLAYER_ENTERING_WORLD") and not (TrufiGCDChSave["EnableIn"]["Combat only"]) then  -- if not Combat only, try to load at locations
 		if (PlayerLocation == "party") then
 			PlayerDislocation = 2
 			if (TrufiGCDChSave["EnableIn"]["PvE"]) then TrGCDEnable = true
@@ -604,6 +637,25 @@ function TrGCDEnterEventHandler(self, event, ...) -- эвент, когда иг
 			PlayerDislocation = 1
 			if (TrufiGCDChSave["EnableIn"]["World"]) then TrGCDEnable = true
 			else TrGCDEnable = false end
+		end
+			elseif (event == "PLAYER_ENTERING_BATTLEGROUND") and (TrufiGCDChSave["EnableIn"]["Combat only"]) then -- if Combat only and just loaded in location
+		if (PlayerLocation == "arena") then
+			PlayerDislocation = 3
+			if (TrufiGCDChSave["EnableIn"]["Arena"]) then TrGCDEnable = false end
+		elseif (PlayerLocation == "pvp") then
+			PlayerDislocation = 4
+			if (TrufiGCDChSave["EnableIn"]["Bg"]) then TrGCDEnable = false end
+		end
+	elseif (event == "PLAYER_ENTERING_WORLD") and (TrufiGCDChSave["EnableIn"]["Combat only"]) then  -- if Combat only and just loaded in location
+		if (PlayerLocation == "party") then
+			PlayerDislocation = 2
+			if (TrufiGCDChSave["EnableIn"]["PvE"]) then TrGCDEnable = false end
+		elseif (PlayerLocation == "raid") then
+			PlayerDislocation = 5
+			if (TrufiGCDChSave["EnableIn"]["Raid"]) then TrGCDEnable = false end
+		elseif ((PlayerLocation ~= "arena") or (PlayerLocation ~= "pvp")) then
+			PlayerDislocation = 1
+			if (TrufiGCDChSave["EnableIn"]["World"]) then TrGCDEnable = false end
 		end
 	end
 end
@@ -682,6 +734,7 @@ function TrGCDSaveSettings()
 	TrufiGCDGlSave["EnableIn"]["Arena"] = TrufiGCDChSave["EnableIn"]["Arena"]
 	TrufiGCDGlSave["EnableIn"]["Bg"] = TrufiGCDChSave["EnableIn"]["Bg"]
 	TrufiGCDGlSave["EnableIn"]["World"] = TrufiGCDChSave["EnableIn"]["World"]
+	TrufiGCDGlSave["EnableIn"]["Combat only"] = TrufiGCDChSave["EnableIn"]["Combat only"]
 	TrufiGCDGlSave["EnableIn"]["Enable"] = TrufiGCDChSave["EnableIn"]["Enable"]
 	TrufiGCDGlSave["ModScroll"] = TrufiGCDChSave["ModScroll"]
 end
@@ -706,6 +759,7 @@ function TrGCDLoadSettings()
 			TrufiGCDChSave["EnableIn"]["Arena"] = TrufiGCDGlSave["EnableIn"]["Arena"]
 			TrufiGCDChSave["EnableIn"]["Bg"] = TrufiGCDGlSave["EnableIn"]["Bg"]
 			TrufiGCDChSave["EnableIn"]["World"] = TrufiGCDGlSave["EnableIn"]["World"]
+			TrufiGCDChSave["EnableIn"]["Combat only"] = TrufiGCDGlSave["EnableIn"]["Combat only"]
 			TrufiGCDChSave["EnableIn"]["Enable"] = TrufiGCDGlSave["EnableIn"]["Enable"]
 			if (TrufiGCDGlSave["EnableIn"]["Raid"] ~= nil) then
 				TrufiGCDChSave["EnableIn"]["Raid"] = TrufiGCDGlSave["EnableIn"]["Raid"]
@@ -757,6 +811,7 @@ function TrGCDRestoreDefaultSettings() -- восстановление стан�
 	TrufiGCDChSave["EnableIn"]["Arena"] = true
 	TrufiGCDChSave["EnableIn"]["Bg"] = true
 	TrufiGCDChSave["EnableIn"]["World"] = true
+	TrufiGCDChSave["EnableIn"]["Combat only"] = false
 	TrufiGCDChSave["EnableIn"]["Enable"] = true
 	TrufiGCDChSave["ModScroll"] = true
 end
@@ -784,6 +839,7 @@ function TrGCDUploadViewSetting()
 	TrGCDGUI.CheckEnableIn[3]:SetChecked(TrufiGCDChSave["EnableIn"]["Arena"])
 	TrGCDGUI.CheckEnableIn[4]:SetChecked(TrufiGCDChSave["EnableIn"]["Bg"])
 	TrGCDGUI.CheckEnableIn[5]:SetChecked(TrufiGCDChSave["EnableIn"]["Raid"])
+	TrGCDGUI.CheckEnableIn[6]:SetChecked(TrufiGCDChSave["EnableIn"]["Combat only"])
 	TrGCDGUI.CheckModScroll:SetChecked(TrufiGCDChSave["ModScroll"])
 end
 function TrGCDResizeQFr(i) -- ресайз после изменения размера очереди TrGCDQueueFr
@@ -1027,7 +1083,7 @@ function TrGCDEventHandler(self, event, who, _, spellId)
 		for l=1, #TrGCDBL do if ((TrGCDBL[l] == spellname) or (GetSpellInfo(TrGCDBL[l]) == spellname)) then blt = false end end -- проверка на черный список
 		for l=1, #InnerBL do if (InnerBL[l] == spellId) then sblt = false end end -- проверка на закрытый черный список
 		if ((spellicon ~= nil) and t and blt and sblt and (GetSpellLink(spellId) ~= nil)) then
-			if (spellId == 42292) then spellicon = trinket end --замена текстуры пвп тринкета				
+			if (spellId == 42292) then spellicon = trinket end --замена текстуры пвп тринкета
 			local IsChannel = TrGCDUnitChannelInfo(who) -- check for channeling spell
 			if (event == "UNIT_SPELLCAST_START") then
 				--print("cast " .. spellname)
