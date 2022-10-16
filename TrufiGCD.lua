@@ -703,7 +703,7 @@ function TrGCDBLAddSpell(self)
       		if (spellId ~= nil) then
         		table.insert(TrGCDBL, spellId)
         		if (spellId .. "") ~= spellname then -- only note if a string was passed
-          		print("[TrufiGCD]: converted \"" .. spellname .. "\" to spell id " .. spellId .. ". If this is not the desired spell id, provide the exat spell id of the spell you wish to blacklist as multiple spells with this name may exist.")
+          		print("[TrufiGCD]: converted \"" .. spellname .. "\" to spell id " .. spellId .. ". If this is not the desired spell id, provide the exact spell id of the spell you wish to blacklist as multiple spells with this name may exist.")
         		end
 
         		TrGCDLoadBlackList()
