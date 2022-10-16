@@ -59,8 +59,8 @@ local InnerBL = { --закрытый черный список, по ID
 	225919, -- Fracture double hit
 	225921, -- Fracture part 2
 	228478, -- Soul Cleave part 2
-  346665, -- Master of the Glaive (DH Class Tree Talent)
-  370966, -- The Hunt Impact (DH Class Tree Talent)
+    346665, -- Master of the Glaive (DH Class Tree Talent)
+    370966, -- The Hunt Impact (DH Class Tree Talent)
 }
 local cross = "Interface\\TargetingFrame\\UI-RaidTargetingIcon_7"
 local skull = "Interface\\TargetingFrame\\UI-RaidTargetingIcon_8"
@@ -669,12 +669,25 @@ function TrGCDEnterEventHandler(self, event, ...) -- эвент, когда иг
 end
 function TrGCDLoadBlackList() -- загрузка черного списка
 	for i=1,60 do
-    local id = id
-		if (id ~= nil) then
-			local spellname = GetSpellInfo(id)
-			if (spellname == nil) then spellname = id end
-			TrGCDGUI.BL.Spell[i]:Enable()
-			TrGCDGUI.BL.Spell[i].Text:SetText("" .. spellname .. " (" .. id .. ")")
+    	local idOrName = TrGCDBL[i]
+		if (idOrName ~= nil) then
+			local name, _, _, _, _, _, spellId = GetSpellInfo(idOrName)
+
+			if spellId then
+				TrGCDGUI.BL.Spell[i]:Enable()
+				TrGCDGUI.BL.Spell[i].Text:SetText(spellId .. " - " .. name)
+
+				-- 10.0 change; only store IDs going forward
+				if tonumber(idOrName) ~= spellId then
+					table.insert(TrGCDBL, i, spellId)
+				end
+			else
+				-- 10.0 change; remove abilities from blacklist that are not resolvable to an id
+				table.remove(TrGCDBL, i)
+				TrGCDGUI.BL.Spell[i]:Disable()
+				TrGCDGUI.BL.Spell[i].Text:SetText(nil)
+				TrGCDGUI.BL.Spell[i].Texture:SetAlpha(0)
+			end
 		else
 			TrGCDGUI.BL.Spell[i]:Disable()
 			TrGCDGUI.BL.Spell[i].Text:SetText(nil)
@@ -686,18 +699,18 @@ function TrGCDBLAddSpell(self)
 	if (TrGCDGUI.BL.AddEdit:GetText() ~= nil) then
 		local spellname = TrGCDGUI.BL.AddEdit:GetText()
 		if (#TrGCDBL < 60) then
-      local spellId = select(7, GetSpellInfo(spellname))
-      if (spellId ~= nil) then
-        table.insert(TrGCDBL, spellId)
-        if (spellId .. "") ~= spellname then -- only note if a string was passed
-          print("[TrufiGCD]: converted \"" .. spellname .. "\" to spell id " .. spellId .. ". If this is not the desired spell id, provide the exat spell id of the spell you wish to blacklist as multiple spells with this name may exist.")
-        end
+      		local spellId = select(7, GetSpellInfo(spellname))
+      		if (spellId ~= nil) then
+        		table.insert(TrGCDBL, spellId)
+        		if (spellId .. "") ~= spellname then -- only note if a string was passed
+          		print("[TrufiGCD]: converted \"" .. spellname .. "\" to spell id " .. spellId .. ". If this is not the desired spell id, provide the exat spell id of the spell you wish to blacklist as multiple spells with this name may exist.")
+        		end
 
-        TrGCDLoadBlackList()
-        TrGCDGUI.BL.AddEdit:SetText("")
-        TrGCDGUI.BL.AddEdit:ClearFocus()
-      end
-    end
+        		TrGCDLoadBlackList()
+        		TrGCDGUI.BL.AddEdit:SetText("")
+        		TrGCDGUI.BL.AddEdit:ClearFocus()
+      		end
+    	end
 	end
 end
 function TrGCDBLSaveSetting()
