@@ -59,6 +59,8 @@ local InnerBL = { --закрытый черный список, по ID
 	225919, -- Fracture double hit
 	225921, -- Fracture part 2
 	228478, -- Soul Cleave part 2
+  346665, -- Master of the Glaive (DH Class Tree Talent)
+  370966, -- The Hunt Impact (DH Class Tree Talent)
 }
 local cross = "Interface\\TargetingFrame\\UI-RaidTargetingIcon_7"
 local skull = "Interface\\TargetingFrame\\UI-RaidTargetingIcon_8"
@@ -211,7 +213,7 @@ function TrufiGCDAddonLoaded(self, event, ...)
 
 		TrGCDCheckToEnableAddon()
 		-- Options Panel Frame
-		TrGCDGUI = CreateFrame ("Frame", nil, UIParent, "OptionsBoxTemplate")
+		TrGCDGUI = CreateFrame ("Frame", nil, UIParent)
 		TrGCDGUI:Hide()
 		TrGCDGUI.name = "TrufiGCD"
 		--кнопка show/hide
@@ -379,7 +381,7 @@ function TrufiGCDAddonLoaded(self, event, ...)
 		end
 		InterfaceOptions_AddCategory(TrGCDGUI)
 		--добавления вкладки Spell Black List
-		TrGCDGUI.BL = CreateFrame ("Frame", nil, UIParent, "OptionsBoxTemplate")
+		TrGCDGUI.BL = CreateFrame ("Frame", nil, UIParent)
 		TrGCDGUI.BL:Hide()
 		TrGCDGUI.BL.name = "Blacklist"
 		TrGCDGUI.BL.parent = "TrufiGCD"
@@ -458,10 +460,12 @@ function TrufiGCDAddonLoaded(self, event, ...)
 		TrGCDGUI.BL.AddButt:SetScript("OnClick", function (self) TrGCDBLAddSpell(self) end)
 		TrGCDGUI.BL.AddEdit:SetScript("OnEnterPressed", function (self) TrGCDBLAddSpell(self) end)
 		TrGCDGUI.BL.AddEdit:SetScript("OnEscapePressed", function (self) self:ClearFocus() end)
-		TrGCDGUI.BL.AddButt.Text2 = TrGCDGUI.BL.List:CreateFontString(nil, "BACKGROUND")
+    TrGCDGUI.BL.AddButt.Text2 = TrGCDGUI.BL.AddButt:CreateFontString(nil, "BACKGROUND")
 		TrGCDGUI.BL.AddButt.Text2:SetFont("Fonts\\FRIZQT__.TTF", 11)
-		--TrGCDGUI.BL.AddButt.Text2:SetText("Blacklist can be loaded from the saved settings,\nbut does not restore the default.")
-		TrGCDGUI.BL.AddButt.Text2:SetPoint("BOTTOMLEFT", TrGCDGUI.BL.AddButt, "BOTTOMLEFT", 0, -35)
+		TrGCDGUI.BL.AddButt.Text2:SetText("You can only blacklist known abilities by name!")
+		TrGCDGUI.BL.AddButt.Text2:SetPoint("BOTTOMLEFT", TrGCDGUI.BL.AddButt, "BOTTOMLEFT",5, -15)
+
+
 		--кнопка загрузки настроек сохраненных в кэше
 		TrGCDGUI.BL.ButtonLoad = AddButton(TrGCDGUI.BL,"TOPRIGHT",-145,-30,22,100,"Load",10,"Load saving blacklist")
 		TrGCDGUI.BL.ButtonLoad:SetScript("OnClick", TrGCDBLLoadSetting)
@@ -665,11 +669,12 @@ function TrGCDEnterEventHandler(self, event, ...) -- эвент, когда иг
 end
 function TrGCDLoadBlackList() -- загрузка черного списка
 	for i=1,60 do
-		if (TrGCDBL[i] ~= nil) then
-			local spellname = GetSpellInfo(TrGCDBL[i])
-			if (spellname == nil) then spellname = TrGCDBL[i] end
+    local id = id
+		if (id ~= nil) then
+			local spellname = GetSpellInfo(id)
+			if (spellname == nil) then spellname = id end
 			TrGCDGUI.BL.Spell[i]:Enable()
-			TrGCDGUI.BL.Spell[i].Text:SetText(spellname)
+			TrGCDGUI.BL.Spell[i].Text:SetText("" .. spellname .. " (" .. id .. ")")
 		else
 			TrGCDGUI.BL.Spell[i]:Disable()
 			TrGCDGUI.BL.Spell[i].Text:SetText(nil)
@@ -681,15 +686,18 @@ function TrGCDBLAddSpell(self)
 	if (TrGCDGUI.BL.AddEdit:GetText() ~= nil) then
 		local spellname = TrGCDGUI.BL.AddEdit:GetText()
 		if (#TrGCDBL < 60) then
-		--local spellicon = select(3, GetSpellInfo(TrGCDGUI.BL.AddEdit:GetText()))
-		--if (spellicon ~= nil) then
-			table.insert(TrGCDBL, spellname)
-			TrGCDLoadBlackList()
-			--TrGCDGUI.BL.AddEdit:SetText("")
-			TrGCDGUI.BL.AddEdit:ClearFocus()
-			--TrGCDGUI.BL.AddButt.Text2:SetText()
-		--else TrGCDGUI.BL.AddButt.Text2:SetText('Spell not find, please try again.') end
-		end
+      local spellId = select(7, GetSpellInfo(spellname))
+      if (spellId ~= nil) then
+        table.insert(TrGCDBL, spellId)
+        if (spellId .. "") ~= spellname then -- only note if a string was passed
+          print("[TrufiGCD]: converted \"" .. spellname .. "\" to spell id " .. spellId .. ". If this is not the desired spell id, provide the exat spell id of the spell you wish to blacklist as multiple spells with this name may exist.")
+        end
+
+        TrGCDLoadBlackList()
+        TrGCDGUI.BL.AddEdit:SetText("")
+        TrGCDGUI.BL.AddEdit:ClearFocus()
+      end
+    end
 	end
 end
 function TrGCDBLSaveSetting()
