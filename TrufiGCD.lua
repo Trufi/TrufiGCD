@@ -59,8 +59,10 @@ local InnerBL = { --закрытый черный список, по ID
 	225919, -- Fracture double hit
 	225921, -- Fracture part 2
 	228478, -- Soul Cleave part 2
-    346665, -- Master of the Glaive (DH Class Tree Talent)
-    370966, -- The Hunt Impact (DH Class Tree Talent)
+	346665, -- Master of the Glaive (DH Class Tree Talent)
+	370966, -- The Hunt Impact (DH Class Tree Talent)
+	394007, -- Ready to Build (DF Engineering Accessoire)
+	391775, -- What's Cookin', Good Lookin'? (DF Cooking Accessoire)
 }
 local cross = "Interface\\TargetingFrame\\UI-RaidTargetingIcon_7"
 local skull = "Interface\\TargetingFrame\\UI-RaidTargetingIcon_8"
