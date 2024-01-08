@@ -391,10 +391,6 @@ function TrufiGCDAddonLoaded(self, event, ...)
 		TrGCDGUI.BL.ScrollBD:SetPoint("TOPLEFT", TrGCDGUI.BL, "TOPLEFT",10, -25)
 		TrGCDGUI.BL.ScrollBD:SetWidth(200)
 		TrGCDGUI.BL.ScrollBD:SetHeight(501)
-		TrGCDGUI.BL.ScrollBD:SetBackdrop({bgFile = nil,
-			edgeFile = "Interface/Tooltips/UI-Tooltip-Border",
-			tile = true, tileSize = 16, edgeSize = 16,
-			insets = {left = 0, right = 0, top = 0, bottom = 0}})
 		TrGCDGUI.BL.Scroll = CreateFrame ("ScrollFrame", nil, TrGCDGUI.BL)
 		TrGCDGUI.BL.Scroll:SetPoint("TOPLEFT", TrGCDGUI.BL, "TOPLEFT",10, -30)
 		TrGCDGUI.BL.Scroll:SetWidth(200)
@@ -1005,7 +1001,7 @@ function TrGCDPlayerTarFocDetect(k) -- чек есть ли цель или фо
 			TrGCDIcon[k][j]:SetAlpha(TrGCDIcon[i][j]:GetAlpha())
 			TrGCDIcon[k][j].TimeStart = TrGCDIcon[i][j].TimeStart
 			if (TrGCDIcon[k][j].show) then
-				TrGCDIcon[k][j]:SetAlpha((1-(abs(TrGCDIcon[k][j].x) - width)/10))  --МИГАЕТ ПРИ РАЗНОМ РАЗМЕРЕ ОЧЕРЕДИ
+				TrGCDIcon[k][j]:SetAlpha(max(0, min(1, 1-(abs(TrGCDIcon[k][j].x) - width)/10)))  --МИГАЕТ ПРИ РАЗНОМ РАЗМЕРЕ ОЧЕРЕДИ
 				TrGCDIcon[k][j]:Show()
 			else TrGCDIcon[k][j]:Hide() end
 			TrGCDIcon[k][j].texture2.show = TrGCDIcon[i][j].texture2.show
