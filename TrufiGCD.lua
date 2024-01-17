@@ -17,39 +17,34 @@ TrGCDCastSpBanTime = {} --время остановки каста
 TrGCDBL = {} -- черный список спеллов
 local BLSpSel = nil --выделенный спелл в блэклисте
 local InnerBL = { --закрытый черный список, по ID
-	61391, -- Тайфун x2
-	5374, -- Расправа х3
-	27576, -- Расправа (левая рука) х3
-	88263, -- Молот Праведника х3
-	98057, -- Великий воин Света
-	32175, -- Удар бури
-	32176, -- Удар бури (левая рука)
-	96103, -- Яростный выпад
-	85384, -- Яростный выпад (левая рука)
-	57794, -- Героический прыжок
-	52174, -- Героический прыжок
-	135299, -- Ледяная ловушка
-	121473, -- Теневой клинок
-	121474, -- Второй теневой клинок
-	114093, -- Хлещущий ветер (левая рука)
-	114089, -- Хлещущий ветер
-	115357, -- Свирепость бури
-	115360, -- Свирепость бури (левая рука)
-	127797, -- Вихрь урсола
-	102794, -- Вихрь урсола
-	50622, -- Вихрь клинков
-	122128, -- Божественная звезда (шп)
-	110745, -- Божественная звезда (не шп)
-	120696, -- Сияние (шп)
-	120692, -- Сияние (не шп)
-	115464, -- Целительная сфера
-	126526, -- Целительная сфера
-	132951, -- Осветительная ракета
-	107270, -- Танцующий журавль
-	137584, -- Бросок сюрикена
-	137585, -- Бросок сюрикена левой рукой
-	117993, -- Ци-полет (дамаг)
-	124040, -- Ци-полет (хил)
+	61391, -- Typhoon x2
+	5374, -- Mutilate х3
+	27576, -- Mutilate (off-hand) х3
+	88263, -- Hammer of the Righteous х3
+	32175, -- Stormstrike
+	32176, -- Stormstrike (off-hand)
+	96103, -- Raging Blow
+	85384, -- Raging Blow (off-hand)
+	57794, -- Heroic Leap
+	52174, -- Heroic Leap
+	135299, -- Tar Trap
+	121473, -- Shadow Blade
+	121474, -- Shadow Blade Off-hand
+	114093, -- Windlash Off-Hand
+	114089, -- Windlash
+	115357, -- Windstrike
+	115360, -- Windstrike Off-Hand
+	127797, -- Ursol's Vortex
+	102794, -- Ursol's Vortex
+	50622, -- Bladestorm
+	122128, -- Divine Star (Shadow Priest)
+	110745, -- Divine Star
+	120696, -- Halo (Shadow Priest)
+	120692, -- Halo
+	115464, -- Healing Sphere
+	126526, -- Healing Sphere
+	132951, -- Flare
+	107270, -- Spinning Crane Kick
 	198928, -- Cinderstorm shards (Fire Mage verified fix)
 	84721, -- Frozen Orb shards (Frost Mage verified fix)
 	222031, -- Chaos Strike 1 (DemonHunter unverified fix)
@@ -63,6 +58,31 @@ local InnerBL = { --закрытый черный список, по ID
 	370966, -- The Hunt Impact (DH Class Tree Talent)
 	394007, -- Ready to Build (DF Engineering Accessoire)
 	391775, -- What's Cookin', Good Lookin'? (DF Cooking Accessoire)
+	384341, -- Critical Failure Prevention Unit (DF Engineering Item)
+	7268, -- Arcane Missiles (Arcane Mage while channeling)
+	37506, -- Scatter Shot (Hunt) x2
+	228354, -- Flurry
+
+	-- Unverified - from GCD History
+	184707, -- Rampage
+	184709, -- Rampage
+	199672, -- Rupture
+	201363, -- Rampage
+	201364, -- Rampage
+	204255, -- Soul Fragments
+	213241, -- Felblade
+	213243, -- Felblade
+	218617, -- Rampage
+	228597, -- Frostbolt
+	272790, -- Frenzy; BM hunter buff
+	276245, -- Env; envenom buff
+	361195, -- Verdant Embrace friendly heal
+	361509, -- Living Flame friendly heal
+	383313, -- Abomination Limb periodical
+	385060, -- Odyn's Fury
+	385061, -- Odyn's Fury
+	385062, -- Odyn's Fury
+	385954 -- Shield Charge
 }
 local cross = "Interface\\TargetingFrame\\UI-RaidTargetingIcon_7"
 local skull = "Interface\\TargetingFrame\\UI-RaidTargetingIcon_8"
