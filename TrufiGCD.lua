@@ -122,7 +122,7 @@ local function AddButton(parent,position,x,y,height,width,text,font,texttop,temp
 	button:SetText(text)
 	if ((font ~= nil) and (texttop ~= nil)) then
 		button.Text = button:CreateFontString(nil, "BACKGROUND")
-		button.Text:SetFont("Fonts\\FRIZQT__.TTF", font)
+		button.Text:SetFont(STANDARD_TEXT_FONT, font)
 		button.Text:SetText(texttop)
 		button.Text:SetPoint("TOP", button, "TOP",0, 10)
 	end
@@ -252,7 +252,7 @@ function TrufiGCDAddonLoaded(self, event, ...)
 		TrGCDGUI.ButtonRes:SetScript("OnClick", function () TrGCDRestoreDefaultSettings() TrGCDUploadViewSetting() end)
 		--чек на Тултип
 		TrGCDGUI.CheckTooltipText = TrGCDGUI:CreateFontString(nil, "BACKGROUND")
-		TrGCDGUI.CheckTooltipText:SetFont("Fonts\\FRIZQT__.TTF", 12)
+		TrGCDGUI.CheckTooltipText:SetFont(STANDARD_TEXT_FONT, 12)
 		TrGCDGUI.CheckTooltipText:SetText("Tooltip:")
 		TrGCDGUI.CheckTooltipText:SetPoint("TOPRIGHT", TrGCDGUI, "TOPRIGHT",-70, -360)
 		TrGCDGUI.CheckTooltip = AddCheckButton(TrGCDGUI,"TOPRIGHT",-90,-380,"Enable","TrGCDCheckTooltip",TrufiGCDChSave["TooltipEnable"])
@@ -271,7 +271,7 @@ function TrufiGCDAddonLoaded(self, event, ...)
 		-- Галочки EnableIn: Enable, World, PvE, Arena, Bg
 		TrGCDGUI.CheckEnableIn = {}
 		TrGCDGUI.CheckEnableIn.Text = TrGCDGUI:CreateFontString(nil, "BACKGROUND")
-		TrGCDGUI.CheckEnableIn.Text:SetFont("Fonts\\FRIZQT__.TTF", 12)
+		TrGCDGUI.CheckEnableIn.Text:SetFont(STANDARD_TEXT_FONT, 12)
 		TrGCDGUI.CheckEnableIn.Text:SetText("Enable in:")
 		TrGCDGUI.CheckEnableIn.Text:SetPoint("TOPRIGHT", TrGCDGUI, "TOPRIGHT",-53, -175)
 		TrGCDGUI.CheckEnableIn[6] = AddCheckButton(TrGCDGUI, "TOPRIGHT",-90,-110,"Combat only","trgcdcheckenablein6",TrufiGCDChSave["EnableIn"]["Combat only"])
@@ -312,7 +312,7 @@ function TrufiGCDAddonLoaded(self, event, ...)
 		--подписи к галочкам, слайдерам и меню
 		for i=1,4 do
 			_G["TrGCDGUI.Text" .. i] = TrGCDGUI:CreateFontString(nil, "BACKGROUND")
-			_G["TrGCDGUI.Text" .. i]:SetFont("Fonts\\FRIZQT__.TTF", 12)
+			_G["TrGCDGUI.Text" .. i]:SetFont(STANDARD_TEXT_FONT, 12)
 		end
 		_G["TrGCDGUI.Text1"]:SetText("Enable")
 		_G["TrGCDGUI.Text1"]:SetPoint("TOPLEFT", TrGCDGUI, "TOPLEFT",20, -65)
@@ -432,12 +432,12 @@ function TrufiGCDAddonLoaded(self, event, ...)
 		TrGCDGUI.BL.List:SetWidth(200)
 		TrGCDGUI.BL.List:SetHeight(958)
 		TrGCDGUI.BL.List.Text = TrGCDGUI.BL.List:CreateFontString(nil, "BACKGROUND")
-		TrGCDGUI.BL.List.Text:SetFont("Fonts\\FRIZQT__.TTF", 12)
+		TrGCDGUI.BL.List.Text:SetFont(STANDARD_TEXT_FONT, 12)
 		TrGCDGUI.BL.List.Text:SetText("Blacklist")
 		TrGCDGUI.BL.List.Text:SetPoint("TOPLEFT", TrGCDGUI.BL.List, "TOPLEFT", 15, 15)
 		TrGCDGUI.BL.Spell = {}
 		TrGCDGUI.BL.TextSpell = TrGCDGUI.BL:CreateFontString(nil, "BACKGROUND")
-		TrGCDGUI.BL.TextSpell:SetFont("Fonts\\FRIZQT__.TTF", 12)
+		TrGCDGUI.BL.TextSpell:SetFont(STANDARD_TEXT_FONT, 12)
 		TrGCDGUI.BL.TextSpell:SetText("Select spell")
 		TrGCDGUI.BL.Delete = AddButton(TrGCDGUI.BL,"TOPLEFT",260,-130,22,100,"Delete")
 		TrGCDGUI.BL.TextSpell:SetPoint("TOPLEFT", TrGCDGUI.BL.Delete, "TOPLEFT", 5, 15)
@@ -478,11 +478,6 @@ function TrufiGCDAddonLoaded(self, event, ...)
 		TrGCDGUI.BL.AddButt:SetScript("OnClick", function (self) TrGCDBLAddSpell(self) end)
 		TrGCDGUI.BL.AddEdit:SetScript("OnEnterPressed", function (self) TrGCDBLAddSpell(self) end)
 		TrGCDGUI.BL.AddEdit:SetScript("OnEscapePressed", function (self) self:ClearFocus() end)
-    TrGCDGUI.BL.AddButt.Text2 = TrGCDGUI.BL.AddButt:CreateFontString(nil, "BACKGROUND")
-		TrGCDGUI.BL.AddButt.Text2:SetFont("Fonts\\FRIZQT__.TTF", 11)
-		TrGCDGUI.BL.AddButt.Text2:SetText("You can only blacklist known abilities by name!")
-		TrGCDGUI.BL.AddButt.Text2:SetPoint("BOTTOMLEFT", TrGCDGUI.BL.AddButt, "BOTTOMLEFT",5, -15)
-
 
 		--кнопка загрузки настроек сохраненных в кэше
 		TrGCDGUI.BL.ButtonLoad = AddButton(TrGCDGUI.BL,"TOPRIGHT",-145,-30,22,100,"Load",10,"Load saving blacklist")
@@ -530,7 +525,7 @@ function TrufiGCDAddonLoaded(self, event, ...)
 				TrGCDQueueFr[i].texture:SetColorTexture(0, 0, 0)
 				TrGCDQueueFr[i].texture:SetAlpha(0)
 				TrGCDQueueFr[i].text = TrGCDQueueFr[i]:CreateFontString(nil, "BACKGROUND")
-				TrGCDQueueFr[i].text:SetFont("Fonts\\FRIZQT__.TTF", 9)
+				TrGCDQueueFr[i].text:SetFont(STANDARD_TEXT_FONT, 9)
 				TrGCDQueueFr[i].text:SetText(TrGCDQueueOpt[i].text)
 				TrGCDQueueFr[i].text:SetAllPoints(TrGCDQueueFr[i])
 				TrGCDQueueFr[i].text:SetAlpha(0)
@@ -1123,7 +1118,7 @@ function TrGCDEventHandler(self, event, who, _, spellId)
 		local blt = true -- для открытого черного списка
 		local sblt = true -- для закрытого черного списка (внутри по ID)
 		TrGCDInsSp["time"][i] = GetTime()
-		for l=1, #TrGCDBL do if ((TrGCDBL[l] == spellname) or (GetSpellInfo(TrGCDBL[l]) == spellname)) then blt = false end end -- проверка на черный список
+		for l=1, #TrGCDBL do if ((TrGCDBL[l] == spellname) or (TrGCDBL[l] == spellId) or (GetSpellInfo(TrGCDBL[l]) == spellname)) then blt = false end end -- проверка на черный список
 		for l=1, #InnerBL do if (InnerBL[l] == spellId) then sblt = false end end -- проверка на закрытый черный список
 		if ((spellicon ~= nil) and t and blt and sblt and (GetSpellLink(spellId) ~= nil)) then
 			if (spellId == 42292) then spellicon = trinket end --замена текстуры пвп тринкета
