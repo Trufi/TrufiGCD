@@ -1116,8 +1116,13 @@ function TrGCDEventHandler(self, event, who, _, spellId)
 
 			elseif (event == "UNIT_SPELLCAST_SUCCEEDED") then
 				if (TrGCDCastSp[i] == 0) then
-					--print("succeeded then " .. spellname)
-					if (IsChannel == nil) then TrGCDCastSp[i] = 1 end
+					-- print("succeeded then " .. spellname .. ", is channeling: " .. IsChannel)
+					if (IsChannel) then
+						TrGCDAddGcdSpell(spellicon, i, spellId)
+					else
+						-- show instant spells while channeling, e.g. for monk mist spells
+						TrGCDCastSp[i] = 1
+					end
 				else
 					local b = false --висит ли багнутый бафф инстант каста
 					if ((TrGCDInsSp["spell"][i] == 48108) and (spellId == 11366)) then b = true
