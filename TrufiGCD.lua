@@ -1104,7 +1104,7 @@ function TrGCDUnitChannelInfo(unit)
 	elseif UnitIsUnit(unit, "player") then
 	  return ChannelInfo()
 	else
-	  return false
+	  return nil
 	end
 end
 
@@ -1161,9 +1161,14 @@ function TrGCDEventHandler(self, event, who, _, spellId)
 			elseif ((event == "UNIT_SPELLCAST_STOP") and (TrGCDCastSp[i] == 0)) then
 				-- print("stop " .. spellname)
 				TrGCDCastSp[i] = 1
-				TrGCDIcon[i][TrGCDi[i]-1].texture2:Show()
-				TrGCDIcon[i][TrGCDi[i]-1].texture2.show = true
-				TrGCDSpStop[i] = TrGCDi[i]-1
+
+				local iconIndex = TrGCDi[i] - 1
+				if (iconIndex == 0) then iconIndex = 10 end
+
+				local icon = TrGCDIcon[i][iconIndex]
+				icon.texture2:Show()
+				icon.texture2.show = true
+				TrGCDSpStop[i] = iconIndex
 				TrGCDSpStopName[i] = spellname
 				TrGCDSpStopTime[i] = GetTime()
 			elseif (event == "UNIT_SPELLCAST_CHANNEL_STOP") then
