@@ -62,6 +62,8 @@ local InnerBL = { --закрытый черный список, по ID
 	7268, -- Arcane Missiles (Arcane Mage while channeling)
 	37506, -- Scatter Shot (Hunt) x2
 	228354, -- Flurry
+	399960, -- Mutilate (SoD rune)
+	399961, -- Mutilate (SoD rune)
 
 	-- Unverified - from GCD History
 	184707, -- Rampage
@@ -1118,7 +1120,7 @@ function TrGCDEventHandler(self, event, who, _, spellId)
 		local blt = true -- для открытого черного списка
 		local sblt = true -- для закрытого черного списка (внутри по ID)
 		TrGCDInsSp["time"][i] = GetTime()
-		for l=1, #TrGCDBL do if ((TrGCDBL[l] == spellname) or (TrGCDBL[l] == spellId) or (GetSpellInfo(TrGCDBL[l]) == spellname)) then blt = false end end -- проверка на черный список
+		for l=1, #TrGCDBL do if ((TrGCDBL[l] == spellname) or (TrGCDBL[l] == spellId)) then blt = false end end -- проверка на черный список
 		for l=1, #InnerBL do if (InnerBL[l] == spellId) then sblt = false end end -- проверка на закрытый черный список
 		if ((spellicon ~= nil) and t and blt and sblt and (GetSpellLink(spellId) ~= nil)) then
 			if (spellId == 42292) then spellicon = trinket end --замена текстуры пвп тринкета
