@@ -60,10 +60,13 @@ local InnerBL = { --закрытый черный список, по ID
 	391775, -- What's Cookin', Good Lookin'? (DF Cooking Accessoire)
 	384341, -- Critical Failure Prevention Unit (DF Engineering Item)
 	7268, -- Arcane Missiles (Arcane Mage while channeling)
+	7270, -- Arcane Missiles (Arcane Mage while channeling)
 	37506, -- Scatter Shot (Hunt) x2
 	228354, -- Flurry
 	399960, -- Mutilate (SoD rune)
 	399961, -- Mutilate (SoD rune)
+	384338, -- Tinker Safety Fuses (DF Engineering Item)
+	384489, -- Spring-Loaded Capacitor Casing (DF Engineering Item)
 
 	-- Unverified - from GCD History
 	184707, -- Rampage
