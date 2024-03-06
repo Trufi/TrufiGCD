@@ -1,0 +1,37 @@
+{
+    "$schema": "https://raw.githubusercontent.com/LuaLS/vscode-lua/master/setting/schema.json",
+    "runtime.version": "Lua 5.1",
+    "diagnostics": {
+        "globals": [
+            "BackdropTemplateMixin",
+            "ChannelInfo",
+            "CreateFrame",
+            "GameTooltip",
+            "GameTooltip_Hide",
+            "GameTooltip_SetDefaultAnchor",
+            "getglobal",
+            "GetSpellInfo",
+            "GetSpellLink",
+            "GetTime",
+            "InterfaceOptions_AddCategory",
+            "InterfaceOptionsFrame_OpenToCategory",
+            "IsInInstance",
+            "LibStub",
+            "SlashCmdList",
+            "STANDARD_TEXT_FONT",
+            "UIDropDownMenu_AddButton",
+            "UIDropDownMenu_CreateInfo",
+            "UIDropDownMenu_Initialize",
+            "UIDropDownMenu_SetWidth",
+            "UIDropDownMenu_SetText",
+            "UIParent",
+            "UnitChannelInfo",
+            "UnitBuff",
+            "UnitHealth",
+            "UnitIsUnit",
+            "UnitName",
+            "WOW_PROJECT_CLASSIC",
+            "WOW_PROJECT_ID"
+        ]
+    }
+}

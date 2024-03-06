@@ -1,5 +1,10 @@
 -- TrufiGCD stevemyz@gmail.com
 
+local _, ns = ...
+
+---@type Icon
+local Icon = ns.Icon
+
 local isClassic = WOW_PROJECT_ID == WOW_PROJECT_CLASSIC
 
 --sizeicon = 30
@@ -89,8 +94,6 @@ local InnerBL = { --закрытый черный список, по ID
 	385062, -- Odyn's Fury
 	385954 -- Shield Charge
 }
-local cross = "Interface\\TargetingFrame\\UI-RaidTargetingIcon_7"
-local skull = "Interface\\TargetingFrame\\UI-RaidTargetingIcon_8"
 local trinket = "Interface\\Icons\\inv_jewelry_trinketpvp_01"
 TrGCDInsSp = {}
 TrGCDInsSp["spell"] = {}
@@ -517,6 +520,8 @@ function TrufiGCDAddonLoaded(self, event, ...)
 		--5 - arena1, 6 - arena2, 7 - arena3
 		--11 - target, 12 - focus
 		TrGCDQueueFr = {}
+
+		---@type { [number]: { [number]: Icon }}
 		TrGCDIcon = {}
 		TrGCDi = {} --счетчик TrGCDIcons
 		TrGCDQueueFirst = {} -- очередь спеллов на первое место
@@ -548,37 +553,7 @@ function TrufiGCDAddonLoaded(self, event, ...)
 				TrGCDIconOnEnter[i] = true
 				TrGCDTimeuseSpamSpell[i] = {}
 				for k = 1,10 do
-					TrGCDIcon[i][k] = CreateFrame("Button", nil, TrGCDQueueFr[i])
-					TrGCDIcon[i][k]:SetHeight(TrGCDQueueOpt[i].size)
-					TrGCDIcon[i][k]:SetWidth(TrGCDQueueOpt[i].size)
-					TrGCDIcon[i][k].texture = TrGCDIcon[i][k]:CreateTexture(nil, "BACKGROUND")
-					TrGCDIcon[i][k].texture:SetAllPoints(TrGCDIcon[i][k])
-					TrGCDIcon[i][k].texture2 = TrGCDIcon[i][k]:CreateTexture(nil, "BORDER")
-					TrGCDIcon[i][k].texture2:SetAllPoints(TrGCDIcon[i][k].texture)
-					TrGCDIcon[i][k].texture2:SetTexture(cross)
-					TrGCDIcon[i][k].texture2:SetAlpha(1)
-					TrGCDIcon[i][k].texture2:Hide()
-					TrGCDIcon[i][k].texture2.show = false
-					TrGCDIcon[i][k]:Hide()
-					TrGCDIcon[i][k].show = false
-					TrGCDIcon[i][k].x = 0
-					TrGCDIcon[i][k].TimeStart = 0
-					TrGCDIcon[i][k].spellID = 0
-					TrGCDIcon[i][k]:SetScript("OnEnter", function (self)
-						if (TrufiGCDChSave["TooltipEnable"] == true) then
-							GameTooltip_SetDefaultAnchor(GameTooltip, self)
-							GameTooltip:SetSpellByID(self.spellID, false, false, true)
-							GameTooltip:Show()
-							if (TrufiGCDChSave["TooltipStopMove"] == true) then
-								TrGCDIconOnEnter[i] = false
-							end
-							if (TrufiGCDChSave["TooltipSpellID"] == true) then
-								if (self.spellID ~= nil) then print(GetSpellLink(self.spellID) .. ' ID: ' .. self.spellID) end
-							end
-						end
-					end)
-					TrGCDIcon[i][k]:SetScript("OnLeave", function () GameTooltip_Hide() TrGCDIconOnEnter[i] = true end)
-					if Masque then TrGCDMasqueIcons:AddButton(TrGCDIcon[i][k], {Icon = TrGCDIcon[i][k].texture}) end
+					TrGCDIcon[i][k] = Icon:New(i)
 				end
 				TrGCDQueueFirst[i] = {}
 				TrGCDQueueFirstI[i] = 1 --начало очереди, потом сдвигается, как спелл проходит в TrGCDQueueFr
@@ -975,19 +950,10 @@ end
 function TrGCDClear(i)
 	TrGCDCastSp[i] = 1
 	for k=1,10 do
-		TrGCDIcon[i][k].show = false
-		TrGCDIcon[i][k]:SetAlpha(0)
-		TrGCDIcon[i][k].x = 0
-		TrGCDIcon[i][k]:SetHeight(TrGCDQueueOpt[i].size)
-		TrGCDIcon[i][k]:SetWidth(TrGCDQueueOpt[i].size)
-		TrGCDIcon[i][k]:ClearAllPoints()
-		TrGCDIcon[i][k]:Hide()
+		TrGCDIcon[i][k]:Clear(TrGCDQueueOpt[i].size)
 		TrGCDi[i] = 1
 		TrGCDQueueFirst[i] = {}
 		TrGCDQueueFirstI[i] = 1
-		TrGCDIcon[i][k].texture:SetTexture(nil)
-		TrGCDIcon[i][k].texture2:Hide()
-		--TrGCDIcon[i][k]:SetPoint("LEFT", TrGCDQueueFr[i], "LEFT",0,0)
 	end
 end
 local function TrGCDCheckForEual(a,b) -- проверка эквивалентности юнитов - имя, хп
@@ -1009,25 +975,8 @@ function TrGCDPlayerTarFocDetect(k) -- чек есть ли цель или фо
 	if ((k ~= 11) and TrGCDCheckForEual(t,"target")) then i = 11 end
 	if ((k~= 12) and TrGCDCheckForEual(t,"focus")) then i = 12 end
 	if (i ~= 0) then -- если есть то копипаст всей очереди
-		local width = TrGCDQueueOpt[i].width*TrGCDQueueOpt[i].size
 		for j=1,10 do
-			TrGCDIcon[k][j].x = TrGCDIcon[i][j].x
-			if (TrGCDQueueOpt[k].fade == "Left") then TrGCDIcon[k][j]:SetPoint("RIGHT", TrGCDQueueFr[k], "RIGHT",TrGCDIcon[k][j].x,0)
-			elseif (TrGCDQueueOpt[k].fade == "Right") then TrGCDIcon[k][j]:SetPoint("LEFT", TrGCDQueueFr[k], "LEFT",-TrGCDIcon[k][j].x,0)
-			elseif (TrGCDQueueOpt[k].fade == "Up") then TrGCDIcon[k][j]:SetPoint("BOTTOM", TrGCDQueueFr[k], "BOTTOM",0,-TrGCDIcon[k][j].x)
-			elseif (TrGCDQueueOpt[k].fade == "Down") then TrGCDIcon[k][j]:SetPoint("TOP", TrGCDQueueFr[k], "TOP",0,TrGCDIcon[k][j].x) end
-			TrGCDIcon[k][j].texture:SetTexture(TrGCDIcon[i][j].texture:GetTexture())
-			TrGCDIcon[k][j].show = TrGCDIcon[i][j].show
-			TrGCDIcon[k][j]:SetAlpha(TrGCDIcon[i][j]:GetAlpha())
-			TrGCDIcon[k][j].TimeStart = TrGCDIcon[i][j].TimeStart
-			if (TrGCDIcon[k][j].show) then
-				TrGCDIcon[k][j]:SetAlpha(max(0, min(1, 1-(abs(TrGCDIcon[k][j].x) - width)/10)))  --МИГАЕТ ПРИ РАЗНОМ РАЗМЕРЕ ОЧЕРЕДИ
-				TrGCDIcon[k][j]:Show()
-			else TrGCDIcon[k][j]:Hide() end
-			TrGCDIcon[k][j].texture2.show = TrGCDIcon[i][j].texture2.show
-			if (TrGCDIcon[k][j].texture2.show) then
-				TrGCDIcon[k][j].texture2:Show()
-			else TrGCDIcon[k][j].texture2:Hide() end
+			TrGCDIcon[k][j]:Copy(TrGCDIcon[i][j], k)
 		end
 		TrGCDCastSp[k] = TrGCDCastSp[i]
 		TrGCDBufferIcon[k] = TrGCDBufferIcon[i]
@@ -1094,12 +1043,7 @@ end
 local function TrGCDAddGcdSpell(texture, i, spellid) -- добавление нового спелла в очередь
 	if (TrGCDi[i] == 10) then TrGCDi[i] = 1 end
 	TrGCDAddSpQueue(TrGCDi[i], i)
-	TrGCDIcon[i][TrGCDi[i]].x = 0;
-	TrGCDIcon[i][TrGCDi[i]].texture:SetTexture(texture)
-	TrGCDIcon[i][TrGCDi[i]].show = false
-	TrGCDIcon[i][TrGCDi[i]]:SetAlpha(0)
-	TrGCDIcon[i][TrGCDi[i]]:Hide()
-	TrGCDIcon[i][TrGCDi[i]].spellID = spellid
+	TrGCDIcon[i][TrGCDi[i]]:SetSpell(spellid, texture)
 	TrGCDi[i] = TrGCDi[i] + 1
 end
 
@@ -1157,8 +1101,7 @@ function TrGCDEventHandler(self, event, who, _, spellId)
 					TrGCDCastSpBanTime[i] = GetTime()
 					if (IsChannel ~= nil) then TrGCDCastSp[i] = 0 end
 					if (((GetTime()-TrGCDSpStopTime[i]) < 1) and (TrGCDSpStopName[i] == spellname) and (b == false)) then
-						TrGCDIcon[i][TrGCDSpStop[i]].texture2:Hide()
-						TrGCDIcon[i][TrGCDSpStop[i]].texture2.show = false
+						TrGCDIcon[i][TrGCDSpStop[i]]:HideCancelTexture()
 					end
 					if ((casttime <= 0) or b) then TrGCDAddGcdSpell(spellicon, i, spellId) end
 					--print("succeeded " .. spellname .. " - " ..TrGCDCastSp[i])
@@ -1170,9 +1113,7 @@ function TrGCDEventHandler(self, event, who, _, spellId)
 				local iconIndex = TrGCDi[i] - 1
 				if (iconIndex == 0) then iconIndex = 10 end
 
-				local icon = TrGCDIcon[i][iconIndex]
-				icon.texture2:Show()
-				icon.texture2.show = true
+				TrGCDIcon[i][iconIndex]:ShowCancelTexture()
 				TrGCDSpStop[i] = iconIndex
 				TrGCDSpStopName[i] = spellname
 				TrGCDSpStopTime[i] = GetTime()
@@ -1190,12 +1131,9 @@ function TrGCDUpdate(self)
 				if (TrGCDSizeQueue(i) > 0) then
 					if ((TrGCDQueueOpt[i].size - TrGCDBufferIcon[i]) <= 0) then
 						local k = TrGCDQueueFirst[i][TrGCDQueueFirstI[i]]
-						TrGCDIcon[i][k].show = true
 						TrGCDIcon[i][k]:Show()
-						TrGCDIcon[i][k]:SetAlpha(1)
 						TrGCDQueueFirstI[i] = TrGCDQueueFirstI[i] + 1
 						TrGCDBufferIcon[i] = 0
-						TrGCDIcon[i][k].TimeStart = GetTime()
 					end
 				end
 				if ((GetTime() - TrGCDCastSpBanTime[i]) > 10) then TrGCDCastSp[i] = 1 end
@@ -1204,37 +1142,42 @@ function TrGCDUpdate(self)
 				else DurTimeImprove = 0.0 end
 				if (DurTimeImprove > (GetTime()-TimeReset)) then DurTimeImprove = GetTime()-TimeReset end
 				for k = 1,10 do
-					if (TrGCDIcon[i][k].show) then
+					local icon = TrGCDIcon[i][k]
+
+					if icon.displayed then
 						local width = TrGCDQueueOpt[i].width * TrGCDQueueOpt[i].size
-						if (TrufiGCDChSave["ModScroll"] == false) then
+						local offsetDelta = -(GetTime() - TimeReset - DurTimeImprove) * TrGCDQueueOpt[i].speed * TrGCDCastSp[i] - DurTimeImprove * fastspeed
+		
+						if not TrufiGCDChSave["ModScroll"] then
 							if (DurTimeImprove ~= 0) then
-								TrGCDIcon[i][k].x = TrGCDIcon[i][k].x - (GetTime()-TimeReset-DurTimeImprove)*TrGCDQueueOpt[i].speed*TrGCDCastSp[i] - DurTimeImprove*fastspeed end
+								icon.offset = icon.offset + offsetDelta
+							end
 						else
-							TrGCDIcon[i][k].x = TrGCDIcon[i][k].x - (GetTime()-TimeReset-DurTimeImprove)*TrGCDQueueOpt[i].speed*TrGCDCastSp[i] - DurTimeImprove*fastspeed
+							icon.offset = icon.offset + offsetDelta
 						end
-						if (TrGCDQueueOpt[i].fade == "Left") then TrGCDIcon[i][k]:SetPoint("RIGHT", TrGCDQueueFr[i], "RIGHT",TrGCDIcon[i][k].x,0)
-						elseif (TrGCDQueueOpt[i].fade == "Right") then TrGCDIcon[i][k]:SetPoint("LEFT", TrGCDQueueFr[i], "LEFT",-TrGCDIcon[i][k].x,0)
-						elseif (TrGCDQueueOpt[i].fade == "Up") then TrGCDIcon[i][k]:SetPoint("BOTTOM", TrGCDQueueFr[i], "BOTTOM",0,-TrGCDIcon[i][k].x)
-						elseif (TrGCDQueueOpt[i].fade == "Down") then TrGCDIcon[i][k]:SetPoint("TOP", TrGCDQueueFr[i], "TOP",0,TrGCDIcon[i][k].x) end
-						if (TrufiGCDChSave["ModScroll"] == false) then
-							if ((GetTime() - TrGCDIcon[i][k].TimeStart) > (ModTimeVanish + ModTimeIndent)) then
-								TrGCDIcon[i][k].show = false
-								TrGCDIcon[i][k]:Hide()
-								TrGCDIcon[i][k]:SetAlpha(0)
-								TrGCDIcon[i][k].x = 0
-								TrGCDIcon[i][k].texture2:Hide()
-								TrGCDIcon[i][k].texture2.show = false
-							elseif ((GetTime() - TrGCDIcon[i][k].TimeStart) > ModTimeIndent) then TrGCDIcon[i][k]:SetAlpha((1-(GetTime() - TrGCDIcon[i][k].TimeStart - ModTimeIndent)/ModTimeVanish)) end
+
+						icon:UpdatePosition(i)
+
+						if not TrufiGCDChSave["ModScroll"] then
+							local elapsedTime = GetTime() - icon.startTime
+
+							if elapsedTime > ModTimeVanish + ModTimeIndent then
+								icon:Hide()
+							elseif elapsedTime > ModTimeIndent then
+								local alpha = 1 - (elapsedTime - ModTimeIndent) / ModTimeVanish
+								icon.frame:SetAlpha(alpha)
+							end
 						end
-						if (abs(TrGCDIcon[i][k].x) > width) then
-							if ((1-(abs(TrGCDIcon[i][k].x) - width)/10) < 0) then
-								TrGCDIcon[i][k].show = false
-								TrGCDIcon[i][k]:Hide()
-								TrGCDIcon[i][k]:SetAlpha(0)
-								TrGCDIcon[i][k].x = 0
-								TrGCDIcon[i][k].texture2:Hide()
-								TrGCDIcon[i][k].texture2.show = false
-							elseif (TrufiGCDChSave["ModScroll"] == true) then TrGCDIcon[i][k]:SetAlpha((1-(abs(TrGCDIcon[i][k].x) - width)/10)) end
+
+						local absoluteOffset = math.abs(icon.offset)
+						if absoluteOffset > width then
+							local alpha = 1 - (absoluteOffset - width) / 10
+
+							if alpha < 0 then
+								icon:Hide()
+							elseif TrufiGCDChSave["ModScroll"] then
+								icon.frame:SetAlpha(alpha)
+							end
 						end
 					end
 				end

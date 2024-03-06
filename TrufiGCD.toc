@@ -8,6 +8,9 @@
 # Libraries
 Libs\LibStub\Libstub.lua
 
+# Modules
+Modules\Icon.lua
+
 # Addon
 TrufiGCD.lua
 TrufiGCD.xml
