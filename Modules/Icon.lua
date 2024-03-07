@@ -147,13 +147,13 @@ end
 ---@param i number
 function Icon:onEnter(i)
     if TrufiGCDChSave["TooltipEnable"] then
-        GameTooltip_SetDefaultAnchor(GameTooltip, self)
+        GameTooltip_SetDefaultAnchor(GameTooltip, self.frame)
         GameTooltip:SetSpellByID(self.spellId, false, false, true)
         GameTooltip:Show()
         if TrufiGCDChSave["TooltipStopMove"] then
             TrGCDIconOnEnter[i] = false
         end
-        if TrufiGCDChSave["TooltipspellId"] then
+        if TrufiGCDChSave["TooltipSpellID"] then
             if self.spellId ~= nil then
                 print(GetSpellLink(self.spellId) .. " ID: " .. self.spellId)
             end
