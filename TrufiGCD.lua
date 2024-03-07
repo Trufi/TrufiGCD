@@ -72,6 +72,7 @@ local InnerBL = { --закрытый черный список, по ID
 	399961, -- Mutilate (SoD rune)
 	384338, -- Tinker Safety Fuses (DF Engineering Item)
 	384489, -- Spring-Loaded Capacitor Casing (DF Engineering Item)
+	146739, -- Corruption (Warlock Affliction)
 
 	-- Unverified - from GCD History
 	184707, -- Rampage
