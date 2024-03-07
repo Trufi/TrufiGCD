@@ -10,6 +10,7 @@ Libs\LibStub\Libstub.lua
 
 # Modules
 Modules\Icon.lua
+Modules\IconQueue.lua
 
 # Addon
 TrufiGCD.lua
