@@ -40,7 +40,7 @@ function Icon:CreateFrame()
     self.texture:SetAllPoints(self.frame)
 
     self.cancelTexture = self.frame:CreateTexture(nil, "BORDER")
-    self.cancelTexture:SetAllPoints(self.texture)
+    self.cancelTexture:SetAllPoints(self.frame)
     self.cancelTexture:SetTexture(crossTexture)
     self.cancelTexture:SetAlpha(1)
     self.cancelTexture:Hide()
@@ -52,13 +52,9 @@ end
 
 function Icon:Show()
     self.startTime = GetTime()
-
     self.displayed = true
     self.frame:Show()
     self.frame:SetAlpha(1)
-
-    self.cancelTextureDisplayed = false
-    self.cancelTexture:Hide()
 end
 
 function Icon:Hide()

@@ -28,10 +28,8 @@ function IconQueue:New(unitIndex)
     ---11 - target, 12 - focus
     obj.unitIndex = unitIndex
 
-
-    ---@type {[number]: number}
-    obj.nextIcons = {}
-    obj.nextIconsIndex = 1
+    ---@type number[]
+    obj.nextIconIndices = {}
 
     ---Buffer between the last shown icon and the start of the frame.
     ---Used to place a next icon if it's big enough.
@@ -83,16 +81,8 @@ function IconQueue:AddSpell(id, texture)
         self.iconIndex = 1
     end
 
-    local k = self.nextIconsIndex
-
-    while self.nextIcons[k] ~= nil do
-        k = k + 1
-    end
-
-    self.nextIcons[k] = self.iconIndex
-
     self.icons[self.iconIndex]:SetSpell(id, texture)
-
+    table.insert(self.nextIconIndices, self.iconIndex)
     self.iconIndex = self.iconIndex + 1
 end
 
@@ -104,13 +94,10 @@ function IconQueue:Copy(from)
 
     self.buffer = from.buffer
     self.iconIndex = from.iconIndex
-    self.nextIconsIndex = 1
 
-    local nextIconsCount = self:NextIconsCount()
-    if nextIconsCount > 0 then
-        for i = 1, nextIconsCount do
-            self.nextIcons[i] = from.nextIcons[from.nextIconsIndex + i - 1]
-        end
+    self.nextIconIndices = {}
+    for _, x in ipairs(from.nextIconIndices) do
+        table.insert(self.nextIconIndices, x)
     end
 end
 
@@ -121,17 +108,15 @@ end
 function IconQueue:Update(interval, iconsScroll, isCasting)
     local options = TrGCDQueueOpt[self.unitIndex]
 
-    if self:NextIconsCount() > 0 then
-        if self.buffer >= options.size then
-            self:ShowNext()
-            self.buffer = 0
-        end
+    if #self.nextIconIndices > 0 and self.buffer >= options.size then
+        self:ShowNextIcon()
+        self.buffer = 0
     end
 
-    local fastSpeed = options.speed * fastSpeedModifier * (self:NextIconsCount() + 1)
+    local fastSpeed = options.speed * fastSpeedModifier * (#self.nextIconIndices + 1)
     local fastSpeedDuration = 0.0
 
-    if self:NextIconsCount() > 0 then
+    if #self.nextIconIndices > 0 then
         fastSpeedDuration = math.min((options.size - self.buffer) / fastSpeed, interval)
     end
 
@@ -179,7 +164,7 @@ function IconQueue:Update(interval, iconsScroll, isCasting)
 end
 
 function IconQueue:ShowCancel()
-    local previousIconIndex = self.iconIndex
+    local previousIconIndex = self.iconIndex - 1
     if previousIconIndex == 0 then
         previousIconIndex = innerIconsNumber
     end
@@ -198,32 +183,20 @@ function IconQueue:HideCancel(index)
 end
 
 ---@private
-function IconQueue:ShowNext()
-    local k = self.nextIcons[self.nextIconsIndex]
-    self.icons[k]:Show()
-    self.nextIconsIndex = self.nextIconsIndex + 1
-end
-
----@private
-function IconQueue:NextIconsCount()
-    local k = self.nextIconsIndex
-
-    while self.nextIcons[k] ~= nil do
-        k = k + 1
-    end
-
-    return k - self.nextIconsIndex
+function IconQueue:ShowNextIcon()
+    local nextIconIndex = table.remove(self.nextIconIndices, 1)
+    self.icons[nextIconIndex]:Show()
 end
 
 function IconQueue:Clear()
     local options = TrGCDQueueOpt[self.unitIndex]
 
-    for k = 1, innerIconsNumber do
-        self.icons[k]:Clear(options.size)
-        self.iconIndex = 1
-        self.nextIcons = {}
-        self.nextIconsIndex = 1
+    for _, icon in ipairs(self.icons) do
+        icon:Clear(options.size)
     end
+
+    self.iconIndex = 1
+    self.nextIconIndices = {}
 end
 
 function IconQueue:Resize()
