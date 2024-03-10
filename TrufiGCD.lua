@@ -2,17 +2,13 @@
 
 local _, ns = ...
 
----@type Icon
-local Icon = ns.Icon
-
 ---@type IconQueue
 local IconQueue = ns.IconQueue
 
-local isClassic = WOW_PROJECT_ID == WOW_PROJECT_CLASSIC
+---@type UnitSettings
+local UnitSettings = ns.UnitSettings
 
---sizeicon = 30
---speed = sizeicon /1.6 --скорость перемотка
-local TimeGcd = 1.6
+local isClassic = WOW_PROJECT_ID == WOW_PROJECT_CLASSIC
 
 ---Icons queue for each unit:
 ---1 - player, 2 - party1, 3 - party2
@@ -20,6 +16,10 @@ local TimeGcd = 1.6
 ---11 - target, 12 - focus
 ---@type { [number]: IconQueue }
 TrGCDQueueFr = {}
+
+---Queue settings for each unit
+---@type { [number]: UnitSettings }
+TrGCDQueueOpt = {}
 
 TrGCDCastSp = {} -- 0 - каст идет, 1 - каст прошел и не идет
 TrGCDCastSpBanTime = {} --время остановки каста
@@ -168,7 +168,6 @@ function TrufiGCDAddonLoaded(self, event, ...)
 	local arg1 = ...;
 	if (arg1 == "TrufiGCD" and event == "ADDON_LOADED") then
 		--Load options
-		TrGCDQueueOpt = {}
 		local TrGCDNullOptions = false -- настройки пустые?
 		if (TrufiGCDChSave == nil) then
 			TrGCDNullOptions = true
@@ -184,7 +183,7 @@ function TrufiGCDAddonLoaded(self, event, ...)
 							TrGCDNullOptions = true
 						elseif ((TrufiGCDChSave["TrGCDQueueFr"][i]["fade"] == nil) or (TrufiGCDChSave["TrGCDQueueFr"][i]["size"] == nil) or (TrufiGCDChSave["TrGCDQueueFr"][i]["width"] == nil)) then
 							TrGCDNullOptions = true
-						elseif ((TrufiGCDChSave["TrGCDQueueFr"][i]["speed"] == nil) or (TrufiGCDChSave["TrGCDQueueFr"][i]["x"] == nil) or (TrufiGCDChSave["TrGCDQueueFr"][i]["y"] == nil)) then
+						elseif TrufiGCDChSave["TrGCDQueueFr"][i]["x"] == nil or TrufiGCDChSave["TrGCDQueueFr"][i]["y"] == nil then
 							TrGCDNullOptions = true
 						end
 					end
@@ -197,16 +196,8 @@ function TrufiGCDAddonLoaded(self, event, ...)
 		if (TrGCDNullOptions) then TrGCDRestoreDefaultSettings()
 		else
 			for i=1,12 do
-				TrGCDQueueOpt[i] = {}
-				TrGCDQueueOpt[i].x = TrufiGCDChSave["TrGCDQueueFr"][i]["x"]
-				TrGCDQueueOpt[i].y = TrufiGCDChSave["TrGCDQueueFr"][i]["y"]
-				TrGCDQueueOpt[i].point = TrufiGCDChSave["TrGCDQueueFr"][i]["point"]
-				TrGCDQueueOpt[i].enable = TrufiGCDChSave["TrGCDQueueFr"][i]["enable"]
-				TrGCDQueueOpt[i].text = TrufiGCDChSave["TrGCDQueueFr"][i]["text"]
-				TrGCDQueueOpt[i].fade = TrufiGCDChSave["TrGCDQueueFr"][i]["fade"]
-				TrGCDQueueOpt[i].size = TrufiGCDChSave["TrGCDQueueFr"][i]["size"]
-				TrGCDQueueOpt[i].width = TrufiGCDChSave["TrGCDQueueFr"][i]["width"]
-				TrGCDQueueOpt[i].speed = TrufiGCDChSave["TrGCDQueueFr"][i]["speed"]
+				TrGCDQueueOpt[i] = UnitSettings:New(i)
+				TrGCDQueueOpt[i]:SetFromSavedVariables(TrufiGCDChSave["TrGCDQueueFr"][i])
 			end
 		end
 		--Проверка на пустой Черный Список
@@ -702,15 +693,7 @@ function TrGCDSaveSettings()
 	TrufiGCDGlSave["TrGCDQueueFr"] = {}
 	for i=1,12 do
 		TrufiGCDGlSave["TrGCDQueueFr"][i] = {}
-		TrufiGCDGlSave["TrGCDQueueFr"][i]["x"] = TrGCDQueueOpt[i].x
-		TrufiGCDGlSave["TrGCDQueueFr"][i]["y"] = TrGCDQueueOpt[i].y
-		TrufiGCDGlSave["TrGCDQueueFr"][i]["point"] = TrGCDQueueOpt[i].point
-		TrufiGCDGlSave["TrGCDQueueFr"][i]["enable"] = TrGCDQueueOpt[i].enable
-		TrufiGCDGlSave["TrGCDQueueFr"][i]["text"] = TrGCDQueueOpt[i].text
-		TrufiGCDGlSave["TrGCDQueueFr"][i]["fade"] = TrGCDQueueOpt[i].fade
-		TrufiGCDGlSave["TrGCDQueueFr"][i]["size"] = TrGCDQueueOpt[i].size
-		TrufiGCDGlSave["TrGCDQueueFr"][i]["width"] = TrGCDQueueOpt[i].width
-		TrufiGCDGlSave["TrGCDQueueFr"][i]["speed"] = TrGCDQueueOpt[i].speed
+		TrGCDQueueOpt[i]:CopyToSavedVariables(TrufiGCDGlSave["TrGCDQueueFr"][i])
 	end
 	TrufiGCDGlSave["TooltipEnable"] = TrufiGCDChSave["TooltipEnable"]
 	TrufiGCDGlSave["TooltipStopMove"] = TrufiGCDChSave["TooltipStopMove"]
@@ -728,16 +711,10 @@ end
 function TrGCDLoadSettings()
 	if ((TrufiGCDGlSave ~= nil) and (TrufiGCDGlSave["TrGCDQueueFr"] ~= nil)) then
 		for i=1,12 do
-			TrGCDQueueOpt[i].x = TrufiGCDGlSave["TrGCDQueueFr"][i]["x"]
-			TrGCDQueueOpt[i].y = TrufiGCDGlSave["TrGCDQueueFr"][i]["y"]
-			TrGCDQueueOpt[i].point = TrufiGCDGlSave["TrGCDQueueFr"][i]["point"]
-			TrGCDQueueOpt[i].enable = TrufiGCDGlSave["TrGCDQueueFr"][i]["enable"]
-			TrGCDQueueOpt[i].text = TrufiGCDGlSave["TrGCDQueueFr"][i]["text"]
-			TrGCDQueueOpt[i].fade = TrufiGCDGlSave["TrGCDQueueFr"][i]["fade"]
-			TrGCDQueueOpt[i].size = TrufiGCDGlSave["TrGCDQueueFr"][i]["size"]
-			TrGCDQueueOpt[i].width = TrufiGCDGlSave["TrGCDQueueFr"][i]["width"]
-			TrGCDQueueOpt[i].speed = TrufiGCDGlSave["TrGCDQueueFr"][i]["speed"]
-			TrufiGCDChSave["TrGCDQueueFr"] = TrGCDQueueOpt
+			TrGCDQueueOpt[i]:SetFromSavedVariables(TrufiGCDGlSave["TrGCDQueueFr"][i])
+
+			TrufiGCDChSave["TrGCDQueueFr"] = {}
+			TrGCDQueueOpt[i]:CopyToSavedVariables(TrufiGCDChSave["TrGCDQueueFr"])
 		end
 		if (TrufiGCDGlSave["EnableIn"] ~= nil) then
 			TrufiGCDChSave["TooltipEnable"] = TrufiGCDGlSave["TooltipEnable"]
@@ -767,30 +744,9 @@ function TrGCDRestoreDefaultSettings() -- восстановление стан�
 	TrufiGCDChSave["TooltipStopMove"] = true
 	TrufiGCDChSave["TooltipSpellID"] = false
 	for i=1,12 do
+		TrGCDQueueOpt[i] = UnitSettings:New(i)
 		TrufiGCDChSave["TrGCDQueueFr"][i] = {}
-		TrGCDQueueOpt[i] = {}
-		TrGCDQueueOpt[i].x = 0
-		TrGCDQueueOpt[i].y = 0
-		TrGCDQueueOpt[i].point = "CENTER"
-		TrGCDQueueOpt[i].enable = true
-		if (i==1) then TrGCDQueueOpt[i].text = "Player" end
-		if (i>1 and i<=5) then TrGCDQueueOpt[i].text = "Party " .. i-1 end
-		if (i>5 and i<=10) then TrGCDQueueOpt[i].text = "Arena " .. i-5 end
-		if (i==11) then TrGCDQueueOpt[i].text = "Target" end
-		if (i==12) then TrGCDQueueOpt[i].text = "Focus" end
-		TrGCDQueueOpt[i].fade = "Left"
-		TrGCDQueueOpt[i].size = 30
-		TrGCDQueueOpt[i].width = 3
-		TrGCDQueueOpt[i].speed = TrGCDQueueOpt[i].size / TimeGcd
-		TrufiGCDChSave["TrGCDQueueFr"][i]["x"] = TrGCDQueueOpt[i].x
-		TrufiGCDChSave["TrGCDQueueFr"][i]["y"] = TrGCDQueueOpt[i].y
-		TrufiGCDChSave["TrGCDQueueFr"][i]["point"] = TrGCDQueueOpt[i].point
-		TrufiGCDChSave["TrGCDQueueFr"][i]["enable"] = TrGCDQueueOpt[i].enable
-		TrufiGCDChSave["TrGCDQueueFr"][i]["text"] = TrGCDQueueOpt[i].text
-		TrufiGCDChSave["TrGCDQueueFr"][i]["fade"] = TrGCDQueueOpt[i].fade
-		TrufiGCDChSave["TrGCDQueueFr"][i]["size"] = TrGCDQueueOpt[i].size
-		TrufiGCDChSave["TrGCDQueueFr"][i]["width"] = TrGCDQueueOpt[i].width
-		TrufiGCDChSave["TrGCDQueueFr"][i]["speed"] = TrGCDQueueOpt[i].speed
+		TrGCDQueueOpt[i]:CopyToSavedVariables(TrufiGCDChSave["TrGCDQueueFr"][i])
 	end
 	TrufiGCDChSave["EnableIn"] = {}
 	TrufiGCDChSave["EnableIn"]["PvE"] = true
@@ -836,8 +792,6 @@ function TrGCDSpSizeChanged(i,value) --изменен размер иконок 
 	getglobal(TrGCDGUI.sizeslider[i]:GetName() .. 'Text'):SetText(value)
 	TrGCDQueueOpt[i].size = value
 	TrufiGCDChSave["TrGCDQueueFr"][i]["size"] = value
-	TrGCDQueueOpt[i].speed = TrGCDQueueOpt[i].size / TimeGcd
-	TrufiGCDChSave["TrGCDQueueFr"][i]["speed"] = TrGCDQueueOpt[i].speed
 	TrGCDQueueFr[i]:Resize()
 	TrGCDClear(i)
 end
@@ -858,20 +812,20 @@ function TrGCDFadeMenuWasCheck(i, str) --выбрана строчка в мен
 end
 function TrGCDCheckEnableClick(i) --произошел клик по галочки вкл/выкл фреймов
 	local iconQueue = TrGCDQueueFr[i]
+	local iconOptions = TrGCDQueueOpt[i]
 
-	if (TrGCDQueueOpt[i].enable) then
-		if (TrGCDGUI.buttonfix:GetText() == "Hide") then
+	iconOptions.enable = not iconOptions.enable
+
+	if TrGCDGUI.buttonfix:GetText() == "Hide" then
+		if iconOptions.enable then
 			iconQueue:HideAnchor()
-		end
-		TrGCDQueueOpt[i].enable = false
-		TrufiGCDChSave["TrGCDQueueFr"][i]["enable"] = TrGCDQueueOpt[i].enable
-	else
-		if (TrGCDGUI.buttonfix:GetText() == "Hide") then
+		else
 			iconQueue:ShowAnchor()
 		end
-		TrGCDQueueOpt[i].enable = true
-		TrufiGCDChSave["TrGCDQueueFr"][i]["enable"] = TrGCDQueueOpt[i].enable
 	end
+
+	iconOptions:CopyToSavedVariables(TrufiGCDChSave["TrGCDQueueFr"][i])
+
 	TrGCDClear(i)
 end
 function TrGCDGUIButtonFixClick() --функция кнопки show/hide в опциях
@@ -891,10 +845,7 @@ function TrGCDGUIButtonFixClick() --функция кнопки show/hide в о�
 				local iconQueue = TrGCDQueueFr[i]
 				iconQueue:HideAnchor()
 				TrGCDQueueOpt[i].point, _, _, TrGCDQueueOpt[i].x, TrGCDQueueOpt[i].y = iconQueue.frame:GetPoint()
-				TrufiGCDChSave["TrGCDQueueFr"][i]["x"] = TrGCDQueueOpt[i].x
-				TrufiGCDChSave["TrGCDQueueFr"][i]["y"] = TrGCDQueueOpt[i].y
-				TrufiGCDChSave["TrGCDQueueFr"][i]["point"] = TrGCDQueueOpt[i].point
-				TrufiGCDChSave["TrGCDQueueFr"][i]["enable"] = TrGCDQueueOpt[i].enable
+				TrGCDQueueOpt[i]:CopyToSavedVariables(TrufiGCDChSave["TrGCDQueueFr"][i])
 			end
 		end
 	end

@@ -5,6 +5,7 @@ local Icon = ns.Icon
 
 local Masque = LibStub("Masque", true)
 
+local globalCooldown = 1.6
 local fastSpeedModifier = 3
 
 local iconHidingDuration = 2
@@ -113,7 +114,8 @@ function IconQueue:Update(interval, iconsScroll, isCasting)
         self.buffer = 0
     end
 
-    local fastSpeed = options.speed * fastSpeedModifier * (#self.nextIconIndices + 1)
+    local normalSpeed = options.size / globalCooldown
+    local fastSpeed = normalSpeed * fastSpeedModifier * (#self.nextIconIndices + 1)
     local fastSpeedDuration = 0.0
 
     if #self.nextIconIndices > 0 then
@@ -123,7 +125,7 @@ function IconQueue:Update(interval, iconsScroll, isCasting)
     local width = options.width * options.size
     local offsetDelta = fastSpeedDuration * fastSpeed
     if not isCasting then
-        offsetDelta = offsetDelta + (interval - fastSpeedDuration) * options.speed
+        offsetDelta = offsetDelta + (interval - fastSpeedDuration) * normalSpeed
     end
 
     for _, icon in ipairs(self.icons) do
