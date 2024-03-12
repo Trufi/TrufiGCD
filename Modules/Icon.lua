@@ -1,3 +1,4 @@
+---@type string, Namespace
 local _, ns = ...
 
 local Masque = LibStub("Masque", true)
@@ -10,7 +11,7 @@ Icon.__index = Icon
 ns.Icon = Icon
 
 ---@param parentFrame any
----@param unitIndex any
+---@param unitIndex number
 function Icon:New(parentFrame, unitIndex)
     ---@class Icon
     local obj = setmetatable({}, Icon)
@@ -27,14 +28,14 @@ end
 
 ---@private
 function Icon:CreateFrame()
-    local options = TrGCDQueueOpt[self.unitIndex]
+    local settings = ns.settings.unitSettings[self.unitIndex]
 
     self.frame = CreateFrame("Button", nil, self.parentFrame)
     self.frame:Hide()
     self.frame:SetScript("OnEnter", function() self:onEnter() end)
     self.frame:SetScript("OnLeave", function() self:onLeave() end)
-    self.frame:SetWidth(options.size)
-    self.frame:SetHeight(options.size)
+    self.frame:SetWidth(settings.iconSize)
+    self.frame:SetHeight(settings.iconSize)
 
     self.texture = self.frame:CreateTexture(nil, "BACKGROUND")
     self.texture:SetAllPoints(self.frame)
@@ -85,7 +86,7 @@ function Icon:Clear(size)
 end
 
 function Icon:UpdatePosition()
-    local direction = TrGCDQueueOpt[self.unitIndex].fade
+    local direction = ns.settings.unitSettings[self.unitIndex].direction
     if direction == "Left" then
         self.frame:SetPoint("RIGHT", self.offset, 0)
     elseif direction == "Right" then

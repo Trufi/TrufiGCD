@@ -1,3 +1,4 @@
+---@type string, Namespace
 local _, ns = ...
 
 local unitLabels = {
@@ -6,20 +7,16 @@ local unitLabels = {
     "Target", "Focus"
 }
 
----@alias Direction "Left" | "Right" | "Up" | "Down"
----@alias Point "TOPLEFT"| "TOPRIGHT"| "BOTTOMLEFT"| "BOTTOMRIGHT"| "TOP"| "BOTTOM"| "LEFT"| "RIGHT"| "CENTER"
-
 ---@class UnitSettings
 ---@field enable boolean
 ---@field x number
 ---@field y number
 ---@field point Point
 ---@field text string
----@field fade Direction
----@field size number Icon size
----@field width number Unit frame width in icon number
+---@field direction Direction
+---@field iconSize number Icon size
+---@field iconsNumber number Unit frame width in icon number
 local UnitSettings = {}
-
 UnitSettings.__index = UnitSettings
 ns.UnitSettings = UnitSettings
 
@@ -27,37 +24,53 @@ ns.UnitSettings = UnitSettings
 function UnitSettings:New(unitIndex)
     ---@class UnitSettings
     local obj = setmetatable({}, UnitSettings)
-    obj.x = 0
-    obj.y = 0
-    obj.point = "CENTER"
-    obj.enable = true
-    obj.fade = "Left"
-    obj.size = 30
-    obj.width = 3
     obj.text = unitLabels[unitIndex]
+    obj:SetToDefaults()
     return obj
+end
+
+function UnitSettings:SetToDefaults()
+    self.x = 0
+    self.y = 0
+    self.point = "CENTER"
+    self.enable = true
+    self.direction = "Left"
+    self.iconSize = 30
+    self.iconsNumber = 3
 end
 
 ---@param savedVariables table
 function UnitSettings:CopyToSavedVariables(savedVariables)
-    savedVariables["x"] = self.x
-    savedVariables["y"] = self.y
-    savedVariables["point"] = self.point
-    savedVariables["enable"] = self.enable
-    savedVariables["text"] = self.text
-    savedVariables["fade"] = self.fade
-    savedVariables["size"] = self.size
-    savedVariables["width"] = self.width
+    savedVariables.x = self.x
+    savedVariables.y = self.y
+    savedVariables.point = self.point
+    savedVariables.enable = self.enable
+    savedVariables.fade = self.direction
+    savedVariables.size = self.iconSize
+    savedVariables.width = self.iconsNumber
 end
 
 ---@param savedVariables table
 function UnitSettings:SetFromSavedVariables(savedVariables)
-    self.x = savedVariables["x"]
-    self.y = savedVariables["y"]
-    self.point = savedVariables["point"]
-    self.enable = savedVariables["enable"]
-    self.text = savedVariables["text"]
-    self.fade = savedVariables["fade"]
-    self.size = savedVariables["size"]
-    self.width = savedVariables["width"]
+    if type(savedVariables.x) == "number" then
+        self.x = savedVariables.x
+    end
+    if type(savedVariables.y) == "number" then
+        self.y = savedVariables.y
+    end
+    if type(savedVariables.point) == "string" then
+        self.point = savedVariables.point
+    end
+    if type(savedVariables.enable) == "boolean" then
+        self.enable = savedVariables.enable
+    end
+    if type(savedVariables.fade) == "string" then
+        self.direction = savedVariables.fade
+    end
+    if type(savedVariables.size) == "number" then
+        self.iconSize = savedVariables.size
+    end
+    if type(savedVariables.width) == "number" then
+        self.iconsNumber = savedVariables.width
+    end
 end

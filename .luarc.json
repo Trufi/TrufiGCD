@@ -19,6 +19,7 @@
             "LibStub",
             "SlashCmdList",
             "STANDARD_TEXT_FONT",
+            "strmatch",
             "UIDropDownMenu_AddButton",
             "UIDropDownMenu_CreateInfo",
             "UIDropDownMenu_Initialize",

@@ -1,7 +1,5 @@
+---@type string, Namespace
 local _, ns = ...
-
----@type Icon
-local Icon = ns.Icon
 
 local Masque = LibStub("Masque", true)
 
@@ -43,7 +41,7 @@ function IconQueue:New(unitIndex)
     ---@type {[number]: Icon}
     obj.icons = {}
     for i = 1, innerIconsNumber do
-        obj.icons[i] = Icon:New(obj.frame, unitIndex)
+        obj.icons[i] = ns.Icon:New(obj.frame, unitIndex)
     end
 
     return obj
@@ -51,7 +49,7 @@ end
 
 ---@private
 function IconQueue:CreateFrame()
-    local options = TrGCDQueueOpt[self.unitIndex]
+    local options = ns.settings.unitSettings[self.unitIndex]
 
     self.frame = CreateFrame("Frame", nil, UIParent)
 
@@ -104,25 +102,24 @@ end
 
 ---Updates the icons every frame
 ---@param interval number
----@param iconsScroll boolean
 ---@param isCasting boolean
-function IconQueue:Update(interval, iconsScroll, isCasting)
-    local options = TrGCDQueueOpt[self.unitIndex]
+function IconQueue:Update(interval, isCasting)
+    local settings = ns.settings.unitSettings[self.unitIndex]
 
-    if #self.nextIconIndices > 0 and self.buffer >= options.size then
+    if #self.nextIconIndices > 0 and self.buffer >= settings.iconSize then
         self:ShowNextIcon()
         self.buffer = 0
     end
 
-    local normalSpeed = options.size / globalCooldown
+    local normalSpeed = settings.iconSize / globalCooldown
     local fastSpeed = normalSpeed * fastSpeedModifier * (#self.nextIconIndices + 1)
     local fastSpeedDuration = 0.0
 
     if #self.nextIconIndices > 0 then
-        fastSpeedDuration = math.min((options.size - self.buffer) / fastSpeed, interval)
+        fastSpeedDuration = math.min((settings.iconSize - self.buffer) / fastSpeed, interval)
     end
 
-    local width = options.width * options.size
+    local width = settings.iconsNumber * settings.iconSize
     local offsetDelta = fastSpeedDuration * fastSpeed
     if not isCasting then
         offsetDelta = offsetDelta + (interval - fastSpeedDuration) * normalSpeed
@@ -130,13 +127,13 @@ function IconQueue:Update(interval, iconsScroll, isCasting)
 
     for _, icon in ipairs(self.icons) do
         if icon.displayed then
-            if iconsScroll or fastSpeedDuration > 0 then
+            if ns.settings.iconsScroll or fastSpeedDuration > 0 then
                 icon.offset = icon.offset - offsetDelta
             end
 
             icon:UpdatePosition()
 
-            if not iconsScroll then
+            if not ns.settings.iconsScroll then
                 local elapsedTime = GetTime() - icon.startTime
 
                 if elapsedTime > iconHidingDuration + iconHidingDelay then
@@ -153,14 +150,14 @@ function IconQueue:Update(interval, iconsScroll, isCasting)
 
                 if alpha < 0 then
                     icon:Hide()
-                elseif iconsScroll then
+                elseif ns.settings.iconsScroll then
                     icon.frame:SetAlpha(alpha)
                 end
             end
         end
     end
 
-    if iconsScroll or fastSpeedDuration > 0 then
+    if ns.settings.iconsScroll or fastSpeedDuration > 0 then
         self.buffer = self.buffer + offsetDelta
     end
 end
@@ -191,10 +188,10 @@ function IconQueue:ShowNextIcon()
 end
 
 function IconQueue:Clear()
-    local options = TrGCDQueueOpt[self.unitIndex]
+    local settings = ns.settings.unitSettings[self.unitIndex]
 
     for _, icon in ipairs(self.icons) do
-        icon:Clear(options.size)
+        icon:Clear(settings.iconSize)
     end
 
     self.iconIndex = 1
@@ -202,13 +199,13 @@ function IconQueue:Clear()
 end
 
 function IconQueue:Resize()
-    local options = TrGCDQueueOpt[self.unitIndex]
-    if options.fade == "Left" or options.fade == "Right" then
-        self.frame:SetWidth(options.width * options.size)
-        self.frame:SetHeight(options.size)
-    elseif options.fade == "Up" or options.fade == "Down" then
-        self.frame:SetWidth(options.size)
-        self.frame:SetHeight(options.width * options.size)
+    local settings = ns.settings.unitSettings[self.unitIndex]
+    if settings.direction == "Left" or settings.direction == "Right" then
+        self.frame:SetWidth(settings.iconsNumber * settings.iconSize)
+        self.frame:SetHeight(settings.iconSize)
+    elseif settings.direction == "Up" or settings.direction == "Down" then
+        self.frame:SetWidth(settings.iconSize)
+        self.frame:SetHeight(settings.iconsNumber * settings.iconSize)
     end
 
     if Masque then
@@ -217,7 +214,7 @@ function IconQueue:Resize()
 end
 
 function IconQueue:UpdateOffset()
-    local options = TrGCDQueueOpt[self.unitIndex]
+    local options = ns.settings.unitSettings[self.unitIndex]
     self.frame:ClearAllPoints()
     self.frame:SetPoint(options.point, options.x, options.y)
 end
