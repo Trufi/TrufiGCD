@@ -6,6 +6,7 @@
 ---@field innerBlockList number[]
 ---@field settingsFrame SettingsFrame
 ---@field blocklistFrame BlocklistFrame
+---@field units Unit[]
 
 ---@alias Direction "Left" | "Right" | "Up" | "Down"
 

@@ -49,7 +49,7 @@ end
 
 ---@private
 function IconQueue:CreateFrame()
-    local options = ns.settings.unitSettings[self.unitIndex]
+    local settings = ns.settings.unitSettings[self.unitIndex]
 
     self.frame = CreateFrame("Frame", nil, UIParent)
 
@@ -61,7 +61,7 @@ function IconQueue:CreateFrame()
 
     self.text = self.frame:CreateFontString(nil, "BACKGROUND")
     self.text:SetFont(STANDARD_TEXT_FONT, 9)
-    self.text:SetText(options.text)
+    self.text:SetText(settings.text)
     self.text:SetAllPoints(self.frame)
     self.text:SetAlpha(0.6)
     self.text:Hide()
@@ -69,7 +69,7 @@ function IconQueue:CreateFrame()
     self.frame:RegisterForDrag("LeftButton")
     self.frame:SetScript("OnDragStart", self.frame.StartMoving)
     self.frame:SetScript("OnDragStop", self.frame.StopMovingOrSizing)
-    self.frame:SetPoint(options.point, options.x, options.y)
+    self.frame:SetPoint(settings.point, settings.x, settings.y)
 
     self:Resize()
 end
@@ -95,8 +95,8 @@ function IconQueue:Copy(from)
     self.iconIndex = from.iconIndex
 
     self.nextIconIndices = {}
-    for _, x in ipairs(from.nextIconIndices) do
-        table.insert(self.nextIconIndices, x)
+    for i, x in ipairs(from.nextIconIndices) do
+        self.nextIconIndices[i] = x
     end
 end
 

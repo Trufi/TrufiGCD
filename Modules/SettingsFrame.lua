@@ -68,8 +68,7 @@ showHideAnchorsButton:SetScript("OnClick", function()
         for i = 1, 12 do
             local queueSettings = ns.settings.unitSettings[i]
             if queueSettings.enable then
-                --TODO: use TrGCDQueueFr from the unit module
-                local iconQueue = TrGCDQueueFr[i]
+                local iconQueue = ns.units[i].iconQueue
                 iconQueue:HideAnchor()
 
                 queueSettings.point, _, _, queueSettings.x, queueSettings.y = iconQueue.frame:GetPoint()
@@ -81,8 +80,7 @@ showHideAnchorsButton:SetScript("OnClick", function()
         frameShowAnchors:Show()
         for i = 1, 12 do
             if ns.settings.unitSettings[i].enable then
-                --TODO: use TrGCDQueueFr from the unit module
-                TrGCDQueueFr[i]:ShowAnchor()
+                ns.units[i].iconQueue:ShowAnchor()
             end
         end
     end
@@ -382,9 +380,7 @@ function UnitSettingsFrame:New(unitIndex)
         onClick = function()
             queueSettings.enable = not queueSettings.enable
 
-            --TODO: use TrGCDQueueFr from the unit module
-            local iconQueue = TrGCDQueueFr[unitIndex]
-
+            local iconQueue = ns.units[unitIndex].iconQueue
             if queueSettings.enable then
                 iconQueue:ShowAnchor()
             else
@@ -392,9 +388,7 @@ function UnitSettingsFrame:New(unitIndex)
             end
 
             ns.settings:SaveToCharacterSavedVariables()
-
-            --TODO: use change event to update unit frames
-            TrGCDClear(unitIndex)
+		    ns.units[unitIndex]:Clear()
         end
     })
 
@@ -410,10 +404,8 @@ function UnitSettingsFrame:New(unitIndex)
         queueSettings.direction = direction
         ns.settings:SaveToCharacterSavedVariables()
 
-        --TODO: use TrGCDQueueFr from the unit module
-        TrGCDQueueFr[unitIndex]:Resize()
-        --TODO: use change event to update unit frames
-        TrGCDClear(unitIndex)
+        ns.units[unitIndex].iconQueue:Resize()
+        ns.units[unitIndex]:Clear()
     end
 
     UIDropDownMenu_Initialize(obj.directionDropdown, function()
@@ -462,10 +454,8 @@ function UnitSettingsFrame:New(unitIndex)
         queueSettings.iconSize = value
         ns.settings:SaveToCharacterSavedVariables()
 
-        --TODO: use TrGCDQueueFr from the unit module
-        TrGCDQueueFr[unitIndex]:Resize()
-        --TODO: use change event to update unit frames
-        TrGCDClear(unitIndex)
+        ns.units[unitIndex].iconQueue:Resize()
+        ns.units[unitIndex]:Clear()
     end)
     obj.sizeSlider:Show()
 
@@ -485,10 +475,8 @@ function UnitSettingsFrame:New(unitIndex)
         queueSettings.iconsNumber = value
         ns.settings:SaveToCharacterSavedVariables()
 
-        --TODO: use TrGCDQueueFr from the unit module
-        TrGCDQueueFr[unitIndex]:Resize()
-        --TODO: use change event to update unit frames
-        TrGCDClear(unitIndex)
+        ns.units[unitIndex].iconQueue:Resize()
+        ns.units[unitIndex]:Clear()
     end)
     obj.iconsNumber:Show()
 
@@ -507,8 +495,7 @@ function UnitSettingsFrame:SyncWithSettings()
     _G[self.iconsNumber:GetName() .. 'Text']:SetText(queueSettings.iconsNumber)
     self.iconsNumber:SetValue(queueSettings.iconsNumber)
 
-    --TODO: use TrGCDQueueFr from the unit module
-    local iconQueue = TrGCDQueueFr[self.unitIndex]
+    local iconQueue = ns.units[self.unitIndex].iconQueue
     iconQueue:Resize()
     iconQueue:UpdateOffset()
 end

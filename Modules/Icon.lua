@@ -81,7 +81,6 @@ function Icon:Clear(size)
     self.frame:ClearAllPoints()
     self.frame:Hide()
 
-    self.cancelTexture:SetTexture(nil)
     self.cancelTexture:Hide()
 end
 
@@ -144,16 +143,21 @@ end
 
 ---@private
 function Icon:onEnter()
-    if TrufiGCDChSave["TooltipEnable"] then
+    if ns.settings.tooltipEnabled then
         GameTooltip_SetDefaultAnchor(GameTooltip, self.frame)
         GameTooltip:SetSpellByID(self.spellId, false, false, true)
         GameTooltip:Show()
-        if TrufiGCDChSave["TooltipStopMove"] then
+        if ns.settings.tooltipStopScroll then
             TrGCDIconOnEnter[self.unitIndex] = false
         end
-        if TrufiGCDChSave["TooltipSpellID"] then
-            if self.spellId ~= nil then
-                print(GetSpellLink(self.spellId) .. " ID: " .. self.spellId)
+        if ns.settings.tooltipPrintSpellId then
+            if self.spellId then
+                local spellLink = GetSpellLink(self.spellId)
+                if spellLink then
+                    print(spellLink .. " ID: " .. self.spellId)
+                else
+                    print("ID: " .. self.spellId)
+                end
             end
         end
     end

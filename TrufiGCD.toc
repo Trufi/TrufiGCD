@@ -14,9 +14,9 @@ Modules\Icon.lua
 Modules\IconQueue.lua
 Modules\UnitSettings.lua
 Modules\Settings.lua
+Modules\Units.lua
 Modules\SettingsFrame.lua
 Modules\BlocklistFrame.lua
 
 # Addon
 TrufiGCD.lua
-TrufiGCD.xml
