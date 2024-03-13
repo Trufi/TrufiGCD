@@ -1,8 +1,6 @@
 ---@type string, Namespace
 local _, ns = ...
 
-local Masque = LibStub("Masque", true)
-
 local crossTexture = "Interface\\TargetingFrame\\UI-RaidTargetingIcon_7"
 
 ---@class Icon
@@ -10,45 +8,48 @@ local Icon = {}
 Icon.__index = Icon
 ns.Icon = Icon
 
----@param parentFrame any
----@param unitIndex number
-function Icon:New(parentFrame, unitIndex)
+---@class IconParams
+---@field parentFrame any
+---@field unitIndex number
+---@field onMouseEnter fun()
+---@field onMouseLeave fun()
+
+---@param params IconParams
+function Icon:New(params)
     ---@class Icon
     local obj = setmetatable({}, Icon)
-    obj.parentFrame = parentFrame
-    obj.unitIndex = unitIndex
+    obj.unitIndex = params.unitIndex
     obj.displayed = false
     obj.offset = 0
     obj.startTime = 0
     obj.spellId = 0
     obj.cancelTextureDisplayed = false
-    obj:CreateFrame()
+
+    obj.frame = CreateFrame("Button", nil, params.parentFrame)
+    obj.frame:Hide()
+    obj.frame:SetScript("OnEnter", function()
+        obj:ShowTooltip()
+        params.onMouseEnter()
+    end)
+    obj.frame:SetScript("OnLeave", function()
+        params:onMouseLeave()
+        GameTooltip_Hide()
+    end)
+
+    obj.texture = obj.frame:CreateTexture(nil, "BACKGROUND")
+    obj.texture:SetAllPoints(obj.frame)
+
+    obj.cancelTexture = obj.frame:CreateTexture(nil, "BORDER")
+    obj.cancelTexture:SetAllPoints(obj.frame)
+    obj.cancelTexture:SetTexture(crossTexture)
+    obj.cancelTexture:SetAlpha(1)
+    obj.cancelTexture:Hide()
+
+    obj:Resize()
+
+    ns.masqueHelper.addIcon(obj.frame, obj.texture)
+
     return obj
-end
-
----@private
-function Icon:CreateFrame()
-    local settings = ns.settings.unitSettings[self.unitIndex]
-
-    self.frame = CreateFrame("Button", nil, self.parentFrame)
-    self.frame:Hide()
-    self.frame:SetScript("OnEnter", function() self:onEnter() end)
-    self.frame:SetScript("OnLeave", function() self:onLeave() end)
-    self.frame:SetWidth(settings.iconSize)
-    self.frame:SetHeight(settings.iconSize)
-
-    self.texture = self.frame:CreateTexture(nil, "BACKGROUND")
-    self.texture:SetAllPoints(self.frame)
-
-    self.cancelTexture = self.frame:CreateTexture(nil, "BORDER")
-    self.cancelTexture:SetAllPoints(self.frame)
-    self.cancelTexture:SetTexture(crossTexture)
-    self.cancelTexture:SetAlpha(1)
-    self.cancelTexture:Hide()
-
-    if Masque then
-        TrGCDMasqueIcons:AddButton(self.frame, {Icon = self.texture})
-    end
 end
 
 function Icon:Show()
@@ -69,15 +70,18 @@ function Icon:Hide()
     self.cancelTexture:Hide()
 end
 
----@param size number
-function Icon:Clear(size)
+function Icon:Resize()
+    local settings = ns.settings.unitSettings[self.unitIndex]
+    self.frame:SetWidth(settings.iconSize)
+    self.frame:SetHeight(settings.iconSize)
+end
+
+function Icon:Clear()
     self.offset = 0
     self.displayed = false
     self.cancelTextureDisplayed = false
 
     self.frame:SetAlpha(0)
-    self.frame:SetHeight(size)
-    self.frame:SetWidth(size)
     self.frame:ClearAllPoints()
     self.frame:Hide()
 
@@ -142,29 +146,22 @@ function Icon:HideCancelTexture()
 end
 
 ---@private
-function Icon:onEnter()
-    if ns.settings.tooltipEnabled then
-        GameTooltip_SetDefaultAnchor(GameTooltip, self.frame)
-        GameTooltip:SetSpellByID(self.spellId, false, false, true)
-        GameTooltip:Show()
-        if ns.settings.tooltipStopScroll then
-            TrGCDIconOnEnter[self.unitIndex] = false
-        end
-        if ns.settings.tooltipPrintSpellId then
-            if self.spellId then
-                local spellLink = GetSpellLink(self.spellId)
-                if spellLink then
-                    print(spellLink .. " ID: " .. self.spellId)
-                else
-                    print("ID: " .. self.spellId)
-                end
+function Icon:ShowTooltip()
+    if not ns.settings.tooltipEnabled then
+        return
+    end
+
+    GameTooltip_SetDefaultAnchor(GameTooltip, self.frame)
+    GameTooltip:SetSpellByID(self.spellId, false, false, true)
+    GameTooltip:Show()
+    if ns.settings.tooltipPrintSpellId then
+        if self.spellId then
+            local spellLink = GetSpellLink(self.spellId)
+            if spellLink then
+                print(spellLink .. " ID: " .. self.spellId)
+            else
+                print("ID: " .. self.spellId)
             end
         end
     end
-end
-
----@private
-function Icon:onLeave()
-    GameTooltip_Hide()
-    TrGCDIconOnEnter[self.unitIndex] = true
 end

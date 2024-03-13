@@ -178,8 +178,8 @@ end
 ---@param savedVariables table
 function Settings:CopyBlocklistToSavedVariables(savedVariables)
     savedVariables.TrGCDBL = {}
-    for i, v in ipairs(self.blocklist) do
-        savedVariables.TrGCDBL[i] = v
+    for _, v in ipairs(self.blocklist) do
+        table.insert(savedVariables.TrGCDBL, v)
     end
 end
 

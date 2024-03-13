@@ -18,6 +18,8 @@ ns.IconQueue = IconQueue
 
 ---@param unitIndex number
 function IconQueue:New(unitIndex)
+    local settings = ns.settings.unitSettings[unitIndex]
+
     ---@class IconQueue
     local obj = setmetatable({}, IconQueue)
 
@@ -34,44 +36,49 @@ function IconQueue:New(unitIndex)
     ---Used to place a next icon if it's big enough.
     obj.buffer = 0
 
-    obj:CreateFrame()
-
     obj.iconIndex = 1
+    obj.isMoving = true
+
+    obj.frame = CreateFrame("Frame", nil, UIParent)
+
+    obj.texture = obj.frame:CreateTexture(nil, "BACKGROUND")
+    obj.texture:SetAllPoints(obj.frame)
+    obj.texture:SetColorTexture(0, 0, 0)
+    obj.texture:SetAlpha(0.6)
+    obj.texture:Hide()
+
+    obj.text = obj.frame:CreateFontString(nil, "BACKGROUND")
+    obj.text:SetFont(STANDARD_TEXT_FONT, 9)
+    obj.text:SetText(settings.text)
+    obj.text:SetAllPoints(obj.frame)
+    obj.text:SetAlpha(0.6)
+    obj.text:Hide()
+
+    obj.frame:RegisterForDrag("LeftButton")
+    obj.frame:SetScript("OnDragStart", obj.frame.StartMoving)
+    obj.frame:SetScript("OnDragStop", obj.frame.StopMovingOrSizing)
+    obj.frame:SetPoint(settings.point, settings.x, settings.y)
 
     ---@type {[number]: Icon}
     obj.icons = {}
     for i = 1, innerIconsNumber do
-        obj.icons[i] = ns.Icon:New(obj.frame, unitIndex)
+        obj.icons[i] = ns.Icon:New({
+            parentFrame = obj.frame,
+            unitIndex = unitIndex,
+            onMouseEnter = function()
+                if ns.settings.tooltipEnabled and ns.settings.tooltipStopScroll then
+                    obj.isMoving = false
+                end
+            end,
+            onMouseLeave = function()
+                obj.isMoving = true
+            end
+        })
     end
 
+    obj:Resize()
+
     return obj
-end
-
----@private
-function IconQueue:CreateFrame()
-    local settings = ns.settings.unitSettings[self.unitIndex]
-
-    self.frame = CreateFrame("Frame", nil, UIParent)
-
-    self.texture = self.frame:CreateTexture(nil, "BACKGROUND")
-    self.texture:SetAllPoints(self.frame)
-    self.texture:SetColorTexture(0, 0, 0)
-    self.texture:SetAlpha(0.6)
-    self.texture:Hide()
-
-    self.text = self.frame:CreateFontString(nil, "BACKGROUND")
-    self.text:SetFont(STANDARD_TEXT_FONT, 9)
-    self.text:SetText(settings.text)
-    self.text:SetAllPoints(self.frame)
-    self.text:SetAlpha(0.6)
-    self.text:Hide()
-
-    self.frame:RegisterForDrag("LeftButton")
-    self.frame:SetScript("OnDragStart", self.frame.StartMoving)
-    self.frame:SetScript("OnDragStop", self.frame.StopMovingOrSizing)
-    self.frame:SetPoint(settings.point, settings.x, settings.y)
-
-    self:Resize()
 end
 
 ---@param id number
@@ -104,6 +111,10 @@ end
 ---@param interval number
 ---@param isCasting boolean
 function IconQueue:Update(interval, isCasting)
+    if not self.isMoving then
+        return
+    end
+
     local settings = ns.settings.unitSettings[self.unitIndex]
 
     if #self.nextIconIndices > 0 and self.buffer >= settings.iconSize then
@@ -188,10 +199,8 @@ function IconQueue:ShowNextIcon()
 end
 
 function IconQueue:Clear()
-    local settings = ns.settings.unitSettings[self.unitIndex]
-
     for _, icon in ipairs(self.icons) do
-        icon:Clear(settings.iconSize)
+        icon:Clear()
     end
 
     self.iconIndex = 1
@@ -208,9 +217,11 @@ function IconQueue:Resize()
         self.frame:SetHeight(settings.iconsNumber * settings.iconSize)
     end
 
-    if Masque then
-        TrGCDMasqueIcons:ReSkin()
+    for _, icon in ipairs(self.icons) do
+        icon:Resize()
     end
+
+    ns.masqueHelper.reskinIcons()
 end
 
 function IconQueue:UpdateOffset()

@@ -9,11 +9,13 @@
 Libs\LibStub\Libstub.lua
 
 # Modules
+Modules\MasqueHelper.lua
 Modules\InnerBlocklist.lua
 Modules\Icon.lua
 Modules\IconQueue.lua
 Modules\UnitSettings.lua
 Modules\Settings.lua
+Modules\LocationCheck.lua
 Modules\Units.lua
 Modules\SettingsFrame.lua
 Modules\BlocklistFrame.lua

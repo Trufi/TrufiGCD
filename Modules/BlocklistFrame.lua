@@ -260,4 +260,3 @@ local buttonRestoreText = buttonRestore:CreateFontString(nil, "BACKGROUND")
 buttonRestoreText:SetFont(STANDARD_TEXT_FONT, 10)
 buttonRestoreText:SetText("Restore default blocklist")
 buttonRestoreText:SetPoint("TOP", 0, 10)
-

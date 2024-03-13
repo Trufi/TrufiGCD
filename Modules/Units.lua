@@ -184,14 +184,12 @@ end
 ---@param time number
 ---@param interval number
 function Unit:Update(time, interval)
-    if TrGCDIconOnEnter[self.unitIndex] then
-        -- fix for stale icons
-        if time - self.castStoppedTime > 10 then
-            self.isCasting = false
-        end
-
-        self.iconQueue:Update(interval, self.isCasting)
+    -- fix for stale icons
+    if time - self.castStoppedTime > 10 then
+        self.isCasting = false
     end
+
+    self.iconQueue:Update(interval, self.isCasting)
 end
 
 ---@private

@@ -249,7 +249,7 @@ local combatOnlyCheckbox = CreateCheckButton({
     onClick = function()
         ns.settings.enabledIn.combatOnly = not ns.settings.enabledIn.combatOnly
         ns.settings:SaveToCharacterSavedVariables()
-        TrGCDCheckToEnableAddon(6)
+        ns.locationCheck.settingsChanged()
     end
 })
 
@@ -263,7 +263,7 @@ local enableCheckbox = CreateCheckButton({
     onClick = function()
         ns.settings.enabledIn.enabled = not ns.settings.enabledIn.enabled
         ns.settings:SaveToCharacterSavedVariables()
-        TrGCDCheckToEnableAddon(0)
+        ns.locationCheck.settingsChanged()
     end
 })
 
@@ -277,7 +277,7 @@ local worldCheckbox = CreateCheckButton({
     onClick = function()
         ns.settings.enabledIn.world = not ns.settings.enabledIn.world
         ns.settings:SaveToCharacterSavedVariables()
-        TrGCDCheckToEnableAddon(1)
+        ns.locationCheck.settingsChanged()
     end
 })
 
@@ -291,7 +291,7 @@ local partyCheckbox = CreateCheckButton({
     onClick = function()
         ns.settings.enabledIn.party = not ns.settings.enabledIn.party
         ns.settings:SaveToCharacterSavedVariables()
-        TrGCDCheckToEnableAddon(2)
+        ns.locationCheck.settingsChanged()
     end
 })
 
@@ -305,7 +305,7 @@ local raidCheckbox = CreateCheckButton({
     onClick = function()
         ns.settings.enabledIn.raid = not ns.settings.enabledIn.raid
         ns.settings:SaveToCharacterSavedVariables()
-        TrGCDCheckToEnableAddon(5)
+        ns.locationCheck.settingsChanged()
     end
 })
 
@@ -319,7 +319,7 @@ local arenaCheckbox = CreateCheckButton({
     onClick = function()
         ns.settings.enabledIn.arena = not ns.settings.enabledIn.arena
         ns.settings:SaveToCharacterSavedVariables()
-        TrGCDCheckToEnableAddon(3)
+        ns.locationCheck.settingsChanged()
     end
 })
 
@@ -333,7 +333,7 @@ local battlegroundCheckbox = CreateCheckButton({
     onClick = function()
         ns.settings.enabledIn.battleground = not ns.settings.enabledIn.battleground
         ns.settings:SaveToCharacterSavedVariables()
-        TrGCDCheckToEnableAddon(4)
+        ns.locationCheck.settingsChanged()
     end
 })
 
