@@ -10,6 +10,7 @@ Libs\LibStub\Libstub.lua
 
 # Modules
 Modules\MasqueHelper.lua
+Modules\Constants.lua
 Modules\InnerBlocklist.lua
 Modules\Icon.lua
 Modules\IconQueue.lua

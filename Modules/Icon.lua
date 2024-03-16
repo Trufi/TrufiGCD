@@ -10,7 +10,7 @@ ns.Icon = Icon
 
 ---@class IconParams
 ---@field parentFrame any
----@field unitIndex number
+---@field unitType UnitType
 ---@field onMouseEnter fun()
 ---@field onMouseLeave fun()
 
@@ -18,7 +18,7 @@ ns.Icon = Icon
 function Icon:New(params)
     ---@class Icon
     local obj = setmetatable({}, Icon)
-    obj.unitIndex = params.unitIndex
+    obj.unitType = params.unitType
     obj.displayed = false
     obj.offset = 0
     obj.startTime = 0
@@ -71,7 +71,7 @@ function Icon:Hide()
 end
 
 function Icon:Resize()
-    local settings = ns.settings.unitSettings[self.unitIndex]
+    local settings = ns.settings.unitSettings[self.unitType]
     self.frame:SetWidth(settings.iconSize)
     self.frame:SetHeight(settings.iconSize)
 end
@@ -89,7 +89,7 @@ function Icon:Clear()
 end
 
 function Icon:UpdatePosition()
-    local direction = ns.settings.unitSettings[self.unitIndex].direction
+    local direction = ns.settings.unitSettings[self.unitType].direction
     if direction == "Left" then
         self.frame:SetPoint("RIGHT", self.offset, 0)
     elseif direction == "Right" then

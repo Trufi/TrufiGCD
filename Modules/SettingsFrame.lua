@@ -65,10 +65,9 @@ showHideAnchorsButton:SetScript("OnClick", function()
     if anchorDisplayed then
         showHideAnchorsButton:SetText("Show")
         frameShowAnchors:Hide()
-        for i = 1, 12 do
-            local queueSettings = ns.settings.unitSettings[i]
+        for unitType, queueSettings in pairs(ns.settings.unitSettings) do
             if queueSettings.enable then
-                local iconQueue = ns.units[i].iconQueue
+                local iconQueue = ns.units[unitType].iconQueue
                 iconQueue:HideAnchor()
 
                 queueSettings.point, _, _, queueSettings.x, queueSettings.y = iconQueue.frame:GetPoint()
@@ -78,9 +77,9 @@ showHideAnchorsButton:SetScript("OnClick", function()
     else
         showHideAnchorsButton:SetText("Hide")
         frameShowAnchors:Show()
-        for i = 1, 12 do
-            if ns.settings.unitSettings[i].enable then
-                ns.units[i].iconQueue:ShowAnchor()
+        for unitType, unitSettings in pairs(ns.settings.unitSettings) do
+            if unitSettings.enable then
+                ns.units[unitType].iconQueue:ShowAnchor()
             end
         end
     end
@@ -362,25 +361,26 @@ labelNumber:SetPoint("TOPLEFT", 390, -65)
 local UnitSettingsFrame = {}
 UnitSettingsFrame.__index = UnitSettingsFrame
 
----@param unitIndex number
-function UnitSettingsFrame:New(unitIndex)
-    local queueSettings = ns.settings.unitSettings[unitIndex]
+---@param unitType UnitType
+---@param offset number
+function UnitSettingsFrame:New(unitType, offset)
+    local queueSettings = ns.settings.unitSettings[unitType]
 
     ---@class UnitSettingsFrame
     local obj = setmetatable({}, UnitSettingsFrame)
-    obj.unitIndex = unitIndex
+    obj.unitType = unitType
 
     obj.buttonEnable = CreateCheckButton({
         text = queueSettings.text,
         position = "TOPLEFT",
         x = 10,
-        y = -50 - unitIndex * 40,
-        name = "trgcdcheckenable" .. unitIndex,
+        y = -50 - offset * 40,
+        name = "trgcdcheckenable" .. unitType,
         checked = queueSettings.enable,
         onClick = function()
             queueSettings.enable = not queueSettings.enable
 
-            local iconQueue = ns.units[unitIndex].iconQueue
+            local iconQueue = ns.units[unitType].iconQueue
             if queueSettings.enable then
                 iconQueue:ShowAnchor()
             else
@@ -388,13 +388,13 @@ function UnitSettingsFrame:New(unitIndex)
             end
 
             ns.settings:SaveToCharacterSavedVariables()
-		    ns.units[unitIndex]:Clear()
+		    ns.units[unitType]:Clear()
         end
     })
 
     ---dropdown menu
-    obj.directionDropdown = CreateFrame("Frame", "trgcdframemenu" .. unitIndex, frame, "UIDropDownMenuTemplate")
-    obj.directionDropdown:SetPoint("TOPLEFT", 70, -50 - unitIndex * 40)
+    obj.directionDropdown = CreateFrame("Frame", "trgcdframemenu" .. unitType, frame, "UIDropDownMenuTemplate")
+    obj.directionDropdown:SetPoint("TOPLEFT", 70, -50 - offset * 40)
     UIDropDownMenu_SetWidth(obj.directionDropdown, 55)
     UIDropDownMenu_SetText(obj.directionDropdown, queueSettings.direction)
 
@@ -404,8 +404,8 @@ function UnitSettingsFrame:New(unitIndex)
         queueSettings.direction = direction
         ns.settings:SaveToCharacterSavedVariables()
 
-        ns.units[unitIndex].iconQueue:Resize()
-        ns.units[unitIndex]:Clear()
+        ns.units[unitType].iconQueue:Resize()
+        ns.units[unitType]:Clear()
     end
 
     UIDropDownMenu_Initialize(obj.directionDropdown, function()
@@ -439,9 +439,9 @@ function UnitSettingsFrame:New(unitIndex)
     end)
 
     ---Size Slider
-    obj.sizeSlider = CreateFrame("Slider", "trgcdframesizeslider" .. unitIndex, frame, "OptionsSliderTemplate")
+    obj.sizeSlider = CreateFrame("Slider", "trgcdframesizeslider" .. unitType, frame, "OptionsSliderTemplate")
     obj.sizeSlider:SetWidth(170)
-    obj.sizeSlider:SetPoint("TOPLEFT", 190, -55 - unitIndex * 40)
+    obj.sizeSlider:SetPoint("TOPLEFT", 190, -55 - offset * 40)
     _G[obj.sizeSlider:GetName() .. 'Low']:SetText('10')
     _G[obj.sizeSlider:GetName() .. 'High']:SetText('100')
     _G[obj.sizeSlider:GetName() .. 'Text']:SetText(queueSettings.iconSize)
@@ -454,15 +454,15 @@ function UnitSettingsFrame:New(unitIndex)
         queueSettings.iconSize = value
         ns.settings:SaveToCharacterSavedVariables()
 
-        ns.units[unitIndex].iconQueue:Resize()
-        ns.units[unitIndex]:Clear()
+        ns.units[unitType].iconQueue:Resize()
+        ns.units[unitType]:Clear()
     end)
     obj.sizeSlider:Show()
 
     ---Icons number slider
-    obj.iconsNumber = CreateFrame("Slider", "trgcdframewidthslider" .. unitIndex, frame, "OptionsSliderTemplate")
+    obj.iconsNumber = CreateFrame("Slider", "trgcdframewidthslider" .. unitType, frame, "OptionsSliderTemplate")
     obj.iconsNumber:SetWidth(100)
-    obj.iconsNumber:SetPoint("TOPLEFT", 390, -55 - unitIndex * 40)
+    obj.iconsNumber:SetPoint("TOPLEFT", 390, -55 - offset * 40)
     _G[obj.iconsNumber:GetName() .. 'Low']:SetText('1')
     _G[obj.iconsNumber:GetName() .. 'High']:SetText('8')
     _G[obj.iconsNumber:GetName() .. 'Text']:SetText(queueSettings.iconsNumber)
@@ -475,8 +475,8 @@ function UnitSettingsFrame:New(unitIndex)
         queueSettings.iconsNumber = value
         ns.settings:SaveToCharacterSavedVariables()
 
-        ns.units[unitIndex].iconQueue:Resize()
-        ns.units[unitIndex]:Clear()
+        ns.units[unitType].iconQueue:Resize()
+        ns.units[unitType]:Clear()
     end)
     obj.iconsNumber:Show()
 
@@ -484,7 +484,7 @@ function UnitSettingsFrame:New(unitIndex)
 end
 
 function UnitSettingsFrame:SyncWithSettings()
-    local queueSettings = ns.settings.unitSettings[self.unitIndex]
+    local queueSettings = ns.settings.unitSettings[self.unitType]
 
     self.buttonEnable:SetChecked(queueSettings.enable)
     UIDropDownMenu_SetText(self.directionDropdown, queueSettings.direction)
@@ -495,18 +495,18 @@ function UnitSettingsFrame:SyncWithSettings()
     _G[self.iconsNumber:GetName() .. 'Text']:SetText(queueSettings.iconsNumber)
     self.iconsNumber:SetValue(queueSettings.iconsNumber)
 
-    local iconQueue = ns.units[self.unitIndex].iconQueue
+    local iconQueue = ns.units[self.unitType].iconQueue
     iconQueue:Resize()
     iconQueue:UpdateOffset()
 end
 
----@type UnitSettingsFrame[]
+---@type {[UnitType]: UnitSettingsFrame}
 local unitSettingsFrames = {}
-for unitIndex = 1, 12 do
-    unitSettingsFrames[unitIndex] = UnitSettingsFrame:New(unitIndex)
+for i, unitType in ipairs(ns.constants.unitTypes) do
+    unitSettingsFrames[unitType] = UnitSettingsFrame:New(unitType, i)
 end
 
-settingsFrame.syncWithSettings = function ()
+settingsFrame.syncWithSettings = function()
     tooltipEnableCheckbox:SetChecked(ns.settings.tooltipEnabled)
     stopMovingCheckbox:SetChecked(ns.settings.tooltipStopScroll)
     spellIdCheckbox:SetChecked(ns.settings.tooltipPrintSpellId)
@@ -520,7 +520,7 @@ settingsFrame.syncWithSettings = function ()
     arenaCheckbox:SetChecked(ns.settings.enabledIn.arena)
     battlegroundCheckbox:SetChecked(ns.settings.enabledIn.battleground)
 
-    for _, unitSettings in ipairs(unitSettingsFrames) do
+    for _, unitSettings in pairs(unitSettingsFrames) do
         unitSettings:SyncWithSettings()
     end
 end

@@ -1,8 +1,6 @@
 ---@type string, Namespace
 local _, ns = ...
 
-local Masque = LibStub("Masque", true)
-
 local globalCooldown = 1.6
 local fastSpeedModifier = 3
 
@@ -16,18 +14,14 @@ local IconQueue = {}
 IconQueue.__index = IconQueue
 ns.IconQueue = IconQueue
 
----@param unitIndex number
-function IconQueue:New(unitIndex)
-    local settings = ns.settings.unitSettings[unitIndex]
+---@param unitType UnitType
+function IconQueue:New(unitType)
+    local settings = ns.settings.unitSettings[unitType]
 
     ---@class IconQueue
     local obj = setmetatable({}, IconQueue)
 
-    ---Index of this icon queue unit
-    ---1 - player, 2 - party1, 3 - party2
-    ---5 - arena1, 6 - arena2, 7 - arena3
-    ---11 - target, 12 - focus
-    obj.unitIndex = unitIndex
+    obj.unitType = unitType
 
     ---@type number[]
     obj.nextIconIndices = {}
@@ -64,7 +58,7 @@ function IconQueue:New(unitIndex)
     for i = 1, innerIconsNumber do
         obj.icons[i] = ns.Icon:New({
             parentFrame = obj.frame,
-            unitIndex = unitIndex,
+            unitType = unitType,
             onMouseEnter = function()
                 if ns.settings.tooltipEnabled and ns.settings.tooltipStopScroll then
                     obj.isMoving = false
@@ -115,7 +109,7 @@ function IconQueue:Update(interval, isCasting)
         return
     end
 
-    local settings = ns.settings.unitSettings[self.unitIndex]
+    local settings = ns.settings.unitSettings[self.unitType]
 
     if #self.nextIconIndices > 0 and self.buffer >= settings.iconSize then
         self:ShowNextIcon()
@@ -208,7 +202,7 @@ function IconQueue:Clear()
 end
 
 function IconQueue:Resize()
-    local settings = ns.settings.unitSettings[self.unitIndex]
+    local settings = ns.settings.unitSettings[self.unitType]
     if settings.direction == "Left" or settings.direction == "Right" then
         self.frame:SetWidth(settings.iconsNumber * settings.iconSize)
         self.frame:SetHeight(settings.iconSize)
@@ -225,9 +219,9 @@ function IconQueue:Resize()
 end
 
 function IconQueue:UpdateOffset()
-    local options = ns.settings.unitSettings[self.unitIndex]
+    local settings = ns.settings.unitSettings[self.unitType]
     self.frame:ClearAllPoints()
-    self.frame:SetPoint(options.point, options.x, options.y)
+    self.frame:SetPoint(settings.point, settings.x, settings.y)
 end
 
 function IconQueue:ShowAnchor()

@@ -1,10 +1,20 @@
 ---@type string, Namespace
 local _, ns = ...
 
+---@type {[UnitType]: string}
 local unitLabels = {
-    "Player", "Party 1", "Party 2", "Party 3", "Party 4",
-    "Arena 1", "Arena 2", "Arena 3", "Arena 4", "Arena 5",
-    "Target", "Focus"
+    player = "Player",
+    party1 = "Party 1",
+    party2 = "Party 2",
+    party3 = "Party 3",
+    party4 = "Party 4",
+    arena1 = "Arena 1",
+    arena2 = "Arena 2",
+    arena3 = "Arena 3",
+    arena4 = "Arena 4",
+    arena5 = "Arena 5",
+    target = "Target",
+    focus = "Focus",
 }
 
 ---@class UnitSettings
@@ -20,11 +30,11 @@ local UnitSettings = {}
 UnitSettings.__index = UnitSettings
 ns.UnitSettings = UnitSettings
 
----@param unitIndex number
-function UnitSettings:New(unitIndex)
+---@param unitType UnitType
+function UnitSettings:New(unitType)
     ---@class UnitSettings
     local obj = setmetatable({}, UnitSettings)
-    obj.text = unitLabels[unitIndex]
+    obj.text = unitLabels[unitType]
     obj:SetToDefaults()
     return obj
 end

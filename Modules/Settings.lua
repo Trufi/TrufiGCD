@@ -9,10 +9,10 @@ function Settings:New()
     ---@class Settings
     local obj = setmetatable({}, Settings)
 
-    ---@type {[number]: UnitSettings}
+    ---@type {[UnitType]: UnitSettings}
     self.unitSettings = {}
-    for unitIndex = 1, 12 do
-        self.unitSettings[unitIndex] = ns.UnitSettings:New(unitIndex)
+    for _, unitType in ipairs(ns.constants.unitTypes) do
+        self.unitSettings[unitType] = ns.UnitSettings:New(unitType)
     end
 
     obj:SetToDefaults()
@@ -111,8 +111,8 @@ function Settings:SetFromSavedVariables(savedVariables)
         if type(savedVariables.EnableIn.Raid) == "boolean" then
             self.enabledIn.raid = savedVariables.EnableIn.Raid
         end
-        if type(savedVariables.EnableIn.combatOnly) == "boolean" then
-            self.enabledIn.combatOnly = savedVariables.EnableIn.combatOnly
+        if type(savedVariables.EnableIn["Combat only"]) == "boolean" then
+            self.enabledIn.combatOnly = savedVariables.EnableIn["Combat only"]
         end
     end
 
@@ -132,7 +132,8 @@ function Settings:SetFromSavedVariables(savedVariables)
     if type(savedVariables.TrGCDQueueFr) == "table" then
         for unitIndex = 1, 12 do
             if type(savedVariables.TrGCDQueueFr[unitIndex]) == "table" then
-                self.unitSettings[unitIndex]:SetFromSavedVariables(savedVariables.TrGCDQueueFr[unitIndex])
+                local unitType = ns.constants.unitTypes[unitIndex]
+                self.unitSettings[unitType]:SetFromSavedVariables(savedVariables.TrGCDQueueFr[unitIndex])
             end
         end
     end
@@ -161,7 +162,7 @@ function Settings:CopyToSavedVariables(savedVariables)
     savedVariables.EnableIn.Bg = self.enabledIn.battleground
     savedVariables.EnableIn.World = self.enabledIn.world
     savedVariables.EnableIn.Raid = self.enabledIn.raid
-    savedVariables.EnableIn.combatOnly = self.enabledIn.combatOnly
+    savedVariables.EnableIn["Combat only"] = self.enabledIn.combatOnly
     savedVariables.ModScroll = self.iconsScroll
     savedVariables.TooltipEnable = self.tooltipEnabled
     savedVariables.TooltipSpellID = self.tooltipPrintSpellId
@@ -170,7 +171,8 @@ function Settings:CopyToSavedVariables(savedVariables)
     savedVariables.TrGCDQueueFr = {}
     for unitIndex = 1, 12 do
         savedVariables.TrGCDQueueFr[unitIndex] = {}
-        self.unitSettings[unitIndex]:CopyToSavedVariables(savedVariables.TrGCDQueueFr[unitIndex])
+        local unitType = ns.constants.unitTypes[unitIndex]
+        self.unitSettings[unitType]:CopyToSavedVariables(savedVariables.TrGCDQueueFr[unitIndex])
     end
 end
 

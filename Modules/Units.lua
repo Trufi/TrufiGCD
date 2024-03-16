@@ -27,11 +27,11 @@ local instantSpellBuffs = {
 local Unit = {}
 Unit.__index = Unit
 
----@param unitIndex number
-function Unit:New(unitIndex)
+---@param unitType UnitType
+function Unit:New(unitType)
     ---@class Unit
     local obj = setmetatable({}, Unit)
-    obj.unitIndex = unitIndex
+    obj.unitType = unitType
     obj.isCasting = false
 
     ---@type number
@@ -46,7 +46,7 @@ function Unit:New(unitIndex)
         iconIndex = 0,
     }
 
-    obj.iconQueue = ns.IconQueue:New(unitIndex)
+    obj.iconQueue = ns.IconQueue:New(unitType)
 
     ---@type number | nil
     obj.instantSpellBuff = nil
@@ -67,13 +67,13 @@ function Unit:Copy(from)
     -- TODO: copy other fields as well
 end
 
----@param unitId number
+---@param unitType UnitType
 ---@param spellId number
 ---@param spellIcon string
 ---@return string
-local function replaceToTrinketIfNeeded(unitId, spellId, spellIcon)
+local function replaceToTrinketIfNeeded(unitType, spellId, spellIcon)
     if spellId == 42292 then
-        if UnitFactionGroup(unitId) == "Horde" then
+        if UnitFactionGroup(unitType) == "Horde" then
             return trinketIconHorde
         else
             return trinketIconAliance
@@ -98,22 +98,25 @@ local function checkBlocklist(spellId)
     end
 end
 
----@param unitId number
+---@param unitType UnitType
 ---@return boolean
-local function unitIsChanneling(unitId)
+local function unitIsChanneling(unitType)
     local isClassic = WOW_PROJECT_ID == WOW_PROJECT_CLASSIC
 
     if not isClassic then
-      return UnitChannelInfo(unitId) ~= nil
-    elseif UnitIsUnit(unitId, "player") then
+      return UnitChannelInfo(unitType) ~= nil
+    elseif UnitIsUnit(unitType, "player") then
       return ChannelInfo() ~= nil
     else
       return false
     end
 end
 
-function Unit:OnEvent(event, spellId, unitId)
-    if not ns.settings.unitSettings[self.unitIndex].enable or checkBlocklist(spellId) then
+---@param event string
+---@param spellId number
+---@param unitType UnitType
+function Unit:OnEvent(event, spellId, unitType)
+    if not ns.settings.unitSettings[self.unitType].enable or checkBlocklist(spellId) then
         return
     end
 
@@ -131,9 +134,9 @@ function Unit:OnEvent(event, spellId, unitId)
         self.castStoppedTime = GetTime()
     elseif event == "UNIT_SPELLCAST_SUCCEEDED" then
         if self.isCasting then
-            if unitIsChanneling(unitId) then
+            if unitIsChanneling(unitType) then
                 -- show instant spells while channeling, e.g. for monk mist spells
-                self.iconQueue:AddSpell(spellId, replaceToTrinketIfNeeded(unitId, spellId, spellIcon))
+                self.iconQueue:AddSpell(spellId, replaceToTrinketIfNeeded(unitType, spellId, spellIcon))
             else
                 self.isCasting = false
             end
@@ -141,7 +144,7 @@ function Unit:OnEvent(event, spellId, unitId)
             local isSpellFromBuff = self:CheckForInstantSpellBuff(spellId)
 
             self.castStoppedTime = GetTime()
-            if unitIsChanneling(unitId) then
+            if unitIsChanneling(unitType) then
                 self.isCasting = true
             end
 
@@ -150,7 +153,7 @@ function Unit:OnEvent(event, spellId, unitId)
             end
 
             if castTime <= 0 or isSpellFromBuff then
-                self.iconQueue:AddSpell(spellId, replaceToTrinketIfNeeded(unitId, spellId, spellIcon))
+                self.iconQueue:AddSpell(spellId, replaceToTrinketIfNeeded(unitType, spellId, spellIcon))
             end
         end
     elseif event == "UNIT_SPELLCAST_STOP" then
@@ -171,7 +174,7 @@ function Unit:OnEvent(event, spellId, unitId)
         self.isCasting = false
     elseif event == "UNIT_AURA" then
         for i = 1, 20 do
-            local buffId = select(11, UnitBuff(unitId, i))
+            local buffId = select(11, UnitBuff(unitType, i))
 
             if instantSpellBuffs[buffId] then
                 self.instantSpellBuff = buffId
@@ -208,6 +211,6 @@ function Unit:CheckForInstantSpellBuff(spellId)
 end
 
 ns.units = {}
-for unitIndex = 1, 12 do
-    ns.units[unitIndex] = Unit:New(unitIndex)
+for unitType, _ in pairs(ns.settings.unitSettings) do
+    ns.units[unitType] = Unit:New(unitType)
 end
