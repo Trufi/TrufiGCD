@@ -13,12 +13,8 @@ eventFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
 eventFrame:RegisterEvent('PLAYER_TARGET_CHANGED')
 eventFrame:RegisterEvent('PLAYER_FOCUS_CHANGED')
 
--- 1 - world
--- 2 - party
--- 3 - arena
--- 4 - pvp
--- 5 - raid
-local playerLocation = 0
+--- @type "unknown" | "world" | "party" | "arena" | "pvp" | "raid"
+local playerLocation = "unknown"
 
 local addonEnabled = true
 
@@ -33,59 +29,59 @@ local function onEvent(_, event)
 
     if event == "PLAYER_REGEN_DISABLED" and enabledIn.combatOnly then -- Entering combat, specific for each zone
         if instanceType == "arena" then
-            playerLocation = 3
+            playerLocation = "arena"
             addonEnabled = enabledIn.arena
         elseif instanceType == "pvp" then
-            playerLocation = 4
+            playerLocation = "pvp"
             addonEnabled = enabledIn.battleground
         elseif instanceType == "party" then
-            playerLocation = 2
+            playerLocation = "party"
             addonEnabled = enabledIn.party
         elseif instanceType == "raid" then
-            playerLocation = 5
+            playerLocation = "raid"
             addonEnabled = enabledIn.raid
         elseif instanceType ~= "arena" or instanceType ~= "pvp" then
-            playerLocation = 1
+            playerLocation = "world"
             addonEnabled = enabledIn.world
         end
     elseif event == "PLAYER_REGEN_ENABLED" and enabledIn.combatOnly then -- Ending combat
         addonEnabled = false
     elseif event == "PLAYER_ENTERING_BATTLEGROUND" and not enabledIn.combatOnly then -- if not Combat only, try to load at locations
         if instanceType == "arena" then
-            playerLocation = 3
+            playerLocation = "arena"
             addonEnabled = enabledIn.arena
         elseif instanceType == "pvp" then
-            playerLocation = 4
+            playerLocation = "pvp"
             addonEnabled = enabledIn.battleground
         end
     elseif event == "PLAYER_ENTERING_WORLD" and not enabledIn.combatOnly then -- if not Combat only, try to load at locations
         if instanceType == "party" then
-            playerLocation = 2
+            playerLocation = "party"
             addonEnabled = enabledIn.party
         elseif instanceType == "raid" then
-            playerLocation = 5
+            playerLocation = "raid"
             addonEnabled = enabledIn.raid
         elseif instanceType ~= "arena" or instanceType ~= "pvp" then
-            playerLocation = 1
+            playerLocation = "world"
             addonEnabled = enabledIn.world
         end
     elseif event == "PLAYER_ENTERING_BATTLEGROUND" and enabledIn.combatOnly then -- if Combat only and just loaded in location
         if instanceType == "arena" then
-            playerLocation = 3
+            playerLocation = "arena"
             if enabledIn.arena then addonEnabled = false end
         elseif instanceType == "pvp" then
-            playerLocation = 4
+            playerLocation = "pvp"
             if enabledIn.battleground then addonEnabled = false end
         end
     elseif event == "PLAYER_ENTERING_WORLD" and enabledIn.combatOnly then -- if Combat only and just loaded in location
         if instanceType == "party" then
-            playerLocation = 2
+            playerLocation = "party"
             if enabledIn.party then addonEnabled = false end
         elseif instanceType == "raid" then
-            playerLocation = 5
+            playerLocation = "raid"
             if enabledIn.raid then addonEnabled = false end
         elseif instanceType ~= "arena" or instanceType ~= "pvp" then
-            playerLocation = 1
+            playerLocation = "world"
             if enabledIn.world then addonEnabled = false end
         end
     end
@@ -96,15 +92,15 @@ eventFrame:SetScript("OnEvent", onEvent)
 locationCheck.settingsChanged = function()
     if not ns.settings.enabledIn.enabled or ns.settings.enabledIn.combatOnly then
         addonEnabled = false
-    elseif playerLocation == 1 then
+    elseif playerLocation == "world" then
         addonEnabled = ns.settings.enabledIn.world
-    elseif playerLocation == 2 then
+    elseif playerLocation == "party" then
         addonEnabled = ns.settings.enabledIn.party
-    elseif playerLocation == 3 then
+    elseif playerLocation == "arena" then
         addonEnabled = ns.settings.enabledIn.arena
-    elseif playerLocation == 4 then
+    elseif playerLocation == "pvp" then
         addonEnabled = ns.settings.enabledIn.battleground
-    elseif playerLocation == 5 then
+    elseif playerLocation == "raid" then
         addonEnabled = ns.settings.enabledIn.raid
     end
 
