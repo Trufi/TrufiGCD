@@ -1,6 +1,7 @@
 ---@type string, Namespace
 local _, ns = ...
 
+---Watches for player location changes and turns on/off the addon according to location settings.
 ---@class LocationCheck
 local locationCheck = {}
 ns.locationCheck = locationCheck

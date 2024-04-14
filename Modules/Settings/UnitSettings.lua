@@ -25,7 +25,7 @@ local unitLabels = {
 ---@field text string
 ---@field direction Direction
 ---@field iconSize number Icon size
----@field iconsNumber number Unit frame width in icon number
+---@field iconsNumber number Unit frame width in icons number
 local UnitSettings = {}
 UnitSettings.__index = UnitSettings
 ns.UnitSettings = UnitSettings

@@ -9,6 +9,7 @@ local iconHidingDelay = 3
 
 local innerIconsNumber = 10
 
+---Represents a queue of moving ability icons. 
 ---@class IconQueue
 local IconQueue = {}
 IconQueue.__index = IconQueue

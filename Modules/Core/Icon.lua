@@ -3,6 +3,8 @@ local _, ns = ...
 
 local crossTexture = "Interface\\TargetingFrame\\UI-RaidTargetingIcon_7"
 
+---Represents an ability icon moving in the queue.
+---It displays an icon texture and a cross texture if the cast ability was canceled.
 ---@class Icon
 local Icon = {}
 Icon.__index = Icon

@@ -1,5 +1,7 @@
 -- TrufiGCD stevemyz@gmail.com
 
+-- The module initializes settings and provides all necessary user events to the modules.
+
 ---@type string, Namespace
 local _, ns = ...
 

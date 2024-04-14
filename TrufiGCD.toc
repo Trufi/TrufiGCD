@@ -8,18 +8,24 @@
 # Libraries
 Libs\LibStub\Libstub.lua
 
-# Modules
+# Utility modules
 Modules\MasqueHelper.lua
 Modules\Constants.lua
-Modules\InnerBlocklist.lua
-Modules\Icon.lua
-Modules\IconQueue.lua
-Modules\UnitSettings.lua
-Modules\Settings.lua
-Modules\LocationCheck.lua
-Modules\Units.lua
-Modules\SettingsFrame.lua
-Modules\BlocklistFrame.lua
+
+# Settings modules
+Modules\Settings\InnerBlocklist.lua
+Modules\Settings\UnitSettings.lua
+Modules\Settings\Settings.lua
+
+# Core modules
+Modules\Core\Icon.lua
+Modules\Core\IconQueue.lua
+Modules\Core\LocationCheck.lua
+Modules\Core\Units.lua
+
+# Frames
+Modules\Frames\SettingsFrame.lua
+Modules\Frames\BlocklistFrame.lua
 
 # Addon
 TrufiGCD.lua
