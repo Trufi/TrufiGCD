@@ -32,7 +32,7 @@ function Unit:New(unitType)
     ---@class Unit
     local obj = setmetatable({}, Unit)
     obj.unitType = unitType
-    obj.isCasting = false
+    obj.castingSpellId = nil
 
     ---@type number
     obj.castStoppedTime = GetTime()
@@ -55,13 +55,13 @@ function Unit:New(unitType)
 end
 
 function Unit:Clear()
-    self.isCasting = false
+    self.castingSpellId = nil
     self.iconQueue:Clear()
 end
 
 ---@param from Unit
 function Unit:Copy(from)
-    self.isCasting = from.isCasting
+    self.castingSpellId = from.castingSpellId
     self.castStoppedTime = from.castStoppedTime
     self.iconQueue:Copy(from.iconQueue)
     -- TODO: copy other fields as well
@@ -130,22 +130,22 @@ function Unit:OnEvent(event, spellId, unitType)
 
     if event == "UNIT_SPELLCAST_START" then
         self.iconQueue:AddSpell(spellId, spellIcon)
-        self.isCasting = true
+        self.castingSpellId = spellId
         self.castStoppedTime = GetTime()
     elseif event == "UNIT_SPELLCAST_SUCCEEDED" then
-        if self.isCasting then
-            if unitIsChanneling(unitType) then
-                -- show instant spells while channeling, e.g. for monk mist spells
+        if self.castingSpellId then
+            -- show instant spells while channeling or casting, e.g. for monk mist spells or mage's Ice Floes 
+            if self.castingSpellId ~= spellId then
                 self.iconQueue:AddSpell(spellId, replaceToTrinketIfNeeded(unitType, spellId, spellIcon))
             else
-                self.isCasting = false
+                self.castingSpellId = nil
             end
         else
             local isSpellFromBuff = self:CheckForInstantSpellBuff(spellId)
 
             self.castStoppedTime = GetTime()
             if unitIsChanneling(unitType) then
-                self.isCasting = true
+                self.castingSpellId = spellId
             end
 
             if GetTime() - self.castStoppedTime < 1 and self.canceledSpell.id == spellId and isSpellFromBuff == false then
@@ -157,11 +157,11 @@ function Unit:OnEvent(event, spellId, unitType)
             end
         end
     elseif event == "UNIT_SPELLCAST_STOP" then
-        if not self.isCasting then
+        if not self.castingSpellId then
             return
         end
 
-        self.isCasting = false
+        self.castingSpellId = nil
 
         self.canceledSpell = {
             id = spellId,
@@ -171,7 +171,7 @@ function Unit:OnEvent(event, spellId, unitType)
             iconIndex = self.iconQueue:ShowCancel()
         }
     elseif event == "UNIT_SPELLCAST_CHANNEL_STOP" then
-        self.isCasting = false
+        self.castingSpellId = nil
     elseif event == "UNIT_AURA" then
         for i = 1, 20 do
             local buffId = select(11, UnitBuff(unitType, i))
@@ -189,10 +189,10 @@ end
 function Unit:Update(time, interval)
     -- fix for stale icons
     if time - self.castStoppedTime > 10 then
-        self.isCasting = false
+        self.castingSpellId = nil
     end
 
-    self.iconQueue:Update(interval, self.isCasting)
+    self.iconQueue:Update(interval, self.castingSpellId ~= nil)
 end
 
 ---@private
