@@ -350,12 +350,17 @@ labelFade:SetPoint("TOPLEFT", 105, -65)
 local labelSize = frame:CreateFontString(nil, "BACKGROUND")
 labelSize:SetFont(STANDARD_TEXT_FONT, 12)
 labelSize:SetText("Icons size")
-labelSize:SetPoint("TOPLEFT", 245, -65)
+labelSize:SetPoint("TOPLEFT", 195, -65)
 
 local labelNumber = frame:CreateFontString(nil, "BACKGROUND")
 labelNumber:SetFont(STANDARD_TEXT_FONT, 12)
 labelNumber:SetText("Icons number")
-labelNumber:SetPoint("TOPLEFT", 390, -65)
+labelNumber:SetPoint("TOPLEFT", 290, -65)
+
+local labelScale = frame:CreateFontString(nil, "BACKGROUND")
+labelScale:SetFont(STANDARD_TEXT_FONT, 12)
+labelScale:SetText("Scale")
+labelScale:SetPoint("TOPLEFT", 405, -65)
 
 ---@class UnitSettingsFrame
 local UnitSettingsFrame = {}
@@ -440,8 +445,8 @@ function UnitSettingsFrame:New(unitType, offset)
 
     ---Size Slider
     obj.sizeSlider = CreateFrame("Slider", "trgcdframesizeslider" .. unitType, frame, "OptionsSliderTemplate")
-    obj.sizeSlider:SetWidth(170)
-    obj.sizeSlider:SetPoint("TOPLEFT", 190, -55 - offset * 40)
+    obj.sizeSlider:SetWidth(100)
+    obj.sizeSlider:SetPoint("TOPLEFT", 175, -55 - offset * 40)
     _G[obj.sizeSlider:GetName() .. 'Low']:SetText('10')
     _G[obj.sizeSlider:GetName() .. 'High']:SetText('100')
     _G[obj.sizeSlider:GetName() .. 'Text']:SetText(queueSettings.iconSize)
@@ -461,18 +466,39 @@ function UnitSettingsFrame:New(unitType, offset)
 
     ---Icons number slider
     obj.iconsNumber = CreateFrame("Slider", "trgcdframewidthslider" .. unitType, frame, "OptionsSliderTemplate")
-    obj.iconsNumber:SetWidth(100)
-    obj.iconsNumber:SetPoint("TOPLEFT", 390, -55 - offset * 40)
+    obj.iconsNumber:SetWidth(80)
+    obj.iconsNumber:SetPoint("TOPLEFT", 290, -55 - offset * 40)
     _G[obj.iconsNumber:GetName() .. 'Low']:SetText('1')
     _G[obj.iconsNumber:GetName() .. 'High']:SetText('8')
     _G[obj.iconsNumber:GetName() .. 'Text']:SetText(queueSettings.iconsNumber)
-    obj.iconsNumber:SetMinMaxValues(1,8)
+    obj.iconsNumber:SetMinMaxValues(1, 8)
     obj.iconsNumber:SetValueStep(1)
     obj.iconsNumber:SetValue(queueSettings.iconsNumber)
     obj.iconsNumber:SetScript("OnValueChanged", function (_, value)
         value = math.ceil(value)
         _G[obj.iconsNumber:GetName() .. 'Text']:SetText(value)
         queueSettings.iconsNumber = value
+        ns.settings:SaveToCharacterSavedVariables()
+
+        ns.units[unitType].iconQueue:Resize()
+        ns.units[unitType]:Clear()
+    end)
+    obj.iconsNumber:Show()
+
+    ---Icons scale slider
+    obj.scaleSlider = CreateFrame("Slider", "trgcdframescaleslider" .. unitType, frame, "OptionsSliderTemplate")
+    obj.scaleSlider:SetWidth(80)
+    obj.scaleSlider:SetPoint("TOPLEFT", 385, -55 - offset * 40)
+    _G[obj.scaleSlider:GetName() .. 'Low']:SetText('0.5')
+    _G[obj.scaleSlider:GetName() .. 'High']:SetText('2')
+    _G[obj.scaleSlider:GetName() .. 'Text']:SetText(queueSettings.iconScale)
+    obj.scaleSlider:SetMinMaxValues(0.5, 2)
+    obj.scaleSlider:SetValueStep(0.1)
+    obj.scaleSlider:SetValue(queueSettings.iconScale)
+    obj.scaleSlider:SetScript("OnValueChanged", function (_, value)
+        value = math.ceil(value * 10) / 10
+        _G[obj.scaleSlider:GetName() .. 'Text']:SetText(value)
+        queueSettings.iconScale = value
         ns.settings:SaveToCharacterSavedVariables()
 
         ns.units[unitType].iconQueue:Resize()
@@ -494,6 +520,9 @@ function UnitSettingsFrame:SyncWithSettings()
 
     _G[self.iconsNumber:GetName() .. 'Text']:SetText(queueSettings.iconsNumber)
     self.iconsNumber:SetValue(queueSettings.iconsNumber)
+
+    _G[self.scaleSlider:GetName() .. 'Text']:SetText(queueSettings.iconScale)
+    self.scaleSlider:SetValue(queueSettings.iconScale)
 
     local iconQueue = ns.units[self.unitType].iconQueue
     iconQueue:Resize()

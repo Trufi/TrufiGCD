@@ -39,13 +39,19 @@ function Icon:New(params)
     end)
 
     obj.texture = obj.frame:CreateTexture(nil, "BACKGROUND")
-    obj.texture:SetAllPoints(obj.frame)
+    obj.texture:SetPoint('CENTER', obj.frame)
+
+    obj.mask = obj.frame:CreateMaskTexture()
+    obj.mask:SetAllPoints(obj.frame)
+    obj.mask:SetTexture("Interface\\AddOns\\WeakAuras\\Media\\Textures\\Square_FullWhite", "CLAMPTOBLACKADDITIVE", "CLAMPTOBLACKADDITIVE", "NEAREST")
+    obj.texture:AddMaskTexture(obj.mask)
 
     obj.cancelTexture = obj.frame:CreateTexture(nil, "BORDER")
     obj.cancelTexture:SetAllPoints(obj.frame)
     obj.cancelTexture:SetTexture(crossTexture)
     obj.cancelTexture:SetAlpha(1)
     obj.cancelTexture:Hide()
+    obj.cancelTexture:AddMaskTexture(obj.mask)
 
     obj:Resize()
 
@@ -74,8 +80,9 @@ end
 
 function Icon:Resize()
     local settings = ns.settings.unitSettings[self.unitType]
-    self.frame:SetWidth(settings.iconSize)
-    self.frame:SetHeight(settings.iconSize)
+    self.frame:SetSize(settings.iconSize, settings.iconSize)
+    self.texture:SetSize(settings.iconSize, settings.iconSize)
+    self.texture:SetScale(settings.iconScale)
 end
 
 function Icon:Clear()

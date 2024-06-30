@@ -26,6 +26,7 @@ local unitLabels = {
 ---@field direction Direction
 ---@field iconSize number Icon size
 ---@field iconsNumber number Unit frame width in icons number
+---@field iconScale number Scale of the icon texture
 local UnitSettings = {}
 UnitSettings.__index = UnitSettings
 ns.UnitSettings = UnitSettings
@@ -47,6 +48,7 @@ function UnitSettings:SetToDefaults()
     self.direction = "Left"
     self.iconSize = 30
     self.iconsNumber = 3
+    self.iconScale = 1
 end
 
 ---@param savedVariables table
@@ -58,6 +60,7 @@ function UnitSettings:CopyToSavedVariables(savedVariables)
     savedVariables.fade = self.direction
     savedVariables.size = self.iconSize
     savedVariables.width = self.iconsNumber
+    savedVariables.iconScale = self.iconScale
 end
 
 ---@param savedVariables table
@@ -82,5 +85,8 @@ function UnitSettings:SetFromSavedVariables(savedVariables)
     end
     if type(savedVariables.width) == "number" then
         self.iconsNumber = savedVariables.width
+    end
+    if type(savedVariables.iconScale) == "number" then
+        self.iconScale = savedVariables.iconScale
     end
 end
