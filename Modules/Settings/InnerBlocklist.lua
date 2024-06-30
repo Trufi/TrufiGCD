@@ -53,6 +53,8 @@ ns.innerBlockList = {
     384338, -- Tinker Safety Fuses (DF Engineering Item)
     384489, -- Spring-Loaded Capacitor Casing (DF Engineering Item)
     146739, -- Corruption (Warlock Affliction)
+    148187, -- Rushing Jade Wind (Monk)
+    126664, -- Charge (second)
 
     -- Unverified - from GCD History
     184707, -- Rampage
