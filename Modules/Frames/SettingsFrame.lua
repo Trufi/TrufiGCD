@@ -91,7 +91,7 @@ end)
 local buttonLoad = CreateFrame("Button", nil, frame, "UIPanelButtonTemplate")
 buttonLoad:SetWidth(100)
 buttonLoad:SetHeight(22)
-buttonLoad:SetPoint("TOPRIGHT", -145, -30)
+buttonLoad:SetPoint("TOPRIGHT", -165, -30)
 buttonLoad:SetText("Load")
 buttonLoad:SetScript("OnClick", function()
     ns.settings:LoadFromGlobalSavedVariables()
@@ -108,7 +108,7 @@ buttonLoadText:SetPoint("TOP", 0, 10)
 local buttonSave = CreateFrame("Button", nil, frame, "UIPanelButtonTemplate")
 buttonSave:SetWidth(100)
 buttonSave:SetHeight(22)
-buttonSave:SetPoint("TOPRIGHT", -260, -30)
+buttonSave:SetPoint("TOPRIGHT", -300, -30)
 buttonSave:SetText("Save")
 buttonSave:SetScript("OnClick", function()
     ns.settings:SaveToGlobalSavedVariables()
@@ -135,36 +135,6 @@ buttonRestoreText:SetFont(STANDARD_TEXT_FONT, 10)
 buttonRestoreText:SetText("Restore default settings")
 buttonRestoreText:SetPoint("TOP", 0, 10)
 
----@class CheckButtonOptions
----@field x number
----@field y number
----@field position Point
----@field text string
----@field name string
----@field checked boolean
----@field tooltip? string
----@field onClick fun(button: any): nil
-
----@param opts CheckButtonOptions
-local function CreateCheckButton(opts)
-    local button = CreateFrame("CheckButton", opts.name, frame, "ChatConfigCheckButtonTemplate")
-    button:SetPoint(opts.position, opts.x, opts.y)
-    button:SetChecked(opts.checked)
-    _G[opts.name .. 'Text']:SetText(opts.text)
-    button:SetScript("OnEnter", function(self)
-        if opts.tooltip then
-            GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-            GameTooltip:SetText(opts.tooltip, nil, nil, nil, nil, 1)
-        end
-    end)
-    button:SetScript("OnLeave", function()
-        GameTooltip:Hide()
-    end)
-    button:SetScript("OnClick", function()
-        opts.onClick(button)
-    end)
-    return button
-end
 
 ---tooltip settings
 local tooltipText = frame:CreateFontString(nil, "BACKGROUND")
@@ -173,7 +143,8 @@ tooltipText:SetText("Tooltip:")
 tooltipText:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -70, -360)
 
 ---enable tooltip checkbox
-local tooltipEnableCheckbox = CreateCheckButton({
+local tooltipEnableCheckbox = ns.frameUtils.createCheckButton({
+    frame = frame,
     text = "Enable",
     position = "TOPRIGHT",
     x = -90,
@@ -188,7 +159,8 @@ local tooltipEnableCheckbox = CreateCheckButton({
 })
 
 ---Stop moving with displayed tooltip checkbox
-local stopMovingCheckbox = CreateCheckButton({
+local stopMovingCheckbox = ns.frameUtils.createCheckButton({
+    frame = frame,
     text = "Stop icons",
     position = "TOPRIGHT",
     x = -90,
@@ -203,7 +175,8 @@ local stopMovingCheckbox = CreateCheckButton({
 })
 
 ---Print spell ID to the chat checkbox
-local spellIdCheckbox = CreateCheckButton({
+local spellIdCheckbox = ns.frameUtils.createCheckButton({
+    frame = frame,
     text = "Spell ID",
     position = "TOPRIGHT",
     x = -90,
@@ -218,7 +191,8 @@ local spellIdCheckbox = CreateCheckButton({
 })
 
 ---Scrolling icons checkbox
-local scrollingCheckbox = CreateCheckButton({
+local scrollingCheckbox = ns.frameUtils.createCheckButton({
+    frame = frame,
     text = "Scrolling icons",
     position = "TOPRIGHT",
     x = -90,
@@ -238,7 +212,8 @@ enableInText:SetFont(STANDARD_TEXT_FONT, 12)
 enableInText:SetText("Enable in:")
 enableInText:SetPoint("TOPRIGHT", -53, -175)
 
-local combatOnlyCheckbox = CreateCheckButton({
+local combatOnlyCheckbox = ns.frameUtils.createCheckButton({
+    frame = frame,
     text = "Combat only",
     position = "TOPRIGHT",
     x = -90,
@@ -252,7 +227,8 @@ local combatOnlyCheckbox = CreateCheckButton({
     end
 })
 
-local enableCheckbox = CreateCheckButton({
+local enableCheckbox = ns.frameUtils.createCheckButton({
+    frame = frame,
     text = "Enable addon",
     position = "TOPRIGHT",
     x = -90,
@@ -266,7 +242,8 @@ local enableCheckbox = CreateCheckButton({
     end
 })
 
-local worldCheckbox = CreateCheckButton({
+local worldCheckbox = ns.frameUtils.createCheckButton({
+    frame = frame,
     text = "World",
     position = "TOPRIGHT",
     x = -90,
@@ -280,7 +257,8 @@ local worldCheckbox = CreateCheckButton({
     end
 })
 
-local partyCheckbox = CreateCheckButton({
+local partyCheckbox = ns.frameUtils.createCheckButton({
+    frame = frame,
     text = "Party",
     position = "TOPRIGHT",
     x = -90,
@@ -294,7 +272,8 @@ local partyCheckbox = CreateCheckButton({
     end
 })
 
-local raidCheckbox = CreateCheckButton({
+local raidCheckbox = ns.frameUtils.createCheckButton({
+    frame = frame,
     text = "Raid",
     position = "TOPRIGHT",
     x = -90,
@@ -308,7 +287,8 @@ local raidCheckbox = CreateCheckButton({
     end
 })
 
-local arenaCheckbox = CreateCheckButton({
+local arenaCheckbox = ns.frameUtils.createCheckButton({
+    frame = frame,
     text = "Arena",
     position = "TOPRIGHT",
     x = -90,
@@ -322,7 +302,8 @@ local arenaCheckbox = CreateCheckButton({
     end
 })
 
-local battlegroundCheckbox = CreateCheckButton({
+local battlegroundCheckbox = ns.frameUtils.createCheckButton({
+    frame = frame,
     text = "Battleground",
     position = "TOPRIGHT",
     x = -90,
@@ -370,7 +351,8 @@ function UnitSettingsFrame:New(unitType, offset)
     local obj = setmetatable({}, UnitSettingsFrame)
     obj.unitType = unitType
 
-    obj.buttonEnable = CreateCheckButton({
+    obj.buttonEnable = ns.frameUtils.createCheckButton({
+        frame = frame,
         text = queueSettings.text,
         position = "TOPLEFT",
         x = 10,

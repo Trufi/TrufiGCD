@@ -1,4 +1,5 @@
 ---@class Namespace
+---@field frameUtils FrameUtils
 ---@field UnitSettings UnitSettings
 ---@field Icon Icon
 ---@field IconQueue IconQueue

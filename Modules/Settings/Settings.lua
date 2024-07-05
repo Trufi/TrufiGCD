@@ -35,6 +35,7 @@ function Settings:SetToDefaults()
     self.tooltipEnabled = true
     self.tooltipPrintSpellId = false
     self.tooltipStopScroll = true
+    self.iconClickAddsSpellToBlocklist = false
 
     for _, unitSettings in ipairs(self.unitSettings) do
         unitSettings:SetToDefaults()
@@ -128,6 +129,9 @@ function Settings:SetFromSavedVariables(savedVariables)
     if type(savedVariables.TooltipStopMove) == "boolean" then
         self.tooltipStopScroll = savedVariables.TooltipStopMove
     end
+    if type(savedVariables.iconClickAddsSpellToBlocklist) == "boolean" then
+        self.iconClickAddsSpellToBlocklist = savedVariables.iconClickAddsSpellToBlocklist
+    end
 
     if type(savedVariables.TrGCDQueueFr) == "table" then
         for unitIndex = 1, 12 do
@@ -167,6 +171,7 @@ function Settings:CopyToSavedVariables(savedVariables)
     savedVariables.TooltipEnable = self.tooltipEnabled
     savedVariables.TooltipSpellID = self.tooltipPrintSpellId
     savedVariables.TooltipStopMove = self.tooltipStopScroll
+    savedVariables.iconClickAddsSpellToBlocklist = self.iconClickAddsSpellToBlocklist
 
     savedVariables.TrGCDQueueFr = {}
     for unitIndex = 1, 12 do

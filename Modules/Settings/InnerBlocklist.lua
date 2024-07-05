@@ -55,6 +55,7 @@ ns.innerBlockList = {
     146739, -- Corruption (Warlock Affliction)
     148187, -- Rushing Jade Wind (Monk)
     126664, -- Charge (second)
+    408385, -- Crusader Strikes (Paladin talent that replaces auto-attack)
 
     -- Unverified - from GCD History
     184707, -- Rampage

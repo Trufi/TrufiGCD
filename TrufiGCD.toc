@@ -1,4 +1,4 @@
-## Interface: 100205
+## Interface: 100207
 ## Title: TrufiGCD
 ## Notes: View queue of last spells
 ## SavedVariables: TrufiGCDGlSave
@@ -11,6 +11,7 @@ Libs\LibStub\Libstub.lua
 # Utility modules
 Modules\MasqueHelper.lua
 Modules\Constants.lua
+Modules\Frames\FrameUtils.lua
 
 # Settings modules
 Modules\Settings\InnerBlocklist.lua

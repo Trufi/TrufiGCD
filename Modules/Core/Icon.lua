@@ -37,6 +37,7 @@ function Icon:New(params)
         params:onMouseLeave()
         GameTooltip_Hide()
     end)
+    obj.frame:SetScript("OnClick", function() obj:AddToBlocklist() end)
 
     obj.texture = obj.frame:CreateTexture(nil, "BACKGROUND")
     obj.texture:SetAllPoints(obj.frame)
@@ -164,6 +165,22 @@ function Icon:ShowTooltip()
             else
                 print("ID: " .. self.spellId)
             end
+        end
+    end
+end
+
+---@private
+function Icon:AddToBlocklist()
+    if ns.settings.iconClickAddsSpellToBlocklist and IsControlKeyDown() and IsAltKeyDown() then
+        table.insert(ns.settings.blocklist, self.spellId)
+        ns.settings:SaveBlocklistToCharacterSavedVariables()
+        ns.blocklistFrame.syncWithSettings()
+
+        local spellLink = GetSpellLink(self.spellId)
+        if spellLink then
+            print("[TrufiGCD]: " .. spellLink .. " spell with ID \"" .. self.spellId .. "\" added to the blocklist")
+        else
+            print("[TrufiGCD]: A spell with ID \"" .. self.spellId .. "\" added to the blocklist")
         end
     end
 end

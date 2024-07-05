@@ -119,6 +119,21 @@ for i = 1, 60 do
     end)
 end
 
+local addOnIconClickCheckbox = ns.frameUtils.createCheckButton({
+    frame = frame,
+    text = "Add by Ctrl+Alt+Click on icon",
+    position = "TOPLEFT",
+    x = 260,
+    y = -280,
+    name = "TrGCDCheckiconClickAddsSpellToBlocklist",
+    checked = ns.settings.iconClickAddsSpellToBlocklist,
+    tooltip = "Add a spell to blocklist by Ctrl+Alt+Click on the spell icon",
+    onClick = function()
+        ns.settings.iconClickAddsSpellToBlocklist = not ns.settings.iconClickAddsSpellToBlocklist
+        ns.settings:SaveToCharacterSavedVariables()
+    end
+})
+
 blocklistFrame.syncWithSettings = function()
 	for i = 1, 60 do
         local spellId = ns.settings.blocklist[i]
@@ -139,6 +154,8 @@ blocklistFrame.syncWithSettings = function()
             item.texture:SetAlpha(0)
         end
     end
+
+    addOnIconClickCheckbox:SetChecked(ns.settings.iconClickAddsSpellToBlocklist)
 end
 blocklistFrame.syncWithSettings()
 
@@ -219,7 +236,7 @@ buttonAddText:SetPoint("TOPLEFT", 5, 40)
 local buttonLoad = CreateFrame("Button", nil, frame, "UIPanelButtonTemplate")
 buttonLoad:SetWidth(100)
 buttonLoad:SetHeight(22)
-buttonLoad:SetPoint("TOPRIGHT", -145, -30)
+buttonLoad:SetPoint("TOPRIGHT", -165, -30)
 buttonLoad:SetText("Load")
 buttonLoad:SetScript("OnClick", function()
     ns.settings:LoadBlocklistFromGlobalSavedVariables()
@@ -234,7 +251,7 @@ buttonLoadText:SetPoint("TOP", 0, 10)
 local buttonSave = CreateFrame("Button", nil, frame, "UIPanelButtonTemplate")
 buttonSave:SetWidth(100)
 buttonSave:SetHeight(22)
-buttonSave:SetPoint("TOPRIGHT", -260, -30)
+buttonSave:SetPoint("TOPRIGHT", -300, -30)
 buttonSave:SetText("Save")
 buttonSave:SetScript("OnClick", function()
     ns.settings:SaveBlocklistToGlobalSavedVariables()
