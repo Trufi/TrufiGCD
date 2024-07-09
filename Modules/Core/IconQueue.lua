@@ -17,7 +17,7 @@ ns.IconQueue = IconQueue
 
 ---@param unitType UnitType
 function IconQueue:New(unitType)
-    local settings = ns.settings.unitSettings[unitType]
+    local settings = ns.settings.activeProfile.unitSettings[unitType]
 
     ---@class IconQueue
     local obj = setmetatable({}, IconQueue)
@@ -61,7 +61,7 @@ function IconQueue:New(unitType)
             parentFrame = obj.frame,
             unitType = unitType,
             onMouseEnter = function()
-                if ns.settings.tooltipEnabled and ns.settings.tooltipStopScroll then
+                if ns.settings.activeProfile.tooltipEnabled and ns.settings.activeProfile.tooltipStopScroll then
                     obj.isMoving = false
                 end
             end,
@@ -110,7 +110,7 @@ function IconQueue:Update(interval, isCasting)
         return
     end
 
-    local settings = ns.settings.unitSettings[self.unitType]
+    local settings = ns.settings.activeProfile.unitSettings[self.unitType]
 
     if #self.nextIconIndices > 0 and self.buffer >= settings.iconSize then
         self:ShowNextIcon()
@@ -133,13 +133,13 @@ function IconQueue:Update(interval, isCasting)
 
     for _, icon in ipairs(self.icons) do
         if icon.displayed then
-            if ns.settings.iconsScroll or fastSpeedDuration > 0 then
+            if ns.settings.activeProfile.iconsScroll or fastSpeedDuration > 0 then
                 icon.offset = icon.offset - offsetDelta
             end
 
             icon:UpdatePosition()
 
-            if not ns.settings.iconsScroll then
+            if not ns.settings.activeProfile.iconsScroll then
                 local elapsedTime = GetTime() - icon.startTime
 
                 if elapsedTime > iconHidingDuration + iconHidingDelay then
@@ -156,14 +156,14 @@ function IconQueue:Update(interval, isCasting)
 
                 if alpha < 0 then
                     icon:Hide()
-                elseif ns.settings.iconsScroll then
+                elseif ns.settings.activeProfile.iconsScroll then
                     icon.frame:SetAlpha(alpha)
                 end
             end
         end
     end
 
-    if ns.settings.iconsScroll or fastSpeedDuration > 0 then
+    if ns.settings.activeProfile.iconsScroll or fastSpeedDuration > 0 then
         self.buffer = self.buffer + offsetDelta
     end
 end
@@ -203,7 +203,7 @@ function IconQueue:Clear()
 end
 
 function IconQueue:Resize()
-    local settings = ns.settings.unitSettings[self.unitType]
+    local settings = ns.settings.activeProfile.unitSettings[self.unitType]
     if settings.direction == "Left" or settings.direction == "Right" then
         self.frame:SetWidth(settings.iconsNumber * settings.iconSize)
         self.frame:SetHeight(settings.iconSize)
@@ -220,7 +220,7 @@ function IconQueue:Resize()
 end
 
 function IconQueue:UpdateOffset()
-    local settings = ns.settings.unitSettings[self.unitType]
+    local settings = ns.settings.activeProfile.unitSettings[self.unitType]
     self.frame:ClearAllPoints()
     self.frame:SetPoint(settings.point, settings.x, settings.y)
 end

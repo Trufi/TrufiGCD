@@ -91,7 +91,7 @@ local function checkBlocklist(spellId)
         end
     end
 
-    for _, blockedSpellId in ipairs(ns.settings.blocklist) do
+    for _, blockedSpellId in ipairs(ns.settings.activeProfile.blocklist) do
         if blockedSpellId == spellId then
             return true
         end
@@ -116,7 +116,7 @@ end
 ---@param spellId number
 ---@param unitType UnitType
 function Unit:OnEvent(event, spellId, unitType)
-    if not ns.settings.unitSettings[self.unitType].enable or checkBlocklist(spellId) then
+    if not ns.settings.activeProfile.unitSettings[self.unitType].enable or checkBlocklist(spellId) then
         return
     end
 
@@ -211,6 +211,6 @@ function Unit:CheckForInstantSpellBuff(spellId)
 end
 
 ns.units = {}
-for unitType, _ in pairs(ns.settings.unitSettings) do
+for _, unitType in ipairs(ns.constants.unitTypes) do
     ns.units[unitType] = Unit:New(unitType)
 end

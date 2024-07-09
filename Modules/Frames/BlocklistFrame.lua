@@ -126,17 +126,17 @@ local addOnIconClickCheckbox = ns.frameUtils.createCheckButton({
     x = 260,
     y = -280,
     name = "TrGCDCheckiconClickAddsSpellToBlocklist",
-    checked = ns.settings.iconClickAddsSpellToBlocklist,
+    checked = ns.settings.activeProfile.iconClickAddsSpellToBlocklist,
     tooltip = "Add a spell to blocklist by Ctrl+Alt+Click on the spell icon",
     onClick = function()
-        ns.settings.iconClickAddsSpellToBlocklist = not ns.settings.iconClickAddsSpellToBlocklist
-        ns.settings:SaveToCharacterSavedVariables()
+        ns.settings.activeProfile.iconClickAddsSpellToBlocklist = not ns.settings.activeProfile.iconClickAddsSpellToBlocklist
+        ns.settings:Save()
     end
 })
 
 blocklistFrame.syncWithSettings = function()
 	for i = 1, 60 do
-        local spellId = ns.settings.blocklist[i]
+        local spellId = ns.settings.activeProfile.blocklist[i]
         local item = items[i]
         if spellId ~= nil then
             item.button:Enable()
@@ -155,7 +155,7 @@ blocklistFrame.syncWithSettings = function()
         end
     end
 
-    addOnIconClickCheckbox:SetChecked(ns.settings.iconClickAddsSpellToBlocklist)
+    addOnIconClickCheckbox:SetChecked(ns.settings.activeProfile.iconClickAddsSpellToBlocklist)
 end
 blocklistFrame.syncWithSettings()
 
@@ -166,9 +166,9 @@ buttonDelete:SetPoint("TOPLEFT", 260, -130)
 buttonDelete:SetText("Delete")
 buttonDelete:SetScript("OnClick", function()
     if selectedItem then
-        table.remove(ns.settings.blocklist, selectedItem.index)
+        table.remove(ns.settings.activeProfile.blocklist, selectedItem.index)
         selectedItemText:SetText("Select spell to delete")
-        ns.settings:SaveBlocklistToCharacterSavedVariables()
+        ns.settings:Save()
         blocklistFrame.syncWithSettings()
     end
 end)
@@ -184,7 +184,7 @@ input:SetAutoFocus(false)
 input:SetScript("OnEscapePressed", function(self) self:ClearFocus() end)
 
 local function addItem()
-    if #ns.settings.blocklist >= 60 then
+    if #ns.settings.activeProfile.blocklist >= 60 then
         print("[TrufiGCD]: blocklist has exceeded its limit of 60 items")
         return
     end
@@ -198,7 +198,7 @@ local function addItem()
     local inputSpellId = tonumber(inputValue)
 
     if inputSpellId ~= nil then
-        table.insert(ns.settings.blocklist, inputSpellId)
+        table.insert(ns.settings.activeProfile.blocklist, inputSpellId)
     else
         local spellName = inputValue
 
@@ -210,11 +210,11 @@ local function addItem()
             return
         end
 
-        table.insert(ns.settings.blocklist, spellId)
+        table.insert(ns.settings.activeProfile.blocklist, spellId)
         print("[TrufiGCD]: converted \"" .. spellName .. "\" to spell ID \"" .. spellId .. "\". If this is not the desired spell ID, provide the exact ID of the spell you wish to block as multiple ones with this name may exist.")
     end
 
-    ns.settings:SaveBlocklistToCharacterSavedVariables()
+    ns.settings:Save()
     blocklistFrame.syncWithSettings()
     input:SetText("")
     input:ClearFocus()
@@ -232,48 +232,3 @@ local buttonAddText = buttonAdd:CreateFontString(nil, "BACKGROUND")
 buttonAddText:SetFont(STANDARD_TEXT_FONT, 12)
 buttonAddText:SetText("Enter spell ID or name")
 buttonAddText:SetPoint("TOPLEFT", 5, 40)
-
-local buttonLoad = CreateFrame("Button", nil, frame, "UIPanelButtonTemplate")
-buttonLoad:SetWidth(100)
-buttonLoad:SetHeight(22)
-buttonLoad:SetPoint("TOPRIGHT", -165, -30)
-buttonLoad:SetText("Load")
-buttonLoad:SetScript("OnClick", function()
-    ns.settings:LoadBlocklistFromGlobalSavedVariables()
-    blocklistFrame.syncWithSettings()
-end)
-
-local buttonLoadText = buttonLoad:CreateFontString(nil, "BACKGROUND")
-buttonLoadText:SetFont(STANDARD_TEXT_FONT, 10)
-buttonLoadText:SetText("Load cached blocklist")
-buttonLoadText:SetPoint("TOP", 0, 10)
-
-local buttonSave = CreateFrame("Button", nil, frame, "UIPanelButtonTemplate")
-buttonSave:SetWidth(100)
-buttonSave:SetHeight(22)
-buttonSave:SetPoint("TOPRIGHT", -300, -30)
-buttonSave:SetText("Save")
-buttonSave:SetScript("OnClick", function()
-    ns.settings:SaveBlocklistToGlobalSavedVariables()
-end)
-
-local buttonSaveText = buttonSave:CreateFontString(nil, "BACKGROUND")
-buttonSaveText:SetFont(STANDARD_TEXT_FONT, 10)
-buttonSaveText:SetText("Save blocklist to cache")
-buttonSaveText:SetPoint("TOP", 0, 10)
-
-local buttonRestore = CreateFrame("Button", nil, frame, "UIPanelButtonTemplate")
-buttonRestore:SetWidth(100)
-buttonRestore:SetHeight(22)
-buttonRestore:SetPoint("TOPRIGHT", -30, -30)
-buttonRestore:SetText("Default")
-buttonRestore:SetScript("OnClick", function()
-    ns.settings:SetBlocklistToDefaults()
-    ns.settings:SaveBlocklistToCharacterSavedVariables()
-    blocklistFrame.syncWithSettings()
-end)
-
-local buttonRestoreText = buttonRestore:CreateFontString(nil, "BACKGROUND")
-buttonRestoreText:SetFont(STANDARD_TEXT_FONT, 10)
-buttonRestoreText:SetText("Restore default blocklist")
-buttonRestoreText:SetPoint("TOP", 0, 10)

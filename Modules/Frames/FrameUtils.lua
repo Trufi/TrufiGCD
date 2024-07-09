@@ -5,6 +5,26 @@ local _, ns = ...
 local frameUtils = {}
 ns.frameUtils = frameUtils
 
+---@param frame any
+---@param title? string
+---@param text? string
+frameUtils.addTooltip = function(frame, title, text)
+    frame:SetScript("OnEnter", function(self)
+        GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+        GameTooltip:ClearLines()
+        if title then
+            GameTooltip:AddLine(title)
+        end
+        if text then
+            GameTooltip:AddLine(text, 1, 1, 1)
+        end
+        GameTooltip:Show()
+    end)
+    frame:SetScript("OnLeave", function()
+        GameTooltip:Hide()
+    end)
+end
+
 ---@class CheckButtonOptions
 ---@field frame any
 ---@field x number
@@ -22,15 +42,9 @@ frameUtils.createCheckButton = function(opts)
     button:SetPoint(opts.position, opts.x, opts.y)
     button:SetChecked(opts.checked)
     _G[opts.name .. 'Text']:SetText(opts.text)
-    button:SetScript("OnEnter", function(self)
-        if opts.tooltip then
-            GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-            GameTooltip:SetText(opts.tooltip, nil, nil, nil, nil, 1)
-        end
-    end)
-    button:SetScript("OnLeave", function()
-        GameTooltip:Hide()
-    end)
+    if opts.tooltip then
+        frameUtils.addTooltip(button, opts.text, opts.tooltip)
+    end
     button:SetScript("OnClick", function()
         opts.onClick(button)
     end)

@@ -35,22 +35,19 @@ function UnitSettings:New(unitType)
     ---@class UnitSettings
     local obj = setmetatable({}, UnitSettings)
     obj.text = unitLabels[unitType]
-    obj:SetToDefaults()
+    obj.x = 0
+    obj.y = 0
+    obj.point = "CENTER"
+    obj.enable = true
+    obj.direction = "Left"
+    obj.iconSize = 30
+    obj.iconsNumber = 3
     return obj
 end
 
-function UnitSettings:SetToDefaults()
-    self.x = 0
-    self.y = 0
-    self.point = "CENTER"
-    self.enable = true
-    self.direction = "Left"
-    self.iconSize = 30
-    self.iconsNumber = 3
-end
-
----@param savedVariables table
-function UnitSettings:CopyToSavedVariables(savedVariables)
+function UnitSettings:GetSavedVariables()
+    ---@type SavedVariablesUnitSettings
+    local savedVariables = {}
     savedVariables.x = self.x
     savedVariables.y = self.y
     savedVariables.point = self.point
@@ -58,9 +55,10 @@ function UnitSettings:CopyToSavedVariables(savedVariables)
     savedVariables.fade = self.direction
     savedVariables.size = self.iconSize
     savedVariables.width = self.iconsNumber
+    return savedVariables
 end
 
----@param savedVariables table
+---@param savedVariables SavedVariablesUnitSettings
 function UnitSettings:SetFromSavedVariables(savedVariables)
     if type(savedVariables.x) == "number" then
         self.x = savedVariables.x

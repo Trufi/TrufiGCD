@@ -26,7 +26,7 @@ end
 ---@param event string
 local function onEvent(_, event)
     local _, instanceType = IsInInstance()
-    local enabledIn = ns.settings.enabledIn
+    local enabledIn = ns.settings.activeProfile.enabledIn
 
     if event == "PLAYER_REGEN_DISABLED" and enabledIn.combatOnly then -- Entering combat, specific for each zone
         if instanceType == "arena" then
@@ -91,18 +91,20 @@ end
 eventFrame:SetScript("OnEvent", onEvent)
 
 locationCheck.settingsChanged = function()
-    if not ns.settings.enabledIn.enabled or ns.settings.enabledIn.combatOnly then
+    local settings = ns.settings.activeProfile
+
+    if not settings.enabledIn.enabled or settings.enabledIn.combatOnly then
         addonEnabled = false
     elseif playerLocation == "world" then
-        addonEnabled = ns.settings.enabledIn.world
+        addonEnabled = settings.enabledIn.world
     elseif playerLocation == "party" then
-        addonEnabled = ns.settings.enabledIn.party
+        addonEnabled = settings.enabledIn.party
     elseif playerLocation == "arena" then
-        addonEnabled = ns.settings.enabledIn.arena
+        addonEnabled = settings.enabledIn.arena
     elseif playerLocation == "pvp" then
-        addonEnabled = ns.settings.enabledIn.battleground
+        addonEnabled = settings.enabledIn.battleground
     elseif playerLocation == "raid" then
-        addonEnabled = ns.settings.enabledIn.raid
+        addonEnabled = settings.enabledIn.raid
     end
 
     if not addonEnabled then

@@ -15,7 +15,7 @@ end
 
 ---@param unitType UnitType
 local function checkIfUnitAlreadyInUse(unitType)
-    for existedUnitType, _ in pairs(ns.settings.unitSettings) do
+    for _, existedUnitType in ipairs(ns.constants.unitTypes) do
         if areUnitsEqual(unitType, existedUnitType) then
             ns.units[unitType]:Copy(ns.units[existedUnitType])
             return
@@ -30,11 +30,10 @@ loadFrame:SetScript("OnEvent", function(_, event, name)
         return
     end
 
-    ns.settings:LoadFromCharacterSavedVariables()
+    ns.settings:Load()
     ns.settingsFrame.syncWithSettings()
-
-    ns.settings:LoadBlocklistFromCharacterSavedVariables()
-    ns.blocklistFrame:syncWithSettings()
+    ns.blocklistFrame.syncWithSettings()
+    ns.profileFrame.syncWithSettings()
 
     ns.locationCheck.settingsChanged()
 
@@ -44,12 +43,12 @@ loadFrame:SetScript("OnEvent", function(_, event, name)
     targetFocusChangeFrame:SetScript("OnEvent", function(_, changeEvent)
         if changeEvent == "PLAYER_TARGET_CHANGED" then
             ns.units.target:Clear()
-            if ns.settings.unitSettings.target.enable then
+            if ns.settings.activeProfile.unitSettings.target.enable then
                 checkIfUnitAlreadyInUse("target")
             end
         elseif changeEvent == "PLAYER_FOCUS_CHANGED" then
             ns.units.focus:Clear()
-            if ns.settings.unitSettings.focus.enable then
+            if ns.settings.activeProfile.unitSettings.focus.enable then
                 checkIfUnitAlreadyInUse("focus")
             end
         end

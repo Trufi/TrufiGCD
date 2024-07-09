@@ -21,6 +21,7 @@ showHideAnchorsButton:SetWidth(100)
 showHideAnchorsButton:SetHeight(22)
 showHideAnchorsButton:SetPoint('TOPLEFT', 10, -30)
 showHideAnchorsButton:SetText('Show')
+ns.frameUtils.addTooltip(showHideAnchorsButton, "Show/Hide anchors", "Show or hide icon frame anchors to change their position")
 
 local showHideAnchorsButtonLabel = showHideAnchorsButton:CreateFontString(nil, 'BACKGROUND')
 showHideAnchorsButtonLabel:SetFont(STANDARD_TEXT_FONT, 10)
@@ -65,19 +66,19 @@ showHideAnchorsButton:SetScript("OnClick", function()
     if anchorDisplayed then
         showHideAnchorsButton:SetText("Show")
         frameShowAnchors:Hide()
-        for unitType, queueSettings in pairs(ns.settings.unitSettings) do
+        for unitType, queueSettings in pairs(ns.settings.activeProfile.unitSettings) do
             if queueSettings.enable then
                 local iconQueue = ns.units[unitType].iconQueue
                 iconQueue:HideAnchor()
 
                 queueSettings.point, _, _, queueSettings.x, queueSettings.y = iconQueue.frame:GetPoint()
-                ns.settings:SaveToCharacterSavedVariables()
+                ns.settings:Save()
             end
         end
     else
         showHideAnchorsButton:SetText("Hide")
         frameShowAnchors:Show()
-        for unitType, unitSettings in pairs(ns.settings.unitSettings) do
+        for unitType, unitSettings in pairs(ns.settings.activeProfile.unitSettings) do
             if unitSettings.enable then
                 ns.units[unitType].iconQueue:ShowAnchor()
             end
@@ -86,55 +87,6 @@ showHideAnchorsButton:SetScript("OnClick", function()
 
     anchorDisplayed = not anchorDisplayed
 end)
-
----button to load saved to cached settings
-local buttonLoad = CreateFrame("Button", nil, frame, "UIPanelButtonTemplate")
-buttonLoad:SetWidth(100)
-buttonLoad:SetHeight(22)
-buttonLoad:SetPoint("TOPRIGHT", -165, -30)
-buttonLoad:SetText("Load")
-buttonLoad:SetScript("OnClick", function()
-    ns.settings:LoadFromGlobalSavedVariables()
-    ns.settings:SaveToCharacterSavedVariables()
-    settingsFrame.syncWithSettings()
-end)
-
-local buttonLoadText = buttonLoad:CreateFontString(nil, "BACKGROUND")
-buttonLoadText:SetFont(STANDARD_TEXT_FONT, 10)
-buttonLoadText:SetText("Load cached settings")
-buttonLoadText:SetPoint("TOP", 0, 10)
-
----button to save current settings to the cache
-local buttonSave = CreateFrame("Button", nil, frame, "UIPanelButtonTemplate")
-buttonSave:SetWidth(100)
-buttonSave:SetHeight(22)
-buttonSave:SetPoint("TOPRIGHT", -300, -30)
-buttonSave:SetText("Save")
-buttonSave:SetScript("OnClick", function()
-    ns.settings:SaveToGlobalSavedVariables()
-end)
-
-local buttonSaveText = buttonSave:CreateFontString(nil, "BACKGROUND")
-buttonSaveText:SetFont(STANDARD_TEXT_FONT, 10)
-buttonSaveText:SetText("Save settings to cache")
-buttonSaveText:SetPoint("TOP", 0, 10)
-
----button to restore default settings
-local buttonRestore = CreateFrame("Button", nil, frame, "UIPanelButtonTemplate")
-buttonRestore:SetWidth(100)
-buttonRestore:SetHeight(22)
-buttonRestore:SetPoint("TOPRIGHT", -30, -30)
-buttonRestore:SetText("Default")
-buttonRestore:SetScript("OnClick", function()
-    ns.settings:SetToDefaults()
-    settingsFrame.syncWithSettings()
-end)
-
-local buttonRestoreText = buttonRestore:CreateFontString(nil, "BACKGROUND")
-buttonRestoreText:SetFont(STANDARD_TEXT_FONT, 10)
-buttonRestoreText:SetText("Restore default settings")
-buttonRestoreText:SetPoint("TOP", 0, 10)
-
 
 ---tooltip settings
 local tooltipText = frame:CreateFontString(nil, "BACKGROUND")
@@ -150,11 +102,11 @@ local tooltipEnableCheckbox = ns.frameUtils.createCheckButton({
     x = -90,
     y = -380,
     name = "TrGCDCheckTooltip",
-    checked = ns.settings.tooltipEnabled,
+    checked = ns.settings.activeProfile.tooltipEnabled,
     tooltip = "Show tooltip when hovering an icon",
     onClick = function()
-        ns.settings.tooltipEnabled = not ns.settings.tooltipEnabled
-        ns.settings:SaveToCharacterSavedVariables()
+        ns.settings.activeProfile.tooltipEnabled = not ns.settings.activeProfile.tooltipEnabled
+        ns.settings:Save()
     end
 })
 
@@ -166,11 +118,11 @@ local stopMovingCheckbox = ns.frameUtils.createCheckButton({
     x = -90,
     y = -410,
     name = "TrGCDCheckTooltipMove",
-    checked = ns.settings.tooltipStopScroll,
+    checked = ns.settings.activeProfile.tooltipStopScroll,
     tooltip = "Stop moving icons when hovering an icon",
     onClick = function()
-        ns.settings.tooltipStopScroll = not ns.settings.tooltipStopScroll
-        ns.settings:SaveToCharacterSavedVariables()
+        ns.settings.activeProfile.tooltipStopScroll = not ns.settings.activeProfile.tooltipStopScroll
+        ns.settings:Save()
     end
 })
 
@@ -182,11 +134,11 @@ local spellIdCheckbox = ns.frameUtils.createCheckButton({
     x = -90,
     y = -440,
     name = "TrGCDCheckTooltipSpellID",
-    checked = ns.settings.tooltipPrintSpellId,
+    checked = ns.settings.activeProfile.tooltipPrintSpellId,
     tooltip = "Print spell ID to the chat when hovering an icon",
     onClick = function()
-        ns.settings.tooltipPrintSpellId = not ns.settings.tooltipPrintSpellId
-        ns.settings:SaveToCharacterSavedVariables()
+        ns.settings.activeProfile.tooltipPrintSpellId = not ns.settings.activeProfile.tooltipPrintSpellId
+        ns.settings:Save()
     end
 })
 
@@ -198,11 +150,11 @@ local scrollingCheckbox = ns.frameUtils.createCheckButton({
     x = -90,
     y = -80,
     name = "TrGCDCheckModScroll",
-    checked = ns.settings.iconsScroll,
+    checked = ns.settings.activeProfile.iconsScroll,
     tooltip = "Icons will be disappearing without moving",
     onClick = function()
-        ns.settings.iconsScroll = not ns.settings.iconsScroll
-        ns.settings:SaveToCharacterSavedVariables()
+        ns.settings.activeProfile.iconsScroll = not ns.settings.activeProfile.iconsScroll
+        ns.settings:Save()
     end
 })
 
@@ -219,10 +171,10 @@ local combatOnlyCheckbox = ns.frameUtils.createCheckButton({
     x = -90,
     y = -110,
     name = "trgcdcheckenablein6",
-    checked = ns.settings.enabledIn.combatOnly,
+    checked = ns.settings.activeProfile.enabledIn.combatOnly,
     onClick = function()
-        ns.settings.enabledIn.combatOnly = not ns.settings.enabledIn.combatOnly
-        ns.settings:SaveToCharacterSavedVariables()
+        ns.settings.activeProfile.enabledIn.combatOnly = not ns.settings.activeProfile.enabledIn.combatOnly
+        ns.settings:Save()
         ns.locationCheck.settingsChanged()
     end
 })
@@ -234,10 +186,10 @@ local enableCheckbox = ns.frameUtils.createCheckButton({
     x = -90,
     y = -140,
     name = "trgcdcheckenablein0",
-    checked = ns.settings.enabledIn.enabled,
+    checked = ns.settings.activeProfile.enabledIn.enabled,
     onClick = function()
-        ns.settings.enabledIn.enabled = not ns.settings.enabledIn.enabled
-        ns.settings:SaveToCharacterSavedVariables()
+        ns.settings.activeProfile.enabledIn.enabled = not ns.settings.activeProfile.enabledIn.enabled
+        ns.settings:Save()
         ns.locationCheck.settingsChanged()
     end
 })
@@ -249,10 +201,10 @@ local worldCheckbox = ns.frameUtils.createCheckButton({
     x = -90,
     y = -200,
     name = "trgcdcheckenablein1",
-    checked = ns.settings.enabledIn.world,
+    checked = ns.settings.activeProfile.enabledIn.world,
     onClick = function()
-        ns.settings.enabledIn.world = not ns.settings.enabledIn.world
-        ns.settings:SaveToCharacterSavedVariables()
+        ns.settings.activeProfile.enabledIn.world = not ns.settings.activeProfile.enabledIn.world
+        ns.settings:Save()
         ns.locationCheck.settingsChanged()
     end
 })
@@ -264,10 +216,10 @@ local partyCheckbox = ns.frameUtils.createCheckButton({
     x = -90,
     y = -230,
     name = "trgcdcheckenablein2",
-    checked = ns.settings.enabledIn.party,
+    checked = ns.settings.activeProfile.enabledIn.party,
     onClick = function()
-        ns.settings.enabledIn.party = not ns.settings.enabledIn.party
-        ns.settings:SaveToCharacterSavedVariables()
+        ns.settings.activeProfile.enabledIn.party = not ns.settings.activeProfile.enabledIn.party
+        ns.settings:Save()
         ns.locationCheck.settingsChanged()
     end
 })
@@ -279,10 +231,10 @@ local raidCheckbox = ns.frameUtils.createCheckButton({
     x = -90,
     y = -260,
     name = "trgcdcheckenablein5",
-    checked = ns.settings.enabledIn.raid,
+    checked = ns.settings.activeProfile.enabledIn.raid,
     onClick = function()
-        ns.settings.enabledIn.raid = not ns.settings.enabledIn.raid
-        ns.settings:SaveToCharacterSavedVariables()
+        ns.settings.activeProfile.enabledIn.raid = not ns.settings.activeProfile.enabledIn.raid
+        ns.settings:Save()
         ns.locationCheck.settingsChanged()
     end
 })
@@ -294,10 +246,10 @@ local arenaCheckbox = ns.frameUtils.createCheckButton({
     x = -90,
     y = -290,
     name = "trgcdcheckenablein3",
-    checked = ns.settings.enabledIn.arena,
+    checked = ns.settings.activeProfile.enabledIn.arena,
     onClick = function()
-        ns.settings.enabledIn.arena = not ns.settings.enabledIn.arena
-        ns.settings:SaveToCharacterSavedVariables()
+        ns.settings.activeProfile.enabledIn.arena = not ns.settings.activeProfile.enabledIn.arena
+        ns.settings:Save()
         ns.locationCheck.settingsChanged()
     end
 })
@@ -309,10 +261,10 @@ local battlegroundCheckbox = ns.frameUtils.createCheckButton({
     x = -90,
     y = -320,
     name = "trgcdcheckenablein4",
-    checked = ns.settings.enabledIn.battleground,
+    checked = ns.settings.activeProfile.enabledIn.battleground,
     onClick = function()
-        ns.settings.enabledIn.battleground = not ns.settings.enabledIn.battleground
-        ns.settings:SaveToCharacterSavedVariables()
+        ns.settings.activeProfile.enabledIn.battleground = not ns.settings.activeProfile.enabledIn.battleground
+        ns.settings:Save()
         ns.locationCheck.settingsChanged()
     end
 })
@@ -345,32 +297,30 @@ UnitSettingsFrame.__index = UnitSettingsFrame
 ---@param unitType UnitType
 ---@param offset number
 function UnitSettingsFrame:New(unitType, offset)
-    local queueSettings = ns.settings.unitSettings[unitType]
-
     ---@class UnitSettingsFrame
     local obj = setmetatable({}, UnitSettingsFrame)
     obj.unitType = unitType
 
     obj.buttonEnable = ns.frameUtils.createCheckButton({
         frame = frame,
-        text = queueSettings.text,
+        text = ns.settings.activeProfile.unitSettings[unitType].text,
         position = "TOPLEFT",
         x = 10,
         y = -50 - offset * 40,
         name = "trgcdcheckenable" .. unitType,
-        checked = queueSettings.enable,
+        checked = ns.settings.activeProfile.unitSettings[unitType].enable,
         onClick = function()
-            queueSettings.enable = not queueSettings.enable
+            ns.settings.activeProfile.unitSettings[unitType].enable = not ns.settings.activeProfile.unitSettings[unitType].enable
 
             local iconQueue = ns.units[unitType].iconQueue
-            if queueSettings.enable then
+            if ns.settings.activeProfile.unitSettings[unitType].enable then
                 iconQueue:ShowAnchor()
             else
                 iconQueue:HideAnchor()
             end
 
-            ns.settings:SaveToCharacterSavedVariables()
-		    ns.units[unitType]:Clear()
+            ns.settings:Save()
+            ns.units[unitType]:Clear()
         end
     })
 
@@ -378,13 +328,13 @@ function UnitSettingsFrame:New(unitType, offset)
     obj.directionDropdown = CreateFrame("Frame", "trgcdframemenu" .. unitType, frame, "UIDropDownMenuTemplate")
     obj.directionDropdown:SetPoint("TOPLEFT", 70, -50 - offset * 40)
     UIDropDownMenu_SetWidth(obj.directionDropdown, 55)
-    UIDropDownMenu_SetText(obj.directionDropdown, queueSettings.direction)
+    UIDropDownMenu_SetText(obj.directionDropdown, ns.settings.activeProfile.unitSettings[unitType].direction)
 
     ---@param direction Direction
     local function onMenuItemClick(direction)
         UIDropDownMenu_SetText(obj.directionDropdown, direction)
-        queueSettings.direction = direction
-        ns.settings:SaveToCharacterSavedVariables()
+        ns.settings.activeProfile.unitSettings[unitType].direction = direction
+        ns.settings:Save()
 
         ns.units[unitType].iconQueue:Resize()
         ns.units[unitType]:Clear()
@@ -426,15 +376,15 @@ function UnitSettingsFrame:New(unitType, offset)
     obj.sizeSlider:SetPoint("TOPLEFT", 190, -55 - offset * 40)
     _G[obj.sizeSlider:GetName() .. 'Low']:SetText('10')
     _G[obj.sizeSlider:GetName() .. 'High']:SetText('100')
-    _G[obj.sizeSlider:GetName() .. 'Text']:SetText(queueSettings.iconSize)
+    _G[obj.sizeSlider:GetName() .. 'Text']:SetText(ns.settings.activeProfile.unitSettings[unitType].iconSize)
     obj.sizeSlider:SetMinMaxValues(10,100)
     obj.sizeSlider:SetValueStep(1)
-    obj.sizeSlider:SetValue(queueSettings.iconSize)
+    obj.sizeSlider:SetValue(ns.settings.activeProfile.unitSettings[unitType].iconSize)
     obj.sizeSlider:SetScript("OnValueChanged", function(_, value)
         value = math.ceil(value)
         _G[obj.sizeSlider:GetName() .. 'Text']:SetText(value)
-        queueSettings.iconSize = value
-        ns.settings:SaveToCharacterSavedVariables()
+        ns.settings.activeProfile.unitSettings[unitType].iconSize = value
+        ns.settings:Save()
 
         ns.units[unitType].iconQueue:Resize()
         ns.units[unitType]:Clear()
@@ -447,15 +397,15 @@ function UnitSettingsFrame:New(unitType, offset)
     obj.iconsNumber:SetPoint("TOPLEFT", 390, -55 - offset * 40)
     _G[obj.iconsNumber:GetName() .. 'Low']:SetText('1')
     _G[obj.iconsNumber:GetName() .. 'High']:SetText('8')
-    _G[obj.iconsNumber:GetName() .. 'Text']:SetText(queueSettings.iconsNumber)
+    _G[obj.iconsNumber:GetName() .. 'Text']:SetText(ns.settings.activeProfile.unitSettings[unitType].iconsNumber)
     obj.iconsNumber:SetMinMaxValues(1,8)
     obj.iconsNumber:SetValueStep(1)
-    obj.iconsNumber:SetValue(queueSettings.iconsNumber)
+    obj.iconsNumber:SetValue(ns.settings.activeProfile.unitSettings[unitType].iconsNumber)
     obj.iconsNumber:SetScript("OnValueChanged", function (_, value)
         value = math.ceil(value)
         _G[obj.iconsNumber:GetName() .. 'Text']:SetText(value)
-        queueSettings.iconsNumber = value
-        ns.settings:SaveToCharacterSavedVariables()
+        ns.settings.activeProfile.unitSettings[unitType].iconsNumber = value
+        ns.settings:Save()
 
         ns.units[unitType].iconQueue:Resize()
         ns.units[unitType]:Clear()
@@ -466,7 +416,7 @@ function UnitSettingsFrame:New(unitType, offset)
 end
 
 function UnitSettingsFrame:SyncWithSettings()
-    local queueSettings = ns.settings.unitSettings[self.unitType]
+    local queueSettings = ns.settings.activeProfile.unitSettings[self.unitType]
 
     self.buttonEnable:SetChecked(queueSettings.enable)
     UIDropDownMenu_SetText(self.directionDropdown, queueSettings.direction)
@@ -489,18 +439,20 @@ for i, unitType in ipairs(ns.constants.unitTypes) do
 end
 
 settingsFrame.syncWithSettings = function()
-    tooltipEnableCheckbox:SetChecked(ns.settings.tooltipEnabled)
-    stopMovingCheckbox:SetChecked(ns.settings.tooltipStopScroll)
-    spellIdCheckbox:SetChecked(ns.settings.tooltipPrintSpellId)
-    scrollingCheckbox:SetChecked(ns.settings.iconsScroll)
+    local settings = ns.settings.activeProfile
 
-    combatOnlyCheckbox:SetChecked(ns.settings.enabledIn.combatOnly)
-    enableCheckbox:SetChecked(ns.settings.enabledIn.enabled)
-    worldCheckbox:SetChecked(ns.settings.enabledIn.world)
-    partyCheckbox:SetChecked(ns.settings.enabledIn.party)
-    raidCheckbox:SetChecked(ns.settings.enabledIn.raid)
-    arenaCheckbox:SetChecked(ns.settings.enabledIn.arena)
-    battlegroundCheckbox:SetChecked(ns.settings.enabledIn.battleground)
+    tooltipEnableCheckbox:SetChecked(settings.tooltipEnabled)
+    stopMovingCheckbox:SetChecked(settings.tooltipStopScroll)
+    spellIdCheckbox:SetChecked(settings.tooltipPrintSpellId)
+    scrollingCheckbox:SetChecked(settings.iconsScroll)
+
+    combatOnlyCheckbox:SetChecked(settings.enabledIn.combatOnly)
+    enableCheckbox:SetChecked(settings.enabledIn.enabled)
+    worldCheckbox:SetChecked(settings.enabledIn.world)
+    partyCheckbox:SetChecked(settings.enabledIn.party)
+    raidCheckbox:SetChecked(settings.enabledIn.raid)
+    arenaCheckbox:SetChecked(settings.enabledIn.arena)
+    battlegroundCheckbox:SetChecked(settings.enabledIn.battleground)
 
     for _, unitSettings in pairs(unitSettingsFrames) do
         unitSettings:SyncWithSettings()

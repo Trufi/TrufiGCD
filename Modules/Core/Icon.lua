@@ -74,7 +74,7 @@ function Icon:Hide()
 end
 
 function Icon:Resize()
-    local settings = ns.settings.unitSettings[self.unitType]
+    local settings = ns.settings.activeProfile.unitSettings[self.unitType]
     self.frame:SetWidth(settings.iconSize)
     self.frame:SetHeight(settings.iconSize)
 end
@@ -92,7 +92,7 @@ function Icon:Clear()
 end
 
 function Icon:UpdatePosition()
-    local direction = ns.settings.unitSettings[self.unitType].direction
+    local direction = ns.settings.activeProfile.unitSettings[self.unitType].direction
     if direction == "Left" then
         self.frame:SetPoint("RIGHT", self.offset, 0)
     elseif direction == "Right" then
@@ -150,14 +150,14 @@ end
 
 ---@private
 function Icon:ShowTooltip()
-    if not ns.settings.tooltipEnabled then
+    if not ns.settings.activeProfile.tooltipEnabled then
         return
     end
 
     GameTooltip_SetDefaultAnchor(GameTooltip, self.frame)
     GameTooltip:SetSpellByID(self.spellId, false, false, true)
     GameTooltip:Show()
-    if ns.settings.tooltipPrintSpellId then
+    if ns.settings.activeProfile.tooltipPrintSpellId then
         if self.spellId then
             local spellLink = GetSpellLink(self.spellId)
             if spellLink then
@@ -171,9 +171,9 @@ end
 
 ---@private
 function Icon:AddToBlocklist()
-    if ns.settings.iconClickAddsSpellToBlocklist and IsControlKeyDown() and IsAltKeyDown() then
-        table.insert(ns.settings.blocklist, self.spellId)
-        ns.settings:SaveBlocklistToCharacterSavedVariables()
+    if ns.settings.activeProfile.iconClickAddsSpellToBlocklist and IsControlKeyDown() and IsAltKeyDown() then
+        table.insert(ns.settings.activeProfile.blocklist, self.spellId)
+        ns.settings:Save()
         ns.blocklistFrame.syncWithSettings()
 
         local spellLink = GetSpellLink(self.spellId)
