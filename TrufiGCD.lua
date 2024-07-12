@@ -81,3 +81,31 @@ loadFrame:SetScript("OnEvent", function(_, event, name)
         end
     end)
 end)
+
+local IS_RETAIL = WOW_PROJECT_ID == WOW_PROJECT_MAINLINE
+
+if IS_RETAIL then
+    AddonCompartmentFrame:RegisterAddon({
+        text = "TrufiGCD",
+        icon = 4622474,
+        notCheckable = true,
+        registerForAnyClick = true,
+        func = function(_, _, _, _, mouseButton)
+            if mouseButton == "LeftButton" then
+                InterfaceOptionsFrame_OpenToCategory(ns.settingsFrame.frame)
+            else
+                ns.settingsFrame.toggleAnchors(false)
+            end
+        end,
+        funcOnEnter = function()
+            GameTooltip:SetOwner(AddonCompartmentFrame, "ANCHOR_TOPRIGHT")
+            GameTooltip:SetText("TrufiGCD")
+            GameTooltip:AddLine("|cffeda55fLeft-Click|r to open the settings.", 1, 1, 1, true)
+            GameTooltip:AddLine("|cffeda55fRight-Click|r to show frame anchors.", 1, 1, 1, true)
+            GameTooltip:Show()
+        end,
+        funcOnLeave = function()
+            GameTooltip:Hide()
+        end,
+    })
+end

@@ -9,6 +9,7 @@ local frame = CreateFrame("Frame", nil, UIParent)
 frame:Hide()
 frame.name = "TrufiGCD"
 InterfaceOptions_AddCategory(frame)
+settingsFrame.frame = frame
 
 SLASH_TRUFI1, SLASH_TRUFI2 = '/tgcd', '/trufigcd'
 function SlashCmdList.TRUFI()
@@ -45,24 +46,31 @@ frameShowAnchorsTexture:SetAllPoints(frameShowAnchors)
 frameShowAnchorsTexture:SetColorTexture(0, 0, 0)
 frameShowAnchorsTexture:SetAlpha(0.5)
 
-local frameShowAnchorsButton = CreateFrame('Button', nil, frameShowAnchors, 'UIPanelButtonTemplate')
-frameShowAnchorsButton:SetWidth(150)
-frameShowAnchorsButton:SetHeight(22)
-frameShowAnchorsButton:SetPoint('BOTTOM', 0, 5)
-frameShowAnchorsButton:SetText('Return to options')
+local frameShowAnchorsReturnButton = CreateFrame("Button", nil, frameShowAnchors, "UIPanelButtonTemplate")
+frameShowAnchorsReturnButton:SetWidth(150)
+frameShowAnchorsReturnButton:SetHeight(22)
+frameShowAnchorsReturnButton:SetPoint("BOTTOM", 0, 5)
+frameShowAnchorsReturnButton:SetText("Return to options")
 
-local frameShowAnchorsButtonText = frameShowAnchorsButton:CreateFontString(nil, 'BACKGROUND')
+local frameShowAnchorsHideButton = CreateFrame("Button", nil, frameShowAnchors, "UIPanelButtonTemplate")
+frameShowAnchorsHideButton:SetWidth(150)
+frameShowAnchorsHideButton:SetHeight(22)
+frameShowAnchorsHideButton:SetPoint("BOTTOM", 0, 5)
+frameShowAnchorsHideButton:SetText("Hide anchors")
+
+local frameShowAnchorsButtonText = frameShowAnchors:CreateFontString(nil, "BACKGROUND")
 frameShowAnchorsButtonText:SetFont(STANDARD_TEXT_FONT, 12)
 frameShowAnchorsButtonText:SetText('TrufiGCD')
-frameShowAnchorsButtonText:SetPoint('TOP', 0, 15)
+frameShowAnchorsButtonText:SetPoint("TOP", 0, -8)
 
-frameShowAnchorsButton:SetScript('OnClick', function()
+frameShowAnchorsReturnButton:SetScript("OnClick", function()
     InterfaceOptionsFrame_OpenToCategory(frame)
 end)
 
 local anchorDisplayed = false
 
-showHideAnchorsButton:SetScript("OnClick", function()
+---@param returnToOptions boolean
+settingsFrame.toggleAnchors = function(returnToOptions)
     if anchorDisplayed then
         showHideAnchorsButton:SetText("Show")
         frameShowAnchors:Hide()
@@ -76,6 +84,13 @@ showHideAnchorsButton:SetScript("OnClick", function()
             end
         end
     else
+        if returnToOptions then
+            frameShowAnchorsHideButton:Hide()
+            frameShowAnchorsReturnButton:Show()
+        else
+            frameShowAnchorsHideButton:Show()
+            frameShowAnchorsReturnButton:Hide()
+        end
         showHideAnchorsButton:SetText("Hide")
         frameShowAnchors:Show()
         for unitType, unitSettings in pairs(ns.settings.activeProfile.unitSettings) do
@@ -84,9 +99,11 @@ showHideAnchorsButton:SetScript("OnClick", function()
             end
         end
     end
-
     anchorDisplayed = not anchorDisplayed
-end)
+end
+
+frameShowAnchorsHideButton:SetScript("OnClick", function() settingsFrame.toggleAnchors(false) end)
+showHideAnchorsButton:SetScript("OnClick", function() settingsFrame.toggleAnchors(true) end)
 
 ---tooltip settings
 local tooltipText = frame:CreateFontString(nil, "BACKGROUND")

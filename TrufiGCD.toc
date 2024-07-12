@@ -1,9 +1,10 @@
 ## Interface: 100207
 ## Title: TrufiGCD
-## Notes: View queue of last spells
+## Notes: Last used spells of the player, target, party or arena members.
 ## SavedVariables: TrufiGCDGlSave
 ## SavedVariablesPerCharacter: TrufiGCDChSave
 ## OptionalDeps: ButtonFacade, Masque
+## IconTexture: 4622474
 ## X-Curse-Project-ID: 46527
 ## X-WoWI-ID: 21820
 ## X-Wago-ID: BNBenxGx
