@@ -4,6 +4,9 @@
 ## SavedVariables: TrufiGCDGlSave
 ## SavedVariablesPerCharacter: TrufiGCDChSave
 ## OptionalDeps: ButtonFacade, Masque
+## X-Curse-Project-ID: 46527
+## X-WoWI-ID: 21820
+## X-Wago-ID: BNBenxGx
 
 # Libraries
 Libs\LibStub\Libstub.lua
