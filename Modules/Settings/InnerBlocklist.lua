@@ -58,6 +58,7 @@ ns.innerBlockList = {
     408385, -- Crusader Strikes (Paladin talent that replaces auto-attack)
     214968, -- Necrotic Aura (Death Knight)
     400698, -- Griftah's All-Purpose Embellishing Powder
+    307005, -- Arena Inbounds Marker
 
     -- Unverified - from GCD History
     184707, -- Rampage
