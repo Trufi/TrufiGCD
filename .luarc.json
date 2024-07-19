@@ -5,6 +5,7 @@
         "globals": [
             "AddonCompartmentFrame",
             "BackdropTemplateMixin",
+            "C_Spell",
             "ChannelInfo",
             "CreateFrame",
             "GameTooltip",

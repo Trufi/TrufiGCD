@@ -29,3 +29,15 @@ end
 utils.defaultProfileName = function()
     return UnitName("player") .. " - " .. GetRealmName()
 end
+
+---@param spellId number | string
+utils.getSpellInfo = function(spellId)
+    if GetSpellInfo then
+        return GetSpellInfo(spellId)
+    else
+        local spellInfo = C_Spell.GetSpellInfo(spellId)
+        if spellInfo then
+            return spellInfo.name, nil, spellInfo.iconID, spellInfo.castTime, spellInfo.minRange, spellInfo.maxRange, spellInfo.spellID, spellInfo.originalIconID
+        end
+    end
+end

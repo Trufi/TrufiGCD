@@ -141,7 +141,7 @@ blocklistFrame.syncWithSettings = function()
         if spellId ~= nil then
             item.button:Enable()
 
-            local name = GetSpellInfo(spellId)
+            local name = ns.utils.getSpellInfo(spellId)
             if name then
                 item.text:SetText(spellId .. " - " .. name)
             else
@@ -203,7 +203,7 @@ local function addItem()
         local spellName = inputValue
 
         ---@type number | nil
-        local spellId = select(7, GetSpellInfo(spellName))
+        local spellId = select(7, ns.utils.getSpellInfo(spellName))
 
         if not spellId then
             print("[TrufiGCD]: can't find a spell ID for the name \"" .. spellName .. "\". Please, provide the exact spell ID.")

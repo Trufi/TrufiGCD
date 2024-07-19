@@ -121,7 +121,7 @@ function Unit:OnEvent(event, spellId, unitType)
     end
 
     ---@type unknown, unknown, string | nil, number
-    local _, _, spellIcon, castTime = GetSpellInfo(spellId)
+    local _, _, spellIcon, castTime = ns.utils.getSpellInfo(spellId)
     local spellLink = GetSpellLink(spellId)
 
     if not spellIcon or not spellLink then
