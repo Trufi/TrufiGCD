@@ -54,18 +54,24 @@ loadFrame:SetScript("OnEvent", function(_, event, name)
         end
     end)
 
-    local eventFrame = CreateFrame("Frame", nil, UIParent)
-    eventFrame:RegisterEvent("UNIT_SPELLCAST_START")
-    eventFrame:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
-    eventFrame:RegisterEvent("UNIT_SPELLCAST_STOP")
-    eventFrame:RegisterEvent("UNIT_SPELLCAST_CHANNEL_STOP")
-    eventFrame:RegisterEvent("UNIT_AURA")
-
     --Delay the initialisation to prevent odd abilities spam at the first world enter
     C_Timer.After(0.5, function()
-        eventFrame:SetScript("OnEvent", function(_, unitEvent, unitType, _, spellId)
+        local spellEventFrame = CreateFrame("Frame", nil, UIParent)
+        spellEventFrame:RegisterEvent("UNIT_SPELLCAST_START")
+        spellEventFrame:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
+        spellEventFrame:RegisterEvent("UNIT_SPELLCAST_STOP")
+        spellEventFrame:RegisterEvent("UNIT_SPELLCAST_CHANNEL_STOP")
+        spellEventFrame:SetScript("OnEvent", function(_, unitEvent, unitType, castId, spellId)
             if ns.units[unitType] and ns.locationCheck.isAddonEnabled() then
-                ns.units[unitType]:OnEvent(unitEvent, spellId, unitType)
+                ns.units[unitType]:OnSpellEvent(unitEvent, spellId, unitType, castId)
+            end
+        end)
+
+        local auraEventFrame = CreateFrame("Frame", nil, UIParent)
+        auraEventFrame:RegisterEvent("UNIT_AURA")
+        auraEventFrame:SetScript("OnEvent", function(_, unitEvent, unitType)
+            if ns.units[unitType] and ns.locationCheck.isAddonEnabled() then
+                ns.units[unitType]:OnAuraEvent(unitEvent)
             end
         end)
     end)
@@ -73,7 +79,8 @@ loadFrame:SetScript("OnEvent", function(_, event, name)
     local minUpdateInterval = 0.03
     local lastUpdateTime = GetTime()
 
-    eventFrame:SetScript("OnUpdate", function()
+    local updateFrame = CreateFrame("Frame", nil, UIParent)
+    updateFrame:SetScript("OnUpdate", function()
         local time = GetTime()
         local interval = time - lastUpdateTime
         if interval > minUpdateInterval then

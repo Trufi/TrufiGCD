@@ -103,9 +103,10 @@ function IconQueue:Copy(from)
 end
 
 ---Updates the icons every frame
+---@param time number
 ---@param interval number
 ---@param isCasting boolean
-function IconQueue:Update(interval, isCasting)
+function IconQueue:Update(time, interval, isCasting)
     if not self.isMoving then
         return
     end
@@ -140,7 +141,7 @@ function IconQueue:Update(interval, isCasting)
             icon:UpdatePosition()
 
             if not ns.settings.activeProfile.iconsScroll then
-                local elapsedTime = GetTime() - icon.startTime
+                local elapsedTime = time - icon.startTime
 
                 if elapsedTime > iconHidingDuration + iconHidingDelay then
                     icon:Hide()

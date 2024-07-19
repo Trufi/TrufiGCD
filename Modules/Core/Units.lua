@@ -39,10 +39,7 @@ function Unit:New(unitType)
 
     obj.canceledSpell = {
         id = 0,
-
-        ---@type number
-        time = GetTime(),
-
+        castId = "",
         iconIndex = 0,
     }
 
@@ -115,7 +112,8 @@ end
 ---@param event string
 ---@param spellId number
 ---@param unitType UnitType
-function Unit:OnEvent(event, spellId, unitType)
+---@param castId string | nil
+function Unit:OnSpellEvent(event, spellId, unitType, castId)
     if not ns.settings.activeProfile.unitSettings[self.unitType].enable or checkBlocklist(spellId) then
         return
     end
@@ -148,7 +146,7 @@ function Unit:OnEvent(event, spellId, unitType)
                 self.castingSpellId = spellId
             end
 
-            if GetTime() - self.castStoppedTime < 1 and self.canceledSpell.id == spellId and isSpellFromBuff == false then
+            if castId and self.canceledSpell.castId == castId then
                 self.iconQueue:HideCancel(self.canceledSpell.iconIndex)
             end
 
@@ -165,21 +163,28 @@ function Unit:OnEvent(event, spellId, unitType)
 
         self.canceledSpell = {
             id = spellId,
-            time = GetTime(),
+            castId = castId,
 
             -- TODO: in refactor branch there is a spell ID passed to ShowCancel
             iconIndex = self.iconQueue:ShowCancel()
         }
     elseif event == "UNIT_SPELLCAST_CHANNEL_STOP" then
         self.castingSpellId = nil
-    elseif event == "UNIT_AURA" then
-        for i = 1, 20 do
-            local buffId = select(11, UnitBuff(unitType, i))
+    end
+end
 
-            if instantSpellBuffs[buffId] then
-                self.instantSpellBuff = buffId
-                return
-            end
+---@param unitType UnitType
+function Unit:OnAuraEvent(unitType)
+    if not ns.settings.activeProfile.unitSettings[self.unitType].enable then
+        return
+    end
+
+    for i = 1, 20 do
+        local buffId = select(11, UnitBuff(unitType, i))
+
+        if instantSpellBuffs[buffId] then
+            self.instantSpellBuff = buffId
+            return
         end
     end
 end
@@ -192,7 +197,7 @@ function Unit:Update(time, interval)
         self.castingSpellId = nil
     end
 
-    self.iconQueue:Update(interval, self.castingSpellId ~= nil)
+    self.iconQueue:Update(time, interval, self.castingSpellId ~= nil)
 end
 
 ---@private
