@@ -61,10 +61,13 @@ loadFrame:SetScript("OnEvent", function(_, event, name)
     eventFrame:RegisterEvent("UNIT_SPELLCAST_CHANNEL_STOP")
     eventFrame:RegisterEvent("UNIT_AURA")
 
-    eventFrame:SetScript("OnEvent", function(_, unitEvent, unitType, _, spellId)
-        if ns.units[unitType] and ns.locationCheck.isAddonEnabled() then
-            ns.units[unitType]:OnEvent(unitEvent, spellId, unitType)
-        end
+    --Delay the initialisation to prevent odd abilities spam at the first world enter
+    C_Timer.After(0.5, function()
+        eventFrame:SetScript("OnEvent", function(_, unitEvent, unitType, _, spellId)
+            if ns.units[unitType] and ns.locationCheck.isAddonEnabled() then
+                ns.units[unitType]:OnEvent(unitEvent, spellId, unitType)
+            end
+        end)
     end)
 
     local minUpdateInterval = 0.03

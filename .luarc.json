@@ -6,6 +6,7 @@
             "AddonCompartmentFrame",
             "BackdropTemplateMixin",
             "C_Spell",
+            "C_Timer",
             "ChannelInfo",
             "CreateFrame",
             "GameTooltip",
