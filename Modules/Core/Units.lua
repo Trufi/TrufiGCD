@@ -32,7 +32,7 @@ function Unit:New(unitType)
     ---@class Unit
     local obj = setmetatable({}, Unit)
     obj.unitType = unitType
-    obj.castingSpellId = nil
+    obj.castingCastId = nil
 
     ---@type number
     obj.castStoppedTime = GetTime()
@@ -52,13 +52,13 @@ function Unit:New(unitType)
 end
 
 function Unit:Clear()
-    self.castingSpellId = nil
+    self.castingCastId = nil
     self.iconQueue:Clear()
 end
 
 ---@param from Unit
 function Unit:Copy(from)
-    self.castingSpellId = from.castingSpellId
+    self.castingCastId = from.castingCastId
     self.castStoppedTime = from.castStoppedTime
     self.iconQueue:Copy(from.iconQueue)
     -- TODO: copy other fields as well
@@ -112,7 +112,7 @@ end
 ---@param event string
 ---@param spellId number
 ---@param unitType UnitType
----@param castId string | nil
+---@param castId string | nil The nil value appears for _CHANNEL_ events
 function Unit:OnSpellEvent(event, spellId, unitType, castId)
     if not ns.settings.activeProfile.unitSettings[self.unitType].enable or checkBlocklist(spellId) then
         return
@@ -128,25 +128,25 @@ function Unit:OnSpellEvent(event, spellId, unitType, castId)
 
     if event == "UNIT_SPELLCAST_START" then
         self.iconQueue:AddSpell(spellId, spellIcon)
-        self.castingSpellId = spellId
+        self.castingCastId = castId
         self.castStoppedTime = GetTime()
     elseif event == "UNIT_SPELLCAST_SUCCEEDED" then
-        if self.castingSpellId then
+        if self.castingCastId then
             -- show instant spells while channeling or casting, e.g. for monk mist spells or mage's Ice Floes 
-            if self.castingSpellId ~= spellId then
+            if self.castingCastId ~= castId then
                 self.iconQueue:AddSpell(spellId, replaceToTrinketIfNeeded(unitType, spellId, spellIcon))
             else
-                self.castingSpellId = nil
+                self.castingCastId = nil
             end
         else
             local isSpellFromBuff = self:CheckForInstantSpellBuff(spellId)
 
             self.castStoppedTime = GetTime()
             if unitIsChanneling(unitType) then
-                self.castingSpellId = spellId
+                self.castingCastId = castId
             end
 
-            if castId and self.canceledSpell.castId == castId then
+            if self.canceledSpell.castId == castId then
                 self.iconQueue:HideCancel(self.canceledSpell.iconIndex)
             end
 
@@ -155,11 +155,11 @@ function Unit:OnSpellEvent(event, spellId, unitType, castId)
             end
         end
     elseif event == "UNIT_SPELLCAST_STOP" then
-        if not self.castingSpellId then
+        if not self.castingCastId then
             return
         end
 
-        self.castingSpellId = nil
+        self.castingCastId = nil
 
         self.canceledSpell = {
             id = spellId,
@@ -169,7 +169,7 @@ function Unit:OnSpellEvent(event, spellId, unitType, castId)
             iconIndex = self.iconQueue:ShowCancel()
         }
     elseif event == "UNIT_SPELLCAST_CHANNEL_STOP" then
-        self.castingSpellId = nil
+        self.castingCastId = nil
     end
 end
 
@@ -194,10 +194,10 @@ end
 function Unit:Update(time, interval)
     -- fix for stale icons
     if time - self.castStoppedTime > 10 then
-        self.castingSpellId = nil
+        self.castingCastId = nil
     end
 
-    self.iconQueue:Update(time, interval, self.castingSpellId ~= nil)
+    self.iconQueue:Update(time, interval, self.castingCastId ~= nil)
 end
 
 ---@private
