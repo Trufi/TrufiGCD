@@ -59,6 +59,19 @@ ns.innerBlockList = {
     214968, -- Necrotic Aura (Death Knight)
     400698, -- Griftah's All-Purpose Embellishing Powder
     307005, -- Arena Inbounds Marker
+    363922, -- Dream Breath (Evoker)
+    362019, -- Deep Breath (Evoker)
+    403758, -- Breath of Eons (Evoker)
+    362362, -- Dream Flight (Evoker)
+    358733, -- Glide (Evoker)
+    397374, -- [DNT] Clear Empower Cooldown (Evoker)
+    367230, -- Spiritbloom (Evoker)
+    371817, -- Recall (Evoker)
+    396557, -- Verdan Embrace (Evoker)
+    47666, -- Penance (Priest)
+    47750, -- Penance (Priest)
+    373130, -- Dark Reprimand (Priest)
+    81782, -- Power Word: Barrier (Priest)
 
     -- Unverified - from GCD History
     184707, -- Rampage
