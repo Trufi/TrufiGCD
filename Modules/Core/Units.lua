@@ -168,7 +168,7 @@ function Unit:OnSpellEvent(event, spellId, unitType, castId)
             -- TODO: in refactor branch there is a spell ID passed to ShowCancel
             iconIndex = self.iconQueue:ShowCancel()
         }
-    elseif event == "UNIT_SPELLCAST_CHANNEL_STOP" then
+    elseif event == "UNIT_SPELLCAST_CHANNEL_STOP" or event == "UNIT_SPELLCAST_EMPOWER_STOP" then
         self.castingCastId = nil
     end
 end

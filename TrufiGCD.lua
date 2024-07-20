@@ -61,6 +61,7 @@ loadFrame:SetScript("OnEvent", function(_, event, name)
         spellEventFrame:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
         spellEventFrame:RegisterEvent("UNIT_SPELLCAST_STOP")
         spellEventFrame:RegisterEvent("UNIT_SPELLCAST_CHANNEL_STOP")
+        spellEventFrame:RegisterEvent("UNIT_SPELLCAST_EMPOWER_STOP")
         spellEventFrame:SetScript("OnEvent", function(_, unitEvent, unitType, castId, spellId)
             if ns.units[unitType] and ns.locationCheck.isAddonEnabled() then
                 ns.units[unitType]:OnSpellEvent(unitEvent, spellId, unitType, castId)
