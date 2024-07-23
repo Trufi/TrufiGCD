@@ -129,6 +129,7 @@ function Icon:Copy(from)
 end
 
 ---@param id number
+---@param texture string | number
 function Icon:SetSpell(id, texture)
     self.offset = 0
     self.displayed = false

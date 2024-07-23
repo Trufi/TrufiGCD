@@ -32,16 +32,25 @@ function Unit:New(unitType)
     ---@class Unit
     local obj = setmetatable({}, Unit)
     obj.unitType = unitType
-    obj.castingCastId = nil
 
     ---@type number
-    obj.castStoppedTime = GetTime()
+    obj.stopMovingTime = GetTime()
 
+    ---A previously canceled spell - used to remove a cross icon if the spell wasn't actually canceled.
     obj.canceledSpell = {
         id = 0,
         castId = "",
         iconIndex = 0,
     }
+
+    ---A previous spell - used to check for supplementary spells that don't need to be displayed.
+    obj.previousSpell = {
+        id = 0,
+        name = ""
+    }
+
+    ---A spell that is currently being casted.
+    obj.currentlyCastedSpell = nil
 
     obj.iconQueue = ns.IconQueue:New(unitType)
 
@@ -52,22 +61,28 @@ function Unit:New(unitType)
 end
 
 function Unit:Clear()
-    self.castingCastId = nil
+    self.currentlyCastedSpell = nil
     self.iconQueue:Clear()
 end
 
 ---@param from Unit
 function Unit:Copy(from)
-    self.castingCastId = from.castingCastId
-    self.castStoppedTime = from.castStoppedTime
+    self.currentlyCastedSpell = nil
+    if from.currentlyCastedSpell then
+        self.currentlyCastedSpell = {
+            id = from.currentlyCastedSpell.id,
+            castId = from.currentlyCastedSpell.castId,
+        }
+    end
+    self.stopMovingTime = from.stopMovingTime
     self.iconQueue:Copy(from.iconQueue)
     -- TODO: copy other fields as well
 end
 
 ---@param unitType UnitType
 ---@param spellId number
----@param spellIcon string
----@return string
+---@param spellIcon number
+---@return number | string
 local function replaceToTrinketIfNeeded(unitType, spellId, spellIcon)
     if spellId == 42292 then
         if UnitFactionGroup(unitType) == "Horde" then
@@ -95,20 +110,6 @@ local function checkBlocklist(spellId)
     end
 end
 
----@param unitType UnitType
----@return boolean
-local function unitIsChanneling(unitType)
-    local isClassic = WOW_PROJECT_ID == WOW_PROJECT_CLASSIC
-
-    if not isClassic then
-      return UnitChannelInfo(unitType) ~= nil
-    elseif UnitIsUnit(unitType, "player") then
-      return ChannelInfo() ~= nil
-    else
-      return false
-    end
-end
-
 ---@param event string
 ---@param spellId number
 ---@param unitType UnitType
@@ -118,48 +119,82 @@ function Unit:OnSpellEvent(event, spellId, unitType, castId)
         return
     end
 
-    ---@type unknown, unknown, string | nil, number
-    local _, _, spellIcon, castTime = ns.utils.getSpellInfo(spellId)
+    local spellName, _, spellIcon, castTime = ns.utils.getSpellInfo(spellId)
     local spellLink = GetSpellLink(spellId)
 
-    if not spellIcon or not spellLink then
+    if not spellIcon or not spellLink or not spellName then
+        return
+    end
+
+    -- If the current spell has the same name but a different ID as the previous one,
+    -- it is probably a supplementary spell that doesn't need to be displayed.
+    -- Sometimes, a supplementary spell can appear right before the main spell (e.g. rogue Shadow Dance),
+    -- but it doesn't really matter in our case.
+    if self.previousSpell.name == spellName and self.previousSpell.id ~= spellId then
         return
     end
 
     if event == "UNIT_SPELLCAST_START" then
-        self.iconQueue:AddSpell(spellId, spellIcon)
-        self.castingCastId = castId
-        self.castStoppedTime = GetTime()
+        self:AddSpell(unitType, spellId, spellIcon, spellName)
+        self.currentlyCastedSpell = {
+            id = spellId,
+            castId = castId,
+            name = spellName,
+        }
+        self.stopMovingTime = GetTime()
+    elseif event == "UNIT_SPELLCAST_CHANNEL_START" or event == "UNIT_SPELLCAST_EMPOWER_START" then
+        -- Channeling and empower spells are different to regular cast spells:
+        -- * they don't have castId
+        -- * their castTime is 0
+        -- * the succeeded event doesn't mean the channeling stopped
+
+        self:AddSpell(unitType, spellId, spellIcon, spellName)
+        self.currentlyCastedSpell = {
+            id = spellId,
+            castId = "channel",
+            name = spellName,
+        }
+        self.stopMovingTime = GetTime()
     elseif event == "UNIT_SPELLCAST_SUCCEEDED" then
-        if self.castingCastId then
-            -- show instant spells while channeling or casting, e.g. for monk mist spells or mage's Ice Floes 
-            if self.castingCastId ~= castId then
-                self.iconQueue:AddSpell(spellId, replaceToTrinketIfNeeded(unitType, spellId, spellIcon))
-            else
-                self.castingCastId = nil
-            end
-        else
-            local isSpellFromBuff = self:CheckForInstantSpellBuff(spellId)
-
-            self.castStoppedTime = GetTime()
-            if unitIsChanneling(unitType) then
-                self.castingCastId = castId
-            end
-
-            if self.canceledSpell.castId == castId then
-                self.iconQueue:HideCancel(self.canceledSpell.iconIndex)
-            end
-
-            if castTime <= 0 or isSpellFromBuff then
-                self.iconQueue:AddSpell(spellId, replaceToTrinketIfNeeded(unitType, spellId, spellIcon))
-            end
-        end
-    elseif event == "UNIT_SPELLCAST_STOP" then
-        if not self.castingCastId then
+        -- If it is a previously canceled spell, just remove the cross icon
+        if self.canceledSpell.castId == castId then
+            self.iconQueue:HideCancel(self.canceledSpell.iconIndex)
             return
         end
 
-        self.castingCastId = nil
+        -- If a unit is casting, it is one of the following:
+        -- 1. The end of the cast
+        -- 2. An instant spell during the casting
+        -- 3. A supplementary spell during the channeling, e.g. priest penance
+        if self.currentlyCastedSpell then
+            -- If it is the same spell that is being casted
+            if self.currentlyCastedSpell.id == spellId then
+                -- And if it is not a channelling
+                if self.currentlyCastedSpell.castId ~= "channel" then
+                    -- Finish the cast and start moving icons
+                    self.currentlyCastedSpell = nil
+                end
+
+            -- If the spell has the same name with the one that is being casted (and a different spell ID),
+            -- it is likely a supplementary spell that doesn't need to be displayed.
+            elseif self.currentlyCastedSpell.name ~= spellName then
+                -- Show instant spells, e.g. for monk mist spells or mage's Ice Floes
+                self:AddSpell(unitType, spellId, spellIcon, spellName)
+            end
+
+        else
+            -- If a unit is NOT casting, it is an instant spell or the one that became instant because of some buff.
+            local isSpellFromBuff = self:CheckForInstantSpellBuff(spellId)
+            if castTime <= 0 or isSpellFromBuff then
+                self:AddSpell(unitType, spellId, spellIcon, spellName)
+            end
+        end
+    elseif event == "UNIT_SPELLCAST_STOP" then
+        if not self.currentlyCastedSpell then
+            return
+        end
+
+        self.currentlyCastedSpell = nil
 
         self.canceledSpell = {
             id = spellId,
@@ -169,7 +204,7 @@ function Unit:OnSpellEvent(event, spellId, unitType, castId)
             iconIndex = self.iconQueue:ShowCancel()
         }
     elseif event == "UNIT_SPELLCAST_CHANNEL_STOP" or event == "UNIT_SPELLCAST_EMPOWER_STOP" then
-        self.castingCastId = nil
+        self.currentlyCastedSpell = nil
     end
 end
 
@@ -193,11 +228,11 @@ end
 ---@param interval number
 function Unit:Update(time, interval)
     -- fix for stale icons
-    if time - self.castStoppedTime > 10 then
-        self.castingCastId = nil
+    if time - self.stopMovingTime > 10 then
+        self.currentlyCastedSpell = nil
     end
 
-    self.iconQueue:Update(time, interval, self.castingCastId ~= nil)
+    self.iconQueue:Update(time, interval, self.currentlyCastedSpell ~= nil)
 end
 
 ---@private
@@ -213,6 +248,17 @@ function Unit:CheckForInstantSpellBuff(spellId)
     end
 
     return false
+end
+
+---@private
+---@param unitType UnitType
+---@param id number
+---@param icon number
+---@param name string
+function Unit:AddSpell(unitType, id, icon, name)
+    self.iconQueue:AddSpell(id, replaceToTrinketIfNeeded(unitType, id, icon))
+    self.previousSpell.id = id
+    self.previousSpell.name = name
 end
 
 ns.units = {}

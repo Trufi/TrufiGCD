@@ -31,13 +31,14 @@ utils.defaultProfileName = function()
 end
 
 ---@param spellId number | string
+---@return string | nil, nil, number | nil, number | nil, number | nil, number | nil, number | nil, number | nil
 utils.getSpellInfo = function(spellId)
     if GetSpellInfo then
         return GetSpellInfo(spellId)
-    else
-        local spellInfo = C_Spell.GetSpellInfo(spellId)
-        if spellInfo then
-            return spellInfo.name, nil, spellInfo.iconID, spellInfo.castTime, spellInfo.minRange, spellInfo.maxRange, spellInfo.spellID, spellInfo.originalIconID
-        end
+    end
+
+    local spellInfo = C_Spell.GetSpellInfo(spellId)
+    if spellInfo then
+        return spellInfo.name, nil, spellInfo.iconID, spellInfo.castTime, spellInfo.minRange, spellInfo.maxRange, spellInfo.spellID, spellInfo.originalIconID
     end
 end

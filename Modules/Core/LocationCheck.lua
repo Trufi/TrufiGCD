@@ -11,8 +11,6 @@ eventFrame:RegisterEvent("PLAYER_ENTERING_BATTLEGROUND")
 eventFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
 eventFrame:RegisterEvent("PLAYER_REGEN_DISABLED")
 eventFrame:RegisterEvent("PLAYER_REGEN_ENABLED")
-eventFrame:RegisterEvent('PLAYER_TARGET_CHANGED')
-eventFrame:RegisterEvent('PLAYER_FOCUS_CHANGED')
 
 --- @type "unknown" | "world" | "party" | "arena" | "pvp" | "raid"
 local playerLocation = "unknown"

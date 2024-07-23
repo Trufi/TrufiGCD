@@ -77,6 +77,7 @@ function IconQueue:New(unitType)
 end
 
 ---@param id number
+---@param texture string | number
 function IconQueue:AddSpell(id, texture)
     if self.iconIndex == innerIconsNumber then
         self.iconIndex = 1
