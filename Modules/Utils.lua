@@ -42,3 +42,33 @@ utils.getSpellInfo = function(spellId)
         return spellInfo.name, nil, spellInfo.iconID, spellInfo.castTime, spellInfo.minRange, spellInfo.maxRange, spellInfo.spellID, spellInfo.originalIconID
     end
 end
+
+---@param spellId string | number
+---@return string
+utils.getSpellLink = function(spellId)
+    if GetSpellLink then
+        return GetSpellLink(spellId)
+    else
+        return C_Spell.GetSpellLink(spellId)
+    end
+
+end
+
+utils.interfaceOptions_AddCategory = function(frame)
+    -- cancel is no longer a default option. May add menu extension for this.
+    frame.OnCommit = frame.okay;
+    frame.OnDefault = frame.default;
+    frame.OnRefresh = frame.refresh;
+
+    if frame.parent then
+        local category = Settings.GetCategory(frame.parent);
+        local subcategory = Settings.RegisterCanvasLayoutSubcategory(category, frame, frame.name, frame.name);
+        subcategory.ID = frame.name;
+        return subcategory, category;
+    else
+        local category = Settings.RegisterCanvasLayoutCategory(frame, frame.name, frame.name);
+        category.ID = frame.name;
+        Settings.RegisterAddOnCategory(category);
+        return category;
+    end
+end

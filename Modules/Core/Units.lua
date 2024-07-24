@@ -120,7 +120,7 @@ function Unit:OnSpellEvent(event, spellId, unitType, castId)
     end
 
     local spellName, _, spellIcon, castTime = ns.utils.getSpellInfo(spellId)
-    local spellLink = GetSpellLink(spellId)
+    local spellLink = ns.utils.getSpellLink(spellId)
 
     if not spellIcon or not spellLink or not spellName then
         return

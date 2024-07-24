@@ -160,7 +160,7 @@ function Icon:ShowTooltip()
     GameTooltip:Show()
     if ns.settings.activeProfile.tooltipPrintSpellId then
         if self.spellId then
-            local spellLink = GetSpellLink(self.spellId)
+            local spellLink = ns.utils.getSpellLink(self.spellId)
             if spellLink then
                 print(spellLink .. " ID: " .. self.spellId)
             else
@@ -177,7 +177,7 @@ function Icon:AddToBlocklist()
         ns.settings:Save()
         ns.blocklistFrame.syncWithSettings()
 
-        local spellLink = GetSpellLink(self.spellId)
+        local spellLink = ns.utils.getSpellLink(self.spellId)
         if spellLink then
             print("[TrufiGCD]: " .. spellLink .. " spell with ID \"" .. self.spellId .. "\" added to the blocklist")
         else

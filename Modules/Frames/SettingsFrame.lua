@@ -8,12 +8,12 @@ ns.settingsFrame = settingsFrame
 local frame = CreateFrame("Frame", nil, UIParent)
 frame:Hide()
 frame.name = "TrufiGCD"
-InterfaceOptions_AddCategory(frame)
+ns.utils.interfaceOptions_AddCategory(frame)
 settingsFrame.frame = frame
 
 SLASH_TRUFI1, SLASH_TRUFI2 = '/tgcd', '/trufigcd'
 function SlashCmdList.TRUFI()
-    InterfaceOptionsFrame_OpenToCategory(frame)
+    Settings.OpenToCategory(frame.name)
 end
 
 ---show/hide anchors button, text and frame
@@ -64,7 +64,7 @@ frameShowAnchorsButtonText:SetText('TrufiGCD')
 frameShowAnchorsButtonText:SetPoint("TOP", 0, -8)
 
 frameShowAnchorsReturnButton:SetScript("OnClick", function()
-    InterfaceOptionsFrame_OpenToCategory(frame)
+    Settings.OpenToCategory(frame.name)
 end)
 
 local anchorDisplayed = false

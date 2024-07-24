@@ -2,6 +2,8 @@
 
 -- The module initializes settings and provides all necessary user events to the modules.
 
+local IS_RETAIL = WOW_PROJECT_ID == WOW_PROJECT_MAINLINE
+
 ---@type string, Namespace
 local _, ns = ...
 
@@ -59,11 +61,15 @@ loadFrame:SetScript("OnEvent", function(_, event, name)
         local spellEventFrame = CreateFrame("Frame", nil, UIParent)
         spellEventFrame:RegisterEvent("UNIT_SPELLCAST_START")
         spellEventFrame:RegisterEvent("UNIT_SPELLCAST_CHANNEL_START")
-        spellEventFrame:RegisterEvent("UNIT_SPELLCAST_EMPOWER_START")
         spellEventFrame:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
         spellEventFrame:RegisterEvent("UNIT_SPELLCAST_STOP")
         spellEventFrame:RegisterEvent("UNIT_SPELLCAST_CHANNEL_STOP")
-        spellEventFrame:RegisterEvent("UNIT_SPELLCAST_EMPOWER_STOP")
+
+        if IS_RETAIL then
+            spellEventFrame:RegisterEvent("UNIT_SPELLCAST_EMPOWER_START")
+            spellEventFrame:RegisterEvent("UNIT_SPELLCAST_EMPOWER_STOP")
+        end
+
         spellEventFrame:SetScript("OnEvent", function(_, unitEvent, unitType, castId, spellId)
             if ns.units[unitType] and ns.locationCheck.isAddonEnabled() then
                 ns.units[unitType]:OnSpellEvent(unitEvent, spellId, unitType, castId)
@@ -95,17 +101,15 @@ loadFrame:SetScript("OnEvent", function(_, event, name)
     end)
 end)
 
-local IS_RETAIL = WOW_PROJECT_ID == WOW_PROJECT_MAINLINE
-
 if IS_RETAIL then
     AddonCompartmentFrame:RegisterAddon({
         text = "TrufiGCD",
         icon = 4622474,
         notCheckable = true,
         registerForAnyClick = true,
-        func = function(_, _, _, _, mouseButton)
-            if mouseButton == "LeftButton" then
-                InterfaceOptionsFrame_OpenToCategory(ns.settingsFrame.frame)
+        func = function(_, btn)
+            if btn.buttonName == "LeftButton" then
+                Settings.OpenToCategory(ns.settingsFrame.frame.name)
             else
                 ns.settingsFrame.toggleAnchors(false)
             end

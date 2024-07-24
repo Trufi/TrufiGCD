@@ -35,7 +35,7 @@ local frame = CreateFrame("Frame", nil, UIParent)
 frame:Hide()
 frame.name = "Profile"
 frame.parent = "TrufiGCD"
-InterfaceOptions_AddCategory(frame)
+ns.utils.interfaceOptions_AddCategory(frame)
 
 local selectActiveProfile = CreateFrame("Frame", "TrGCDActiveProfileSelect", frame, "UIDropDownMenuTemplate")
 selectActiveProfile:SetPoint("TOPLEFT", -5, -50)

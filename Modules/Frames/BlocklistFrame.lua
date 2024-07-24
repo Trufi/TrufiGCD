@@ -9,7 +9,7 @@ local frame = CreateFrame("Frame", nil, UIParent)
 frame:Hide()
 frame.name = "Blocklist"
 frame.parent = "TrufiGCD"
-InterfaceOptions_AddCategory(frame)
+ns.utils.interfaceOptions_AddCategory(frame)
 
 local listBorder = CreateFrame("Frame", nil, frame, "BackdropTemplate")
 listBorder:SetPoint("TOPLEFT", 10, -25)

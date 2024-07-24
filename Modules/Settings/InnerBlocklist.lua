@@ -73,6 +73,7 @@ ns.innerBlockList = {
     373130, -- Dark Reprimand (Priest)
     81782, -- Power Word: Barrier (Priest)
     185313, -- Shadow Dance (Rogue buff)
+    221771, -- Storm, Earth, and Fire: Fixate (Monk buff)
 
     -- Unverified - from GCD History
     184707, -- Rampage
