@@ -23,6 +23,7 @@
             "IsControlKeyDown",
             "IsInInstance",
             "LibStub",
+            "MenuUtil",
             "Settings",
             "SlashCmdList",
             "STANDARD_TEXT_FONT",

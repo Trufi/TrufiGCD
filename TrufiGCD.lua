@@ -111,18 +111,20 @@ if IS_RETAIL then
             if btn.buttonName == "LeftButton" then
                 Settings.OpenToCategory(ns.settingsFrame.frame.name)
             else
-                ns.settingsFrame.toggleAnchors(false)
+                ns.settingsFrame.toggleAnchors()
             end
         end,
-        funcOnEnter = function()
-            GameTooltip:SetOwner(AddonCompartmentFrame, "ANCHOR_TOPRIGHT")
-            GameTooltip:SetText("TrufiGCD")
-            GameTooltip:AddLine("|cffeda55fLeft-Click|r to open the settings.", 1, 1, 1, true)
-            GameTooltip:AddLine("|cffeda55fRight-Click|r to show frame anchors.", 1, 1, 1, true)
-            GameTooltip:Show()
+        funcOnEnter = function(button)
+            MenuUtil.ShowTooltip(button, function(tooltip)
+                tooltip:ClearLines()
+                tooltip:SetText("TrufiGCD")
+                tooltip:AddLine("|cffeda55fLeft-Click|r to open the settings.", 1, 1, 1, true)
+                tooltip:AddLine("|cffeda55fRight-Click|r to show frame anchors.", 1, 1, 1, true)
+                tooltip:Show()
+            end)
         end,
-        funcOnLeave = function()
-            GameTooltip:Hide()
+        funcOnLeave = function(button)
+            MenuUtil.HideTooltip(button)
         end,
     })
 end
