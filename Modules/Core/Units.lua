@@ -116,13 +116,17 @@ function Unit:OnSpellEvent(event, spellId, unitType, castId)
     end
 
     if event == "UNIT_SPELLCAST_START" then
-        self:AddSpell(unitType, spellId, spellIcon, spellName)
-        self.currentlyCastedSpell = {
-            id = spellId,
-            castId = castId,
-            name = spellName,
-        }
-        self.stopMovingTime = GetTime()
+        -- Ignore start of spells without castId - they are likely supplemental
+        -- e.g. casts from druid forms create two start events (one without castId)
+        if castId then
+            self:AddSpell(unitType, spellId, spellIcon, spellName)
+            self.currentlyCastedSpell = {
+                id = spellId,
+                castId = castId,
+                name = spellName,
+            }
+            self.stopMovingTime = GetTime()
+        end
     elseif event == "UNIT_SPELLCAST_CHANNEL_START" or event == "UNIT_SPELLCAST_EMPOWER_START" then
         -- Channeling and empower spells are different to regular cast spells:
         -- * they don't have castId
