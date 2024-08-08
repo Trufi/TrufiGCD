@@ -75,14 +75,6 @@ loadFrame:SetScript("OnEvent", function(_, event, name)
                 ns.units[unitType]:OnSpellEvent(unitEvent, spellId, unitType, castId)
             end
         end)
-
-        local auraEventFrame = CreateFrame("Frame", nil, UIParent)
-        auraEventFrame:RegisterEvent("UNIT_AURA")
-        auraEventFrame:SetScript("OnEvent", function(_, unitEvent, unitType)
-            if ns.units[unitType] and ns.locationCheck.isAddonEnabled() then
-                ns.units[unitType]:OnAuraEvent(unitEvent)
-            end
-        end)
     end)
 
     local minUpdateInterval = 0.03

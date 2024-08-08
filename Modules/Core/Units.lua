@@ -4,25 +4,6 @@ local _, ns = ...
 local trinketIconAliance = "Interface\\Icons\\inv_jewelry_trinketpvp_01"
 local trinketIconHorde = "Interface\\Icons\\inv_jewelry_trinketpvp_02"
 
--- TODO: remove outdated spells
--- list of instant spell buffs
-local instantSpellBuffs = {
-    -- Pyroblast! - Pyroblast
-    [48108] = {11366},
-    -- Shooting Stars - Starsurge
-    [93400] = {78674},
-    -- Predatory Swiftness - Entangling Roots, Cyclone, Healing Touch, Rebirth
-    [69369] = {339, 33786, 5185, 20484},
-    -- Glyph of Mind Spike - Mind Blast
-    [81292] = {8092},
-    -- Surge of Darkness - Mind Spike
-    [87160] = {87160},
-    -- Surge of Light - Flash Heal
-    [114255] = {2061},
-    -- Shadowy Insight - Mind Blast
-    [124430] = {8092}
-}
-
 ---@class Unit
 local Unit = {}
 Unit.__index = Unit
@@ -184,8 +165,7 @@ function Unit:OnSpellEvent(event, spellId, unitType, castId)
 
         else
             -- If a unit is NOT casting, it is an instant spell or the one that became instant because of some buff.
-            local isSpellFromBuff = self:CheckForInstantSpellBuff(spellId)
-            if castTime <= 0 or isSpellFromBuff then
+            if castTime <= 0 then
                 self:AddSpell(unitType, spellId, spellIcon, spellName)
             end
         end
@@ -208,21 +188,6 @@ function Unit:OnSpellEvent(event, spellId, unitType, castId)
     end
 end
 
----@param unitType UnitType
-function Unit:OnAuraEvent(unitType)
-    if not ns.settings.activeProfile.unitSettings[self.unitType].enable then
-        return
-    end
-
-    for i = 1, 20 do
-        local buffId = select(11, UnitBuff(unitType, i))
-
-        if instantSpellBuffs[buffId] then
-            self.instantSpellBuff = buffId
-            return
-        end
-    end
-end
 
 ---@param time number
 ---@param interval number
@@ -233,21 +198,6 @@ function Unit:Update(time, interval)
     end
 
     self.iconQueue:Update(time, interval, self.currentlyCastedSpell ~= nil)
-end
-
----@private
----@param spellId number
----@return boolean
-function Unit:CheckForInstantSpellBuff(spellId)
-    if self.instantSpellBuff and instantSpellBuffs[self.instantSpellBuff] then
-        for _, buffSpell in ipairs(instantSpellBuffs[self.instantSpellBuff]) do
-            if buffSpell == spellId then
-                return true
-            end
-        end
-    end
-
-    return false
 end
 
 ---@private
