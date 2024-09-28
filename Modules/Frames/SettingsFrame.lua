@@ -380,7 +380,7 @@ function UnitSettingsFrame:New(unitType, offset)
     end)
 
     ---Size Slider
-    obj.sizeSlider = CreateFrame("Slider", "trgcdframesizeslider" .. unitType, frame, "OptionsSliderTemplate")
+    obj.sizeSlider = CreateFrame("Slider", "trgcdframesizeslider" .. unitType, frame, "TrufiGCD_OptionsSliderTemplate")
     obj.sizeSlider:SetWidth(170)
     obj.sizeSlider:SetPoint("TOPLEFT", 190, -55 - offset * 40)
     _G[obj.sizeSlider:GetName() .. 'Low']:SetText('10')
@@ -401,7 +401,7 @@ function UnitSettingsFrame:New(unitType, offset)
     obj.sizeSlider:Show()
 
     ---Icons number slider
-    obj.iconsNumber = CreateFrame("Slider", "trgcdframewidthslider" .. unitType, frame, "OptionsSliderTemplate")
+    obj.iconsNumber = CreateFrame("Slider", "trgcdframewidthslider" .. unitType, frame, "TrufiGCD_OptionsSliderTemplate")
     obj.iconsNumber:SetWidth(100)
     obj.iconsNumber:SetPoint("TOPLEFT", 390, -55 - offset * 40)
     _G[obj.iconsNumber:GetName() .. 'Low']:SetText('1')

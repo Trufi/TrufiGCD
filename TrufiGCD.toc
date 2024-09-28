@@ -1,5 +1,5 @@
 ## Interface: 110002
-## Interface-Classic: 11503
+## Interface-Classic: 11504
 ## Interface-Cata: 40400
 ## Title: TrufiGCD
 ## Notes: Last used spells of the player, target, party or arena members.
@@ -10,6 +10,8 @@
 ## X-Curse-Project-ID: 46527
 ## X-WoWI-ID: 21820
 ## X-Wago-ID: BNBenxGx
+
+Polyfills.xml
 
 # Libraries
 Libs\LibStub\Libstub.lua
