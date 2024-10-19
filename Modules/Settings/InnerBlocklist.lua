@@ -74,6 +74,9 @@ ns.innerBlockList = {
     81782, -- Power Word: Barrier (Priest)
     185313, -- Shadow Dance (Rogue buff)
     221771, -- Storm, Earth, and Fire: Fixate (Monk buff)
+    361652, -- Demonic Gateway
+    228212, -- Arena Starting Area Marker
+    463429, -- Griftah's All-Purpose Embellishing Powder
 
     -- Unverified - from GCD History
     184707, -- Rampage
