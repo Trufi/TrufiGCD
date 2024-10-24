@@ -77,6 +77,7 @@ ns.innerBlockList = {
     361652, -- Demonic Gateway
     228212, -- Arena Starting Area Marker
     463429, -- Griftah's All-Purpose Embellishing Powder
+    421177, -- Disable ALL Mounts
 
     -- Unverified - from GCD History
     184707, -- Rampage

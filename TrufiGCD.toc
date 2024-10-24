@@ -1,4 +1,4 @@
-## Interface: 110002
+## Interface: 110005
 ## Interface-Classic: 11504
 ## Interface-Cata: 40400
 ## Title: TrufiGCD
