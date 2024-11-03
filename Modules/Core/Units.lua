@@ -35,9 +35,6 @@ function Unit:New(unitType)
 
     obj.iconQueue = ns.IconQueue:New(unitType)
 
-    ---@type number | nil
-    obj.instantSpellBuff = nil
-
     return obj
 end
 
@@ -78,10 +75,8 @@ end
 
 ---@param spellId number
 local function checkBlocklist(spellId)
-    for _, blockedSpellId in ipairs(ns.innerBlockList) do
-        if blockedSpellId == spellId then
-            return true
-        end
+    if ns.innerBlockList[spellId] then
+        return true
     end
 
     for _, blockedSpellId in ipairs(ns.settings.activeProfile.blocklist) do
@@ -103,7 +98,7 @@ function Unit:OnSpellEvent(event, spellId, unitType, castId)
     local spellName, _, spellIcon, castTime = ns.utils.getSpellInfo(spellId)
     local spellLink = ns.utils.getSpellLink(spellId)
 
-    if not spellIcon or not spellLink or not spellName then
+    if not spellIcon or not spellLink or not spellName or ns.innerIconsBlocklist[spellIcon] then
         return
     end
 

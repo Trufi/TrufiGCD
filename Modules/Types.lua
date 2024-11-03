@@ -7,7 +7,8 @@
 ---@field profileFrame ProfileFrame
 ---@field ProfileSettings ProfileSettings
 ---@field settings Settings
----@field innerBlockList number[]
+---@field innerBlockList {[string]: boolean}
+---@field innerIconsBlocklist {[string]: boolean}
 ---@field settingsFrame SettingsFrame
 ---@field blocklistFrame BlocklistFrame
 ---@field units {[UnitType]: Unit}

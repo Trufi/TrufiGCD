@@ -1,7 +1,7 @@
 ---@type string, Namespace
 local _, ns = ...
 
-ns.innerBlockList = {
+local blocklistArray = {
     61391, -- Typhoon x2
     5374, -- Mutilate х3
     27576, -- Mutilate (off-hand) х3
@@ -100,3 +100,18 @@ ns.innerBlockList = {
     385062, -- Odyn's Fury
     385954 -- Shield Charge
 }
+
+local iconsBlocklistArray = {
+    136243, -- Gear icon
+}
+
+ns.innerBlockList = {}
+for _, spellId in ipairs(blocklistArray) do
+    ns.innerBlockList[spellId] = true
+end
+
+
+ns.innerIconsBlocklist = {}
+for _, spellId in ipairs(iconsBlocklistArray) do
+    ns.innerIconsBlocklist[spellId] = true
+end
