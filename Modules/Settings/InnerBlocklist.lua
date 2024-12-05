@@ -78,6 +78,7 @@ local blocklistArray = {
     228212, -- Arena Starting Area Marker
     463429, -- Griftah's All-Purpose Embellishing Powder
     421177, -- Disable ALL Mounts
+    454455, -- Complicated Fuse Box
 
     -- Unverified - from GCD History
     184707, -- Rampage
