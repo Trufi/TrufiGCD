@@ -17,6 +17,7 @@ Polyfills.xml
 Libs\LibStub\Libstub.lua
 
 # Utility modules
+Modules\Cache.lua
 Modules\Utils.lua
 Modules\MasqueHelper.lua
 Modules\Constants.lua

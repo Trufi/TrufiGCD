@@ -15,6 +15,7 @@
 ---@field masqueHelper MasqueHelper
 ---@field locationCheck LocationCheck
 ---@field constants Constants
+---@field Cache Cache
 
 ---@alias Direction "Left" | "Right" | "Up" | "Down"
 

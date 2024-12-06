@@ -25,6 +25,8 @@ function Icon:New(params)
     obj.offset = 0
     obj.startTime = 0
     obj.spellId = 0
+    obj.spellName = ""
+    obj.castId = ""
     obj.cancelTextureDisplayed = false
 
     obj.frame = CreateFrame("Button", nil, params.parentFrame)
@@ -47,6 +49,12 @@ function Icon:New(params)
     obj.cancelTexture:SetTexture(crossTexture)
     obj.cancelTexture:SetAlpha(1)
     obj.cancelTexture:Hide()
+
+    obj.damage = 0
+    obj.heal = 0
+    obj.damageText = obj.frame:CreateFontString(nil, "BACKGROUND")
+    obj.damageText:SetPoint("CENTER", obj.frame, "BOTTOM", 0, -6)
+    obj.damageText:SetFont(STANDARD_TEXT_FONT, 12, "OUTLINE")
 
     obj:Resize()
 
@@ -126,14 +134,28 @@ function Icon:Copy(from)
     else
         self.cancelTexture:Hide()
     end
+
+    self.spellId = from.spellId
+    self.spellName = from.spellName
+    self.damage = from.damage
+    self.castId = from.castId
+    self.heal = from.heal
+    self:UpdateDamageText()
 end
 
 ---@param id number
+---@param name string
+---@param castId string
 ---@param texture string | number
-function Icon:SetSpell(id, texture)
+function Icon:SetSpell(id, name, castId, texture)
     self.offset = 0
     self.displayed = false
     self.spellId = id
+    self.spellName = name
+    self.damage = 0
+    self.castId = castId
+    self.heal = 0
+    self.damageText:SetText("")
     self.texture:SetTexture(texture)
     self.frame:SetAlpha(0)
     self.frame:Hide()
@@ -147,6 +169,61 @@ end
 function Icon:HideCancelTexture()
     self.cancelTexture:Hide()
     self.cancelTextureDisplayed = false
+end
+
+
+---@param damage number
+---@param isHeal boolean
+function Icon:AddDamage(damage, isHeal)
+    if isHeal then
+        self.heal = self.heal + damage
+    else
+        self.damage = self.damage + damage
+    end
+
+    self:UpdateDamageText()
+end
+
+---@param value number
+local function formatNumber(value)
+    if value >= 1e6 then
+        local formatted = value / 1e6
+        return string.format(formatted < 10 and "%.1fM" or "%.0fM", formatted)
+    elseif value >= 1e3 then
+        local formatted = value / 1e3
+        return string.format(formatted < 10 and "%.1fK" or "%.0fK", formatted)
+    else
+        return tostring(value)
+    end
+end
+
+---@private
+function Icon:UpdateDamageText()
+    local amount = 0
+
+    if self.damage > self.heal then
+        --Use yellow color for any damage
+        self.damageText:SetTextColor(1.0, 1.0, 0.0)
+        amount = self.damage
+    else
+        --Use green color for healing
+        self.damageText:SetTextColor(0.3, 1.0, 0.3)
+        amount = self.heal
+    end
+
+    local text = formatNumber(amount);
+    self.damageText:SetText(text)
+
+    local settings = ns.settings.activeProfile.unitSettings[self.unitType]
+
+    --Resize text based on number of letters
+    local k = 3
+    if #text > 3 then
+        k = 3.3
+    end
+    local fontSize = settings.iconSize / k;
+
+    self.damageText:SetFont(STANDARD_TEXT_FONT, fontSize, "OUTLINE")
 end
 
 ---@private
