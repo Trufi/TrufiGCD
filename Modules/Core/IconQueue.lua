@@ -77,13 +77,15 @@ function IconQueue:New(unitType)
 end
 
 ---@param id number
+---@param name string
+---@param castId string
 ---@param texture string | number
-function IconQueue:AddSpell(id, texture)
+function IconQueue:AddSpell(id, name, castId, texture)
     if self.iconIndex == innerIconsNumber then
         self.iconIndex = 1
     end
 
-    self.icons[self.iconIndex]:SetSpell(id, texture)
+    self.icons[self.iconIndex]:SetSpell(id, name, castId, texture)
     table.insert(self.nextIconIndices, self.iconIndex)
     self.iconIndex = self.iconIndex + 1
 end
@@ -241,4 +243,43 @@ function IconQueue:HideAnchor()
 
     self.texture:Hide()
     self.text:Hide()
+end
+
+---@param spellName string
+---@param damage number
+---@param isHeal boolean
+---@param currentlyCastedCastId string | nil
+---@param possibleDamageSpellCastId string | nil
+function IconQueue:AddDamage(spellName, damage, isHeal, currentlyCastedCastId, possibleDamageSpellCastId)
+    local previousIconIndex = self.iconIndex - 1
+    if previousIconIndex == 0 then
+        previousIconIndex = innerIconsNumber
+    end
+    local steps = 0
+
+    while steps < #self.icons do
+        local prevIcon = self.icons[previousIconIndex]
+        if
+            prevIcon.spellName == spellName and
+            not prevIcon.cancelTextureDisplayed and
+
+            -- This line prevents adding damage to the currently being casted spell if you spam the same spell
+            -- - Current spell is always the first -> ignore anything after first step
+            -- - Channel is okay for adding damage
+            (steps ~= 0 or currentlyCastedCastId == "channel" or currentlyCastedCastId ~= prevIcon.castId) and
+
+            -- This finds spell that was applied to the specific target/
+            -- Fixes the case when someone casts dots/hots on different targets.
+            (not possibleDamageSpellCastId or possibleDamageSpellCastId == prevIcon.castId)
+        then
+            prevIcon:AddDamage(damage, isHeal)
+            return
+        end
+
+        previousIconIndex = previousIconIndex - 1
+        if previousIconIndex == 0 then
+            previousIconIndex = innerIconsNumber
+        end
+        steps = steps + 1
+    end
 end

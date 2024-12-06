@@ -91,6 +91,36 @@ loadFrame:SetScript("OnEvent", function(_, event, name)
             lastUpdateTime = time
         end
     end)
+
+
+    local combatLogFrame = CreateFrame("Frame")
+    combatLogFrame:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
+    combatLogFrame:SetScript("OnEvent", function()
+        local _, subevent, _, sourceGuid, _, _, _, destGuid, _, _, _, _, spellName, _, amount = CombatLogGetCurrentEventInfo()
+
+        if subevent ~= "SPELL_DAMAGE" and subevent ~= "SPELL_PERIODIC_DAMAGE" and
+            subevent ~= "SPELL_HEAL" and subevent ~= "SPELL_PERIODIC_HEAL" and
+            subevent ~= "SPELL_CAST_SUCCESS"
+        then
+            return
+        end
+
+        --TODO: Use unit GUID map prepared beforehand
+        for _, unitType in ipairs(ns.constants.unitTypes) do
+            if UnitGUID(unitType) == sourceGuid then
+                if subevent == "SPELL_CAST_SUCCESS" then
+                    ns.units[unitType]:AttachDestGuidToSpell(spellName, destGuid)
+                else
+                    local isHeal = subevent == "SPELL_HEAL" and subevent == "SPELL_PERIODIC_HEAL"
+
+                    -- Delay damage info because creation of self instant healing spells appears later their combat log heals
+                    C_Timer.After(0, function()
+                        ns.units[unitType]:AddDamage(spellName, amount, isHeal, destGuid)
+                    end)
+                end
+            end
+        end
+    end)
 end)
 
 if IS_RETAIL then
