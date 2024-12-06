@@ -12,10 +12,12 @@
 ---@field innerIconsBlocklist {[string]: boolean}
 ---@field settingsFrame SettingsFrame
 ---@field blocklistFrame BlocklistFrame
+---@field labelSettingsFrame LabelSettingsFrame
 ---@field units {[UnitType]: Unit}
 ---@field masqueHelper MasqueHelper
 ---@field locationCheck LocationCheck
 ---@field constants Constants
+---@field Cache Cache
 
 ---@alias Direction "Left" | "Right" | "Up" | "Down"
 
@@ -23,6 +25,18 @@
 
 ---@alias UnitType "player" | "party1" | "party2" | "party3" | "party4" | "arena1" | "arena2" | "arena3" | "arena4" | "arena5" | "target" | "focus"
 ---@alias LayoutType "player" | "party" | "arena" | "target" | "focus"
+
+---@class Color
+---@field r number
+---@field g number
+---@field b number
+---@field a number
+
+---@class SavedColor
+---@field r? number
+---@field g? number
+---@field b? number
+---@field a? number
 
 ---@class UnitVariablesV1
 ---@field x? number
@@ -41,6 +55,13 @@
 ---@field World? boolean
 ---@field Raid? boolean
 ---@field ["Combat only"]? boolean
+
+---@class SavedVariablesLabels
+---@field enable? boolean
+---@field damageColor? SavedColor
+---@field healColor? SavedColor
+---@field critColor? SavedColor
+---@field position? "TOP" | "BOTTOM" | "CENTER"
 
 --TODO: Drop V1 support after 25.08.2025
 ---@class ProfileVariablesV1
@@ -99,6 +120,7 @@
 ---@field name? string
 ---@field layouts? LayoutsVariablesV2
 ---@field units? UnitsVariablesV2
+---@field labels? SavedVariablesLabels
 ---@field EnableIn? SavedVariablesEnabledIn
 ---@field ModScroll? boolean
 ---@field TooltipEnable? boolean

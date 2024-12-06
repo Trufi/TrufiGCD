@@ -10,6 +10,7 @@ local function activateProfile(profile)
     ns.settings.activeProfile = profile
     ns.settings:Save()
     ns.settingsFrame:syncWithSettings()
+    ns.labelSettingsFrame:syncWithSettings()
     ns.blocklistFrame:syncWithSettings()
     ns.profileFrame:syncWithSettings()
 end
@@ -18,6 +19,7 @@ local function deleteCurrentProfile()
     ns.settings:DeleteCurrentProfile()
     ns.settings:Save()
     ns.settingsFrame:syncWithSettings()
+    ns.labelSettingsFrame:syncWithSettings()
     ns.blocklistFrame:syncWithSettings()
     ns.profileFrame:syncWithSettings()
 end
@@ -27,6 +29,7 @@ local function createNewProfile(name)
     ns.settings:CreateNewProfile(name)
     ns.settings:Save()
     ns.settingsFrame:syncWithSettings()
+    ns.labelSettingsFrame:syncWithSettings()
     ns.blocklistFrame:syncWithSettings()
     ns.profileFrame:syncWithSettings()
 end
@@ -180,6 +183,7 @@ profileFrame.syncWithSettings = function()
     --TODO: move to the units module
     for _, unit in pairs(ns.units) do
         unit.iconQueue:Resize()
+        unit.iconQueue:SyncLabelSettings()
         unit:Clear()
     end
 end

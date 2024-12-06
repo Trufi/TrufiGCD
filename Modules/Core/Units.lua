@@ -36,6 +36,7 @@ function Unit:New(params)
     }
 
     ---A spell that is currently being casted.
+    ---@type {id: number, castId: string, name: string} | nil
     obj.currentlyCastedSpell = nil
 
     obj.iconQueue = ns.IconQueue:New({
@@ -43,11 +44,22 @@ function Unit:New(params)
         layoutType = obj.layoutType,
     })
 
+    ---An array of last succeeded spells.
+    ---Used to map castId (which is presented only in regular events)
+    ---to destination GUID (which is presented in combat log event only).
+    ---@type {castId: string, name: string}[]
+    obj.lastSucceededSpells = {}
+
+    ---Consists of found matches between castId and destination GUID.
+    obj.destGuidToCastIdMap = ns.Cache:New(20)
+
     return obj
 end
 
 function Unit:Clear()
     self.currentlyCastedSpell = nil
+    self.lastSucceededSpells = {}
+    self.destGuidToCastIdMap:Clear()
     self.iconQueue:Clear()
 end
 
@@ -61,6 +73,14 @@ function Unit:Copy(from)
         }
     end
     self.stopMovingTime = from.stopMovingTime
+    self.lastSucceededSpells = {}
+    for _, spell in ipairs(from.lastSucceededSpells) do
+        table.insert(self.lastSucceededSpells, {
+            castId = spell.castId,
+            name = spell.name,
+        })
+    end
+    self.destGuidToCastIdMap:Copy(from.destGuidToCastIdMap)
     self.iconQueue:Copy(from.iconQueue)
     -- TODO: copy other fields as well
 end
@@ -122,7 +142,7 @@ function Unit:OnSpellEvent(event, spellId, unitType, castId)
         -- Ignore start of spells without castId - they are likely supplemental
         -- e.g. casts from druid forms create two start events (one without castId)
         if castId then
-            self:AddSpell(unitType, spellId, spellIcon, spellName)
+            self:AddSpell(unitType, spellId, spellIcon, spellName, castId)
             self.currentlyCastedSpell = {
                 id = spellId,
                 castId = castId,
@@ -136,7 +156,7 @@ function Unit:OnSpellEvent(event, spellId, unitType, castId)
         -- * their castTime is 0
         -- * the succeeded event doesn't mean the channeling stopped
 
-        self:AddSpell(unitType, spellId, spellIcon, spellName)
+        self:AddSpell(unitType, spellId, spellIcon, spellName, "channel")
         self.currentlyCastedSpell = {
             id = spellId,
             castId = "channel",
@@ -144,6 +164,15 @@ function Unit:OnSpellEvent(event, spellId, unitType, castId)
         }
         self.stopMovingTime = GetTime()
     elseif event == "UNIT_SPELLCAST_SUCCEEDED" then
+        -- Update the array of last spells for castId <-> destination GUID mapping
+        table.insert(self.lastSucceededSpells, {
+            castId = castId,
+            name = spellName,
+        })
+        if #self.lastSucceededSpells >= 5 then
+            table.remove(self.lastSucceededSpells, 1)
+        end
+
         -- If it is a previously canceled spell, just remove the cross icon
         if self.canceledSpell.castId == castId then
             self.iconQueue:HideCancel(self.canceledSpell.iconIndex)
@@ -167,13 +196,13 @@ function Unit:OnSpellEvent(event, spellId, unitType, castId)
             -- it is likely a supplementary spell that doesn't need to be displayed.
             elseif self.currentlyCastedSpell.name ~= spellName then
                 -- Show instant spells, e.g. for monk mist spells or mage's Ice Floes
-                self:AddSpell(unitType, spellId, spellIcon, spellName)
+                self:AddSpell(unitType, spellId, spellIcon, spellName, castId --[[@as string]])
             end
 
         else
             -- If a unit is NOT casting, it is an instant spell or the one that became instant because of some buff.
             if castTime <= 0 then
-                self:AddSpell(unitType, spellId, spellIcon, spellName)
+                self:AddSpell(unitType, spellId, spellIcon, spellName, castId --[[@as string]])
             end
         end
     elseif event == "UNIT_SPELLCAST_STOP" then
@@ -212,10 +241,37 @@ end
 ---@param id number
 ---@param icon number
 ---@param name string
-function Unit:AddSpell(unitType, id, icon, name)
-    self.iconQueue:AddSpell(id, replaceToTrinketIfNeeded(unitType, id, icon))
+---@param castId string
+function Unit:AddSpell(unitType, id, icon, name, castId)
+    self.iconQueue:AddSpell(id, name, castId, replaceToTrinketIfNeeded(unitType, id, icon))
     self.previousSpell.id = id
     self.previousSpell.name = name
+end
+
+---@param spellName string
+---@param damage number
+---@param isHeal boolean
+---@param isCritical boolean
+---@param destGuid string
+function Unit:AddDamage(spellName, damage, isHeal, isCritical, destGuid)
+    local currentlyCastedCastId = self.currentlyCastedSpell and self.currentlyCastedSpell.castId
+    local possibleDamageSpellCastId = self.destGuidToCastIdMap:Get(destGuid .. spellName) --[[@as string | nil]]
+    self.iconQueue:AddDamage(spellName, damage, isHeal, isCritical, currentlyCastedCastId, possibleDamageSpellCastId)
+end
+
+---@param spellName string
+---@param destGuid string
+function Unit:AttachDestGuidToSpell(spellName, destGuid)
+    --If spell doesn't have target destination GUID is an empty string
+    if #destGuid > 0 then
+        for index, spell in ipairs(self.lastSucceededSpells) do
+            if spell.name == spellName then
+                self.destGuidToCastIdMap:Add(destGuid .. spell.name, spell.castId)
+                table.remove(self.lastSucceededSpells, index)
+                break
+            end
+        end
+    end
 end
 
 ---@type {[UnitType]: LayoutType}

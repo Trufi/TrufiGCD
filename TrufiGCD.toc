@@ -11,12 +11,11 @@
 ## X-WoWI-ID: 21820
 ## X-Wago-ID: BNBenxGx
 
+embeds.xml
 Polyfills.xml
 
-# Libraries
-Libs\LibStub\Libstub.lua
-
 # Utility modules
+Modules\Cache.lua
 Modules\Utils.lua
 Modules\MasqueHelper.lua
 Modules\Constants.lua
@@ -38,6 +37,7 @@ Modules\Core\Units.lua
 # Frames
 Modules\Frames\SettingsFrame.lua
 Modules\Frames\BlocklistFrame.lua
+Modules\Frames\LabelSettingsFrame.lua
 Modules\Frames\ProfileFrame.lua
 
 # Addon
