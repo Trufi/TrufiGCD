@@ -111,7 +111,7 @@ loadFrame:SetScript("OnEvent", function(_, event, name)
                 if subevent == "SPELL_CAST_SUCCESS" then
                     ns.units[unitType]:AttachDestGuidToSpell(spellName, destGuid)
                 else
-                    local isHeal = subevent == "SPELL_HEAL" and subevent == "SPELL_PERIODIC_HEAL"
+                    local isHeal = subevent == "SPELL_HEAL" or subevent == "SPELL_PERIODIC_HEAL"
 
                     -- Delay damage info because creation of self instant healing spells appears later their combat log heals
                     C_Timer.After(0, function()
