@@ -79,6 +79,7 @@ local blocklistArray = {
     463429, -- Griftah's All-Purpose Embellishing Powder
     421177, -- Disable ALL Mounts
     454455, -- Complicated Fuse Box
+    467718, -- Bleak Arrows (Hunter)
 
     -- Unverified - from GCD History
     184707, -- Rampage
