@@ -113,9 +113,16 @@ loadFrame:SetScript("OnEvent", function(_, event, name)
                 else
                     local isHeal = subevent == "SPELL_HEAL" or subevent == "SPELL_PERIODIC_HEAL"
 
+                    local isCritical = false
+                    if isHeal then
+                        isCritical = select(18, CombatLogGetCurrentEventInfo())
+                    else
+                        isCritical = select(21, CombatLogGetCurrentEventInfo())
+                    end
+
                     -- Delay damage info because creation of self instant healing spells appears later their combat log heals
                     C_Timer.After(0, function()
-                        ns.units[unitType]:AddDamage(spellName, amount, isHeal, destGuid)
+                        ns.units[unitType]:AddDamage(spellName, amount, isHeal, isCritical, destGuid)
                     end)
                 end
             end

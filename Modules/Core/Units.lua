@@ -244,11 +244,12 @@ end
 ---@param spellName string
 ---@param damage number
 ---@param isHeal boolean
+---@param isCritical boolean
 ---@param destGuid string
-function Unit:AddDamage(spellName, damage, isHeal, destGuid)
+function Unit:AddDamage(spellName, damage, isHeal, isCritical, destGuid)
     local currentlyCastedCastId = self.currentlyCastedSpell and self.currentlyCastedSpell.castId
     local possibleDamageSpellCastId = self.destGuidToCastIdMap:Get(destGuid .. spellName) --[[@as string | nil]]
-    self.iconQueue:AddDamage(spellName, damage, isHeal, currentlyCastedCastId, possibleDamageSpellCastId)
+    self.iconQueue:AddDamage(spellName, damage, isHeal, isCritical, currentlyCastedCastId, possibleDamageSpellCastId)
 end
 
 ---@param spellName string

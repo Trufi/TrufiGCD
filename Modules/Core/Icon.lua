@@ -52,6 +52,7 @@ function Icon:New(params)
 
     obj.damage = 0
     obj.heal = 0
+    obj.isCritical = false
     obj.damageText = obj.frame:CreateFontString(nil, "BACKGROUND")
     obj.damageText:SetPoint("CENTER", obj.frame, "BOTTOM", 0, -6)
     obj.damageText:SetFont(STANDARD_TEXT_FONT, 12, "OUTLINE")
@@ -153,6 +154,7 @@ function Icon:SetSpell(id, name, castId, texture)
     self.spellId = id
     self.spellName = name
     self.damage = 0
+    self.isCritical = false
     self.castId = castId
     self.heal = 0
     self.damageText:SetText("")
@@ -174,12 +176,15 @@ end
 
 ---@param damage number
 ---@param isHeal boolean
-function Icon:AddDamage(damage, isHeal)
+---@param isCritical boolean
+function Icon:AddDamage(damage, isHeal, isCritical)
     if isHeal then
         self.heal = self.heal + damage
     else
         self.damage = self.damage + damage
     end
+
+    self.isCritical = isCritical or self.isCritical
 
     self:UpdateDamageText()
 end
@@ -202,12 +207,21 @@ function Icon:UpdateDamageText()
     local amount = 0
 
     if self.damage > self.heal then
-        --Use yellow color for any damage
-        self.damageText:SetTextColor(1.0, 1.0, 0.0)
+        if self.isCritical then
+            --Use yellow color for crit damage
+            self.damageText:SetTextColor(1.0, 1.0, 0.0)
+        else
+            self.damageText:SetTextColor(1.0, 1.0, 1.0)
+        end
         amount = self.damage
     else
-        --Use green color for healing
-        self.damageText:SetTextColor(0.3, 1.0, 0.3)
+        if self.isCritical then
+            --Use yellow color for crit damage
+            self.damageText:SetTextColor(1.0, 1.0, 0.0)
+        else
+            --Use green color for healing
+            self.damageText:SetTextColor(0.3, 1.0, 0.3)
+        end
         amount = self.heal
     end
 

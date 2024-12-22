@@ -248,9 +248,10 @@ end
 ---@param spellName string
 ---@param damage number
 ---@param isHeal boolean
+---@param isCritical boolean
 ---@param currentlyCastedCastId string | nil
 ---@param possibleDamageSpellCastId string | nil
-function IconQueue:AddDamage(spellName, damage, isHeal, currentlyCastedCastId, possibleDamageSpellCastId)
+function IconQueue:AddDamage(spellName, damage, isHeal, isCritical, currentlyCastedCastId, possibleDamageSpellCastId)
     local previousIconIndex = self.iconIndex - 1
     if previousIconIndex == 0 then
         previousIconIndex = innerIconsNumber
@@ -272,7 +273,7 @@ function IconQueue:AddDamage(spellName, damage, isHeal, currentlyCastedCastId, p
             -- Fixes the case when someone casts dots/hots on different targets.
             (not possibleDamageSpellCastId or possibleDamageSpellCastId == prevIcon.castId)
         then
-            prevIcon:AddDamage(damage, isHeal)
+            prevIcon:AddDamage(damage, isHeal, isCritical)
             return
         end
 
