@@ -11,6 +11,7 @@
 ---@field innerIconsBlocklist {[string]: boolean}
 ---@field settingsFrame SettingsFrame
 ---@field blocklistFrame BlocklistFrame
+---@field labelSettingsFrame LabelSettingsFrame
 ---@field units {[UnitType]: Unit}
 ---@field masqueHelper MasqueHelper
 ---@field locationCheck LocationCheck
