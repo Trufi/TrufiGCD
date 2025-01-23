@@ -223,6 +223,12 @@ function IconQueue:Resize()
     ns.masqueHelper.reskinIcons()
 end
 
+function IconQueue:SyncLabelSettings()
+    for _, icon in ipairs(self.icons) do
+        icon:SyncLabelSettings()
+    end
+end
+
 function IconQueue:UpdateOffset()
     local settings = ns.settings.activeProfile.unitSettings[self.unitType]
     self.frame:ClearAllPoints()

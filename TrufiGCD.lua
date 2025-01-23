@@ -34,6 +34,7 @@ loadFrame:SetScript("OnEvent", function(_, event, name)
 
     ns.settings:Load()
     ns.settingsFrame.syncWithSettings()
+    ns.labelSettingsFrame:syncWithSettings()
     ns.blocklistFrame.syncWithSettings()
     ns.profileFrame.syncWithSettings()
 

@@ -24,6 +24,18 @@
 
 ---@alias UnitType "player" | "party1" | "party2" | "party3" | "party4" | "arena1" | "arena2" | "arena3" | "arena4" | "arena5" | "target" | "focus"
 
+---@class Color
+---@field r number
+---@field g number
+---@field b number
+---@field a number
+
+---@class SavedColor
+---@field r? number
+---@field g? number
+---@field b? number
+---@field a? number
+
 ---@class SavedVariablesUnitSettings
 ---@field x? number
 ---@field y? number
@@ -42,6 +54,13 @@
 ---@field Raid? boolean
 ---@field ["Combat only"]? boolean
 
+---@class SavedVariablesLabels
+---@field enable? boolean
+---@field damageColor? SavedColor
+---@field healColor? SavedColor
+---@field critColor? SavedColor
+---@field position? "TOP" | "BOTTOM" | "CENTER"
+
 ---@class SavedVariablesV0
 ---@field EnableIn? SavedVariablesEnabledIn
 ---@field ModScroll? boolean
@@ -59,6 +78,7 @@
 ---@class SavedVariablesV1: SavedVariablesV0
 ---@field id? string
 ---@field name? string
+---@field labels? SavedVariablesLabels
 
 ---@class ProfileVariablesV1: SavedVariablesV1
 

@@ -54,7 +54,6 @@ function Icon:New(params)
     obj.heal = 0
     obj.isCritical = false
     obj.damageText = obj.frame:CreateFontString(nil, "BACKGROUND")
-    obj.damageText:SetPoint("CENTER", obj.frame, "BOTTOM", 0, -6)
     obj.damageText:SetFont(STANDARD_TEXT_FONT, 12, "OUTLINE")
 
     obj:Resize()
@@ -111,6 +110,24 @@ function Icon:UpdatePosition()
     elseif direction == "Down" then
         self.frame:SetPoint("TOP", 0, self.offset)
     end
+end
+
+function Icon:SyncLabelSettings()
+    local settings = ns.settings.activeProfile.labels
+
+    if settings.enable then
+        self.damageText:Show()
+    else
+        self.damageText:Hide()
+    end
+
+    local offset = 0
+    if settings.position == "TOP" then
+        offset = 6
+    elseif settings.position == "BOTTOM" then
+        offset = -6
+    end
+    self.damageText:SetPoint("CENTER", self.frame, settings.position, 0, offset)
 end
 
 ---@param from Icon
@@ -204,23 +221,44 @@ end
 
 ---@private
 function Icon:UpdateDamageText()
+    local labels = ns.settings.activeProfile.labels
     local amount = 0
 
     if self.damage > self.heal then
         if self.isCritical then
             --Use yellow color for crit damage
-            self.damageText:SetTextColor(1.0, 1.0, 0.0)
+            self.damageText:SetTextColor(
+                labels.critColor.r,
+                labels.critColor.g,
+                labels.critColor.b,
+                labels.critColor.a
+            )
         else
-            self.damageText:SetTextColor(1.0, 1.0, 1.0)
+            self.damageText:SetTextColor(
+                labels.damageColor.r,
+                labels.damageColor.g,
+                labels.damageColor.b,
+                labels.damageColor.a
+            )
         end
         amount = self.damage
     else
         if self.isCritical then
             --Use yellow color for crit damage
-            self.damageText:SetTextColor(1.0, 1.0, 0.0)
+            self.damageText:SetTextColor(
+                labels.critColor.r,
+                labels.critColor.g,
+                labels.critColor.b,
+                labels.critColor.a
+            )
         else
             --Use green color for healing
-            self.damageText:SetTextColor(0.3, 1.0, 0.3)
+            self.damageText:SetTextColor(
+                labels.healColor.r,
+                labels.healColor.g,
+                labels.healColor.b,
+                labels.healColor.a
+            )
         end
         amount = self.heal
     end
@@ -228,13 +266,13 @@ function Icon:UpdateDamageText()
     local text = formatNumber(amount);
     self.damageText:SetText(text)
 
-    local settings = ns.settings.activeProfile.unitSettings[self.unitType]
 
     --Resize text based on number of letters
     local k = 3
     if #text > 3 then
         k = 3.3
     end
+    local settings = ns.settings.activeProfile.unitSettings[self.unitType]
     local fontSize = settings.iconSize / k;
 
     self.damageText:SetFont(STANDARD_TEXT_FONT, fontSize, "OUTLINE")
