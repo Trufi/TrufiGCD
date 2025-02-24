@@ -6,7 +6,7 @@ local ProfileSettings = {}
 ProfileSettings.__index = ProfileSettings
 ns.ProfileSettings = ProfileSettings
 
----@param savedVariables SavedVariablesV0 | SavedVariablesV1
+---@param savedVariables ProfileVariablesV1
 function ProfileSettings:New(savedVariables)
     ---@class ProfileSettings
     local obj = setmetatable({}, ProfileSettings)
@@ -49,7 +49,7 @@ function ProfileSettings:New(savedVariables)
 end
 
 ---@private
----@param savedVariables SavedVariablesV0 | SavedVariablesV1
+---@param savedVariables ProfileVariablesV1
 function ProfileSettings:SetFromSavedVariables(savedVariables)
     if type(savedVariables.id) == "string" then
         self.id = savedVariables.id

@@ -25,10 +25,10 @@ function Settings:New()
 end
 
 function Settings:Load()
-    ---@type CharacterSavedVariablesV0 | CharacterSavedVariablesV1
+    ---@type CharacterSavedVariablesV1
     TrufiGCDChSave = TrufiGCDChSave or {}
 
-    ---@type GlobalSavedVariablesV0 | GlobalSavedVariablesV1
+    ---@type GlobalSavedVariablesV1
     TrufiGCDGlSave = TrufiGCDGlSave or {}
 
     self.profiles = {}
@@ -42,12 +42,7 @@ function Settings:Load()
         end
     end
 
-    -- Old version of the character saved variables
-    if type(TrufiGCDChSave.TrGCDQueueFr) == "table" then
-        local profile = ns.ProfileSettings:New(TrufiGCDChSave --[[@as CharacterSavedVariablesV0]])
-        self.profiles[profile.id] = profile
-        self.activeProfile = profile
-    elseif type(TrufiGCDChSave.profileId) == "string" and self.profiles[TrufiGCDChSave.profileId] then
+   if type(TrufiGCDChSave.profileId) == "string" and self.profiles[TrufiGCDChSave.profileId] then
         self.activeProfile = self.profiles[TrufiGCDChSave.profileId]
     end
 

@@ -40,7 +40,9 @@
 ---@field Raid? boolean
 ---@field ["Combat only"]? boolean
 
----@class SavedVariablesV0
+---@class ProfileVariablesV1
+---@field id? string
+---@field name? string
 ---@field EnableIn? SavedVariablesEnabledIn
 ---@field ModScroll? boolean
 ---@field TooltipEnable? boolean
@@ -50,21 +52,11 @@
 ---@field TrGCDQueueFr? SavedVariablesUnitSettings
 ---@field TrGCDBL? number[]
 
---TODO: Remove V0 types after 01.12.2024
----@class GlobalSavedVariablesV0: SavedVariablesV0
----@class CharacterSavedVariablesV0: SavedVariablesV0
-
----@class SavedVariablesV1: SavedVariablesV0
----@field id? string
----@field name? string
-
----@class ProfileVariablesV1: SavedVariablesV1
-
 ---@class GlobalSavedVariablesV1
----@field version 1
+---@field version? 1
 ---@field profiles? { [string]: ProfileVariablesV1 }
 ---@field lastUsedProfileId? string
 
 ---@class CharacterSavedVariablesV1
----@field version 1
+---@field version? 1
 ---@field profileId? string
