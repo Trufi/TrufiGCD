@@ -38,6 +38,7 @@ Modules\Core\Units.lua
 Modules\Frames\SettingsFrame.lua
 Modules\Frames\BlocklistFrame.lua
 Modules\Frames\LabelSettingsFrame.lua
+Modules\Frames\OtherSettingsFrame.lua
 Modules\Frames\ProfileFrame.lua
 
 # Addon

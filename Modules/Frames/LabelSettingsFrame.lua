@@ -5,7 +5,7 @@ local AceGUI = LibStub("AceGUI-3.0")
 
 ---@class LabelSettingsFrame
 local labelSettingsFrame = {}
-ns.labelSettingsFrame = labelSettingsFrame
+-- ns.labelSettingsFrame = labelSettingsFrame
 
 local settingFrame = CreateFrame("Frame", nil, UIParent)
 settingFrame:Hide()
@@ -111,25 +111,25 @@ end)
 container:AddChild(positionMenu)
 
 labelSettingsFrame.syncWithSettings = function()
-    local settings = ns.settings.activeProfile.labels
-    enableCheckBox:SetValue(settings.enable)
+    local labelsSettings = ns.settings.activeProfile.labels
+    enableCheckBox:SetValue(labelsSettings.enable)
     damageColor:SetColor(
-        settings.damageColor.r,
-        settings.damageColor.g,
-        settings.damageColor.b,
-        settings.damageColor.a
+        labelsSettings.damageColor.r,
+        labelsSettings.damageColor.g,
+        labelsSettings.damageColor.b,
+        labelsSettings.damageColor.a
     )
     healColor:SetColor(
-        settings.healColor.r,
-        settings.healColor.g,
-        settings.healColor.b,
-        settings.healColor.a
+        labelsSettings.healColor.r,
+        labelsSettings.healColor.g,
+        labelsSettings.healColor.b,
+        labelsSettings.healColor.a
     )
     critColor:SetColor(
-        settings.critColor.r,
-        settings.critColor.g,
-        settings.critColor.b,
-        settings.critColor.a
+        labelsSettings.critColor.r,
+        labelsSettings.critColor.g,
+        labelsSettings.critColor.b,
+        labelsSettings.critColor.a
     )
-    positionMenu:SetValue(settings.position)
+    positionMenu:SetValue(labelsSettings.position)
 end
