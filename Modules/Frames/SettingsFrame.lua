@@ -73,21 +73,19 @@ settingsFrame.toggleAnchors = function()
     if anchorDisplayed then
         showHideAnchorsButton:SetText("Show")
         frameShowAnchors:Hide()
-        for unitType, queueSettings in pairs(ns.settings.activeProfile.unitSettings) do
-            if queueSettings.enable then
-                local iconQueue = ns.units[unitType].iconQueue
-                iconQueue:HideAnchor()
-
-                queueSettings.point, _, _, queueSettings.x, queueSettings.y = iconQueue.frame:GetPoint()
-                ns.settings:Save()
-            end
+        for _, unit in pairs(ns.units) do
+            local unitSettings = ns.settings.activeProfile.unitSettings[unit.unitType]
+            unitSettings.point, _, _, unitSettings.x, unitSettings.y = unit.iconQueue.frame:GetPoint()
+            unit.iconQueue:HideAnchor()
         end
+        ns.settings:Save()
     else
         showHideAnchorsButton:SetText("Hide")
         frameShowAnchors:Show()
-        for unitType, unitSettings in pairs(ns.settings.activeProfile.unitSettings) do
-            if unitSettings.enable then
-                ns.units[unitType].iconQueue:ShowAnchor()
+        for _, unit in pairs(ns.units) do
+            local layout = ns.settings.activeProfile.layoutSettings[unit.layoutType]
+            if layout.enable then
+                unit.iconQueue:ShowAnchor()
             end
         end
     end
@@ -299,54 +297,60 @@ labelNumber:SetFont(STANDARD_TEXT_FONT, 12)
 labelNumber:SetText("Icons number")
 labelNumber:SetPoint("TOPLEFT", 390, -65)
 
----@class UnitSettingsFrame
-local UnitSettingsFrame = {}
-UnitSettingsFrame.__index = UnitSettingsFrame
+---@class LayoutSettingsFrame
+local LayoutSettingsFrame = {}
+LayoutSettingsFrame.__index = LayoutSettingsFrame
 
----@param unitType UnitType
+---@param layoutType LayoutType
 ---@param offset number
-function UnitSettingsFrame:New(unitType, offset)
-    ---@class UnitSettingsFrame
-    local obj = setmetatable({}, UnitSettingsFrame)
-    obj.unitType = unitType
-
+function LayoutSettingsFrame:New(layoutType, offset)
+    ---@class LayoutSettingsFrame
+    local obj = setmetatable({}, LayoutSettingsFrame)
+    obj.layoutType = layoutType
     obj.buttonEnable = ns.frameUtils.createCheckButton({
         frame = frame,
-        text = ns.settings.activeProfile.unitSettings[unitType].text,
+        text = layoutType:gsub("^%l", string.upper),
         position = "TOPLEFT",
         x = 10,
         y = -50 - offset * 40,
-        name = "trgcdcheckenable" .. unitType,
-        checked = ns.settings.activeProfile.unitSettings[unitType].enable,
+        name = "trgcdcheckenable" .. layoutType,
+        checked = ns.settings.activeProfile.layoutSettings[layoutType].enable,
         onClick = function()
-            ns.settings.activeProfile.unitSettings[unitType].enable = not ns.settings.activeProfile.unitSettings[unitType].enable
+            ns.settings.activeProfile.layoutSettings[layoutType].enable = not ns.settings.activeProfile.layoutSettings[layoutType].enable
 
-            local iconQueue = ns.units[unitType].iconQueue
-            if ns.settings.activeProfile.unitSettings[unitType].enable then
-                iconQueue:ShowAnchor()
-            else
-                iconQueue:HideAnchor()
+            for _, unit in pairs(ns.units) do
+                if unit.layoutType == layoutType then
+                    if ns.settings.activeProfile.layoutSettings[layoutType].enable then
+                        unit.iconQueue:ShowAnchor()
+                    else
+                        unit.iconQueue:HideAnchor()
+                    end
+                    unit:Clear()
+                end
             end
 
             ns.settings:Save()
-            ns.units[unitType]:Clear()
         end
     })
 
     ---dropdown menu
-    obj.directionDropdown = CreateFrame("Frame", "trgcdframemenu" .. unitType, frame, "UIDropDownMenuTemplate")
+    obj.directionDropdown = CreateFrame("Frame", "trgcdframemenu" .. layoutType, frame, "UIDropDownMenuTemplate")
     obj.directionDropdown:SetPoint("TOPLEFT", 70, -50 - offset * 40)
     UIDropDownMenu_SetWidth(obj.directionDropdown, 55)
-    UIDropDownMenu_SetText(obj.directionDropdown, ns.settings.activeProfile.unitSettings[unitType].direction)
+    UIDropDownMenu_SetText(obj.directionDropdown, ns.settings.activeProfile.layoutSettings[layoutType].direction)
 
     ---@param direction Direction
     local function onMenuItemClick(direction)
         UIDropDownMenu_SetText(obj.directionDropdown, direction)
-        ns.settings.activeProfile.unitSettings[unitType].direction = direction
+        ns.settings.activeProfile.layoutSettings[layoutType].direction = direction
         ns.settings:Save()
 
-        ns.units[unitType].iconQueue:Resize()
-        ns.units[unitType]:Clear()
+        for _, unit in pairs(ns.units) do
+            if unit.layoutType == layoutType then
+                unit.iconQueue:Resize()
+                unit:Clear()
+            end
+        end
     end
 
     UIDropDownMenu_Initialize(obj.directionDropdown, function()
@@ -380,71 +384,82 @@ function UnitSettingsFrame:New(unitType, offset)
     end)
 
     ---Size Slider
-    obj.sizeSlider = CreateFrame("Slider", "trgcdframesizeslider" .. unitType, frame, "TrufiGCD_OptionsSliderTemplate")
+    obj.sizeSlider = CreateFrame("Slider", "trgcdframesizeslider" .. layoutType, frame, "TrufiGCD_OptionsSliderTemplate")
     obj.sizeSlider:SetWidth(170)
     obj.sizeSlider:SetPoint("TOPLEFT", 190, -55 - offset * 40)
     _G[obj.sizeSlider:GetName() .. 'Low']:SetText('10')
     _G[obj.sizeSlider:GetName() .. 'High']:SetText('100')
-    _G[obj.sizeSlider:GetName() .. 'Text']:SetText(ns.settings.activeProfile.unitSettings[unitType].iconSize)
+    _G[obj.sizeSlider:GetName() .. 'Text']:SetText(ns.settings.activeProfile.layoutSettings[layoutType].iconSize)
     obj.sizeSlider:SetMinMaxValues(10,100)
     obj.sizeSlider:SetValueStep(1)
-    obj.sizeSlider:SetValue(ns.settings.activeProfile.unitSettings[unitType].iconSize)
+    obj.sizeSlider:SetValue(ns.settings.activeProfile.layoutSettings[layoutType].iconSize)
     obj.sizeSlider:SetScript("OnValueChanged", function(_, value)
         value = math.ceil(value)
         _G[obj.sizeSlider:GetName() .. 'Text']:SetText(value)
-        ns.settings.activeProfile.unitSettings[unitType].iconSize = value
+        ns.settings.activeProfile.layoutSettings[layoutType].iconSize = value
         ns.settings:Save()
 
-        ns.units[unitType].iconQueue:Resize()
-        ns.units[unitType]:Clear()
+        for _, unit in pairs(ns.units) do
+            if unit.layoutType == layoutType then
+                unit.iconQueue:Resize()
+                unit:Clear()
+            end
+        end
     end)
     obj.sizeSlider:Show()
 
     ---Icons number slider
-    obj.iconsNumber = CreateFrame("Slider", "trgcdframewidthslider" .. unitType, frame, "TrufiGCD_OptionsSliderTemplate")
+    obj.iconsNumber = CreateFrame("Slider", "trgcdframewidthslider" .. layoutType, frame, "TrufiGCD_OptionsSliderTemplate")
     obj.iconsNumber:SetWidth(100)
     obj.iconsNumber:SetPoint("TOPLEFT", 390, -55 - offset * 40)
     _G[obj.iconsNumber:GetName() .. 'Low']:SetText('1')
     _G[obj.iconsNumber:GetName() .. 'High']:SetText('8')
-    _G[obj.iconsNumber:GetName() .. 'Text']:SetText(ns.settings.activeProfile.unitSettings[unitType].iconsNumber)
+    _G[obj.iconsNumber:GetName() .. 'Text']:SetText(ns.settings.activeProfile.layoutSettings[layoutType].iconsNumber)
     obj.iconsNumber:SetMinMaxValues(1,8)
     obj.iconsNumber:SetValueStep(1)
-    obj.iconsNumber:SetValue(ns.settings.activeProfile.unitSettings[unitType].iconsNumber)
+    obj.iconsNumber:SetValue(ns.settings.activeProfile.layoutSettings[layoutType].iconsNumber)
     obj.iconsNumber:SetScript("OnValueChanged", function (_, value)
         value = math.ceil(value)
         _G[obj.iconsNumber:GetName() .. 'Text']:SetText(value)
-        ns.settings.activeProfile.unitSettings[unitType].iconsNumber = value
+        ns.settings.activeProfile.layoutSettings[layoutType].iconsNumber = value
         ns.settings:Save()
 
-        ns.units[unitType].iconQueue:Resize()
-        ns.units[unitType]:Clear()
+        for _, unit in pairs(ns.units) do
+            if unit.layoutType == layoutType then
+                unit.iconQueue:Resize()
+                unit:Clear()
+            end
+        end
     end)
     obj.iconsNumber:Show()
 
     return obj
 end
 
-function UnitSettingsFrame:SyncWithSettings()
-    local queueSettings = ns.settings.activeProfile.unitSettings[self.unitType]
+function LayoutSettingsFrame:SyncWithSettings()
+    local layoutSettings = ns.settings.activeProfile.layoutSettings[self.layoutType]
 
-    self.buttonEnable:SetChecked(queueSettings.enable)
-    UIDropDownMenu_SetText(self.directionDropdown, queueSettings.direction)
+    self.buttonEnable:SetChecked(layoutSettings.enable)
+    UIDropDownMenu_SetText(self.directionDropdown, layoutSettings.direction)
 
-    _G[self.sizeSlider:GetName() .. 'Text']:SetText(queueSettings.iconSize)
-    self.sizeSlider:SetValue(queueSettings.iconSize)
+    _G[self.sizeSlider:GetName() .. 'Text']:SetText(layoutSettings.iconSize)
+    self.sizeSlider:SetValue(layoutSettings.iconSize)
 
-    _G[self.iconsNumber:GetName() .. 'Text']:SetText(queueSettings.iconsNumber)
-    self.iconsNumber:SetValue(queueSettings.iconsNumber)
+    _G[self.iconsNumber:GetName() .. 'Text']:SetText(layoutSettings.iconsNumber)
+    self.iconsNumber:SetValue(layoutSettings.iconsNumber)
 
-    local iconQueue = ns.units[self.unitType].iconQueue
-    iconQueue:Resize()
-    iconQueue:UpdateOffset()
+    for _, unit in pairs(ns.units) do
+        if unit.layoutType == self.layoutType then
+            unit.iconQueue:Resize()
+            unit.iconQueue:UpdateOffset()
+        end
+    end
 end
 
----@type {[UnitType]: UnitSettingsFrame}
-local unitSettingsFrames = {}
-for i, unitType in ipairs(ns.constants.unitTypes) do
-    unitSettingsFrames[unitType] = UnitSettingsFrame:New(unitType, i)
+---@type {[LayoutType]: LayoutSettingsFrame}
+local layoutSettingsFrames = {}
+for index, layoutType in ipairs(ns.constants.layoutTypes) do
+    layoutSettingsFrames[layoutType] = LayoutSettingsFrame:New(layoutType, index)
 end
 
 settingsFrame.syncWithSettings = function()
@@ -463,7 +478,7 @@ settingsFrame.syncWithSettings = function()
     arenaCheckbox:SetChecked(settings.enabledIn.arena)
     battlegroundCheckbox:SetChecked(settings.enabledIn.battleground)
 
-    for _, unitSettings in pairs(unitSettingsFrames) do
-        unitSettings:SyncWithSettings()
+    for _, layoutSettings in pairs(layoutSettingsFrames) do
+        layoutSettings:SyncWithSettings()
     end
 end

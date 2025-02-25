@@ -6,7 +6,7 @@ local ProfileSettings = {}
 ProfileSettings.__index = ProfileSettings
 ns.ProfileSettings = ProfileSettings
 
----@param savedVariables ProfileVariablesV1
+---@param savedVariables ProfileVariablesV1 | ProfileVariablesV2
 function ProfileSettings:New(savedVariables)
     ---@class ProfileSettings
     local obj = setmetatable({}, ProfileSettings)
@@ -43,13 +43,22 @@ function ProfileSettings:New(savedVariables)
         obj.unitSettings[unitType] = ns.UnitSettings:New(unitType)
     end
 
+    ---@type {[LayoutType]: LayoutSettings}
+    obj.layoutSettings = {}
+    for _, layoutType in ipairs(ns.constants.layoutTypes) do
+        obj.layoutSettings[layoutType] = ns.LayoutSettings:New()
+    end
+
+    --By default enable only player frame - not many people use anything else
+    obj.layoutSettings.player.enable = true
+
     obj:SetFromSavedVariables(savedVariables)
 
     return obj
 end
 
 ---@private
----@param savedVariables ProfileVariablesV1
+---@param savedVariables ProfileVariablesV1 | ProfileVariablesV2
 function ProfileSettings:SetFromSavedVariables(savedVariables)
     if type(savedVariables.id) == "string" then
         self.id = savedVariables.id
@@ -103,11 +112,46 @@ function ProfileSettings:SetFromSavedVariables(savedVariables)
         self.iconClickAddsSpellToBlocklist = savedVariables.iconClickAddsSpellToBlocklist
     end
 
+    -- Support for V1
     if type(savedVariables.TrGCDQueueFr) == "table" then
         for unitIndex = 1, 12 do
-            if type(savedVariables.TrGCDQueueFr[unitIndex]) == "table" then
-                local unitType = ns.constants.unitTypes[unitIndex]
-                self.unitSettings[unitType]:SetFromSavedVariables(savedVariables.TrGCDQueueFr[unitIndex])
+            local unitSaves = savedVariables.TrGCDQueueFr[unitIndex]
+            local unitType = ns.constants.unitTypes[unitIndex]
+            local unitSettings = self.unitSettings[unitType]
+
+            if type(unitSaves) == "table" and unitSettings then
+                unitSettings:SetFromSavedVariables(unitSaves)
+            end
+        end
+
+        ---@type {[LayoutType]: number}
+        local v1UnitSavesMapping = {
+            player = 1,
+            party = 2,
+            arena = 6,
+            target = 11,
+            focus = 12,
+        }
+        for layoutType, layoutSettings in pairs(self.layoutSettings) do
+            local unitIndex = v1UnitSavesMapping[layoutType]
+            local unitSaves = savedVariables.TrGCDQueueFr[unitIndex]
+            if type(unitSaves) == "table" then
+                layoutSettings:SetFromSavedVariables(unitSaves)
+            end
+        end
+    else
+        if type(savedVariables.layouts) == "table" then
+            for layoutType, layoutSaves in pairs(savedVariables.layouts) do
+                if type(layoutSaves) == "table" and self.layoutSettings[layoutType] then
+                    self.layoutSettings[layoutType]:SetFromSavedVariables(layoutSaves)
+                end
+            end
+        end
+        if type(savedVariables.units) == "table" then
+            for unitType, unitSaves in pairs(savedVariables.units) do
+                if type(unitSaves) == "table" and self.unitSettings[unitType] then
+                    self.unitSettings[unitType]:SetFromSavedVariables(unitSaves)
+                end
             end
         end
     end
@@ -123,7 +167,7 @@ function ProfileSettings:SetFromSavedVariables(savedVariables)
 end
 
 function ProfileSettings:GetSavedVariables()
-    ---@type ProfileVariablesV1
+    ---@type ProfileVariablesV2
     local savedVariables = {}
 
     savedVariables.id = self.id
@@ -142,10 +186,14 @@ function ProfileSettings:GetSavedVariables()
     savedVariables.TooltipStopMove = self.tooltipStopScroll
     savedVariables.iconClickAddsSpellToBlocklist = self.iconClickAddsSpellToBlocklist
 
-    savedVariables.TrGCDQueueFr = {}
-    for unitIndex = 1, 12 do
-        local unitType = ns.constants.unitTypes[unitIndex]
-        savedVariables.TrGCDQueueFr[unitIndex] = self.unitSettings[unitType]:GetSavedVariables()
+    savedVariables.layouts = {}
+    for layoutType, layoutSettings in pairs(self.layoutSettings) do
+        savedVariables.layouts[layoutType] = layoutSettings:GetSavedVariables()
+    end
+
+    savedVariables.units = {}
+    for unitType, unitSettings in pairs(self.unitSettings) do
+        savedVariables.units[unitType] = unitSettings:GetSavedVariables()
     end
 
     savedVariables.TrGCDBL = {}

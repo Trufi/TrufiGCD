@@ -8,11 +8,16 @@ local trinketIconHorde = "Interface\\Icons\\inv_jewelry_trinketpvp_02"
 local Unit = {}
 Unit.__index = Unit
 
----@param unitType UnitType
-function Unit:New(unitType)
+---@class UnitParams
+---@field unitType UnitType
+---@field layoutType LayoutType
+
+---@param params UnitParams
+function Unit:New(params)
     ---@class Unit
     local obj = setmetatable({}, Unit)
-    obj.unitType = unitType
+    obj.unitType = params.unitType
+    obj.layoutType = params.layoutType
 
     ---@type number
     obj.stopMovingTime = GetTime()
@@ -33,7 +38,10 @@ function Unit:New(unitType)
     ---A spell that is currently being casted.
     obj.currentlyCastedSpell = nil
 
-    obj.iconQueue = ns.IconQueue:New(unitType)
+    obj.iconQueue = ns.IconQueue:New({
+        unitType = obj.unitType,
+        layoutType = obj.layoutType,
+    })
 
     return obj
 end
@@ -91,7 +99,7 @@ end
 ---@param unitType UnitType
 ---@param castId string | nil The nil value appears for _CHANNEL_ events
 function Unit:OnSpellEvent(event, spellId, unitType, castId)
-    if not ns.settings.activeProfile.unitSettings[self.unitType].enable or checkBlocklist(spellId) then
+    if not ns.settings.activeProfile.layoutSettings[self.layoutType].enable or checkBlocklist(spellId) then
         return
     end
 
@@ -210,7 +218,24 @@ function Unit:AddSpell(unitType, id, icon, name)
     self.previousSpell.name = name
 end
 
+---@type {[UnitType]: LayoutType}
+local unitTypeToLayoutType = {
+    player = "player",
+    party1 = "party",
+    party2 = "party",
+    party3 = "party",
+    party4 = "party",
+    arena1 = "arena",
+    arena2 = "arena",
+    arena3 = "arena",
+    target = "target",
+    focus = "focus",
+}
+
 ns.units = {}
-for _, unitType in ipairs(ns.constants.unitTypes) do
-    ns.units[unitType] = Unit:New(unitType)
+for unitType, layoutType in pairs(unitTypeToLayoutType) do
+    ns.units[unitType] = Unit:New({
+        unitType = unitType,
+        layoutType = layoutType,
+    })
 end

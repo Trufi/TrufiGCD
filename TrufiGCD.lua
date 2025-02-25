@@ -45,12 +45,12 @@ loadFrame:SetScript("OnEvent", function(_, event, name)
     targetFocusChangeFrame:SetScript("OnEvent", function(_, changeEvent)
         if changeEvent == "PLAYER_TARGET_CHANGED" then
             ns.units.target:Clear()
-            if ns.settings.activeProfile.unitSettings.target.enable then
+            if ns.settings.activeProfile.layoutSettings.target.enable then
                 checkIfUnitAlreadyInUse("target")
             end
         elseif changeEvent == "PLAYER_FOCUS_CHANGED" then
             ns.units.focus:Clear()
-            if ns.settings.activeProfile.unitSettings.focus.enable then
+            if ns.settings.activeProfile.layoutSettings.focus.enable then
                 checkIfUnitAlreadyInUse("focus")
             end
         end

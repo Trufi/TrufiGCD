@@ -15,14 +15,19 @@ local IconQueue = {}
 IconQueue.__index = IconQueue
 ns.IconQueue = IconQueue
 
----@param unitType UnitType
-function IconQueue:New(unitType)
-    local settings = ns.settings.activeProfile.unitSettings[unitType]
+---@class IconQueueParams
+---@field unitType UnitType
+---@field layoutType LayoutType
+
+---@param params IconQueueParams
+function IconQueue:New(params)
+    local unitSettings = ns.settings.activeProfile.unitSettings[params.unitType]
 
     ---@class IconQueue
     local obj = setmetatable({}, IconQueue)
 
-    obj.unitType = unitType
+    obj.unitType = params.unitType
+    obj.layoutType = params.layoutType
 
     ---@type number[]
     obj.nextIconIndices = {}
@@ -44,7 +49,7 @@ function IconQueue:New(unitType)
 
     obj.text = obj.frame:CreateFontString(nil, "BACKGROUND")
     obj.text:SetFont(STANDARD_TEXT_FONT, 9)
-    obj.text:SetText(settings.text)
+    obj.text:SetText(unitSettings.text)
     obj.text:SetAllPoints(obj.frame)
     obj.text:SetAlpha(0.6)
     obj.text:Hide()
@@ -52,14 +57,15 @@ function IconQueue:New(unitType)
     obj.frame:RegisterForDrag("LeftButton")
     obj.frame:SetScript("OnDragStart", obj.frame.StartMoving)
     obj.frame:SetScript("OnDragStop", obj.frame.StopMovingOrSizing)
-    obj.frame:SetPoint(settings.point, settings.x, settings.y)
+    obj.frame:SetPoint(unitSettings.point, unitSettings.x, unitSettings.y)
 
     ---@type {[number]: Icon}
     obj.icons = {}
     for i = 1, innerIconsNumber do
         obj.icons[i] = ns.Icon:New({
             parentFrame = obj.frame,
-            unitType = unitType,
+            unitType = obj.unitType,
+            layoutType = obj.layoutType,
             onMouseEnter = function()
                 if ns.settings.activeProfile.tooltipEnabled and ns.settings.activeProfile.tooltipStopScroll then
                     obj.isMoving = false
@@ -112,22 +118,22 @@ function IconQueue:Update(time, interval, isCasting)
         return
     end
 
-    local settings = ns.settings.activeProfile.unitSettings[self.unitType]
+    local layout = ns.settings.activeProfile.layoutSettings[self.layoutType]
 
-    if #self.nextIconIndices > 0 and self.buffer >= settings.iconSize then
+    if #self.nextIconIndices > 0 and self.buffer >= layout.iconSize then
         self:ShowNextIcon()
         self.buffer = 0
     end
 
-    local normalSpeed = settings.iconSize / globalCooldown
+    local normalSpeed = layout.iconSize / globalCooldown
     local fastSpeed = normalSpeed * fastSpeedModifier * (#self.nextIconIndices + 1)
     local fastSpeedDuration = 0.0
 
     if #self.nextIconIndices > 0 then
-        fastSpeedDuration = math.min((settings.iconSize - self.buffer) / fastSpeed, interval)
+        fastSpeedDuration = math.min((layout.iconSize - self.buffer) / fastSpeed, interval)
     end
 
-    local width = settings.iconsNumber * settings.iconSize
+    local width = layout.iconsNumber * layout.iconSize
     local offsetDelta = fastSpeedDuration * fastSpeed
     if not isCasting then
         offsetDelta = offsetDelta + (interval - fastSpeedDuration) * normalSpeed
@@ -205,13 +211,13 @@ function IconQueue:Clear()
 end
 
 function IconQueue:Resize()
-    local settings = ns.settings.activeProfile.unitSettings[self.unitType]
-    if settings.direction == "Left" or settings.direction == "Right" then
-        self.frame:SetWidth(settings.iconsNumber * settings.iconSize)
-        self.frame:SetHeight(settings.iconSize)
-    elseif settings.direction == "Up" or settings.direction == "Down" then
-        self.frame:SetWidth(settings.iconSize)
-        self.frame:SetHeight(settings.iconsNumber * settings.iconSize)
+    local layout = ns.settings.activeProfile.layoutSettings[self.layoutType]
+    if layout.direction == "Left" or layout.direction == "Right" then
+        self.frame:SetWidth(layout.iconsNumber * layout.iconSize)
+        self.frame:SetHeight(layout.iconSize)
+    elseif layout.direction == "Up" or layout.direction == "Down" then
+        self.frame:SetWidth(layout.iconSize)
+        self.frame:SetHeight(layout.iconsNumber * layout.iconSize)
     end
 
     for _, icon in ipairs(self.icons) do
@@ -222,9 +228,9 @@ function IconQueue:Resize()
 end
 
 function IconQueue:UpdateOffset()
-    local settings = ns.settings.activeProfile.unitSettings[self.unitType]
+    local unitSettings = ns.settings.activeProfile.unitSettings[self.unitType]
     self.frame:ClearAllPoints()
-    self.frame:SetPoint(settings.point, settings.x, settings.y)
+    self.frame:SetPoint(unitSettings.point, unitSettings.x, unitSettings.y)
 end
 
 function IconQueue:ShowAnchor()

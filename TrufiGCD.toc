@@ -24,6 +24,7 @@ Modules\Frames\FrameUtils.lua
 
 # Settings modules
 Modules\Settings\InnerBlocklist.lua
+Modules\Settings\LayoutSettings.lua
 Modules\Settings\UnitSettings.lua
 Modules\Settings\ProfileSettings.lua
 Modules\Settings\Settings.lua

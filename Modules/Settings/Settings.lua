@@ -25,17 +25,17 @@ function Settings:New()
 end
 
 function Settings:Load()
-    ---@type CharacterSavedVariablesV1
+    ---@type CharacterSavedVariablesV1 | CharacterSavedVariablesV2
     TrufiGCDChSave = TrufiGCDChSave or {}
 
-    ---@type GlobalSavedVariablesV1
+    ---@type GlobalSavedVariablesV1 | GlobalSavedVariablesV2
     TrufiGCDGlSave = TrufiGCDGlSave or {}
 
     self.profiles = {}
 
     -- Load only a new version of the global saved variables
     if type(TrufiGCDGlSave.profiles) == "table" then
-        local newGlobalVariables = TrufiGCDGlSave --[[@as GlobalSavedVariablesV1]]
+        local newGlobalVariables = TrufiGCDGlSave --[[@as GlobalSavedVariablesV1 | GlobalSavedVariablesV2]]
         for _, profileVariables in pairs(newGlobalVariables.profiles) do
             local profile = ns.ProfileSettings:New(profileVariables)
             self.profiles[profile.id] = profile
@@ -60,7 +60,7 @@ function Settings:Load()
             self.activeProfile = self.profiles[TrufiGCDGlSave.lastUsedProfileId]
         else
             local _, profile = next(self.profiles)
-            self.activeProfile = profile
+            self.activeProfile = profile --[[@as ProfileSettings]]
         end
     end
 
@@ -68,9 +68,9 @@ function Settings:Load()
 end
 
 function Settings:Save()
-    ---@type GlobalSavedVariablesV1
+    ---@type GlobalSavedVariablesV2
     TrufiGCDGlSave = {
-        version = 1,
+        version = 2,
         profiles = {},
         lastUsedProfileId = self.activeProfile.id,
     }
@@ -79,9 +79,9 @@ function Settings:Save()
         TrufiGCDGlSave.profiles[profile.id] = profile:GetSavedVariables()
     end
 
-    ---@type CharacterSavedVariablesV1
+    ---@type CharacterSavedVariablesV2
     TrufiGCDChSave = {
-        version = 1,
+        version = 2,
         profileId = self.activeProfile.id,
     }
 end
@@ -108,7 +108,7 @@ function Settings:DeleteCurrentProfile()
         self.activeProfile = defaultProfile
     else
         local _, profile = next(self.profiles)
-        self.activeProfile = profile
+        self.activeProfile = profile --[[@as ProfileSettings]]
     end
 end
 
