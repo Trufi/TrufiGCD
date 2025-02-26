@@ -95,6 +95,7 @@
 ---@field direction? Direction
 ---@field iconSize? number
 ---@field iconsNumber? number
+---@field labels? SavedVariablesLabels
 
 ---@class LayoutsVariablesV2
 ---@field player? LayoutVariablesV2
@@ -120,7 +121,6 @@
 ---@field name? string
 ---@field layouts? LayoutsVariablesV2
 ---@field units? UnitsVariablesV2
----@field labels? SavedVariablesLabels
 ---@field EnableIn? SavedVariablesEnabledIn
 ---@field ModScroll? boolean
 ---@field TooltipEnable? boolean

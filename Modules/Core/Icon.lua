@@ -115,7 +115,7 @@ function Icon:UpdatePosition()
 end
 
 function Icon:SyncLabelSettings()
-    local settings = ns.settings.activeProfile.labels
+    local settings = ns.settings.activeProfile.layoutSettings[self.layoutType].labels
 
     if settings.enable then
         self.damageText:Show()
@@ -223,7 +223,9 @@ end
 
 ---@private
 function Icon:UpdateDamageText()
-    local labels = ns.settings.activeProfile.labels
+    local settings = ns.settings.activeProfile.layoutSettings[self.layoutType]
+    local labels = settings.labels
+
     local amount = 0
 
     if self.damage > self.heal then
@@ -265,7 +267,7 @@ function Icon:UpdateDamageText()
         amount = self.heal
     end
 
-    local text = formatNumber(amount);
+    local text = formatNumber(amount)
     self.damageText:SetText(text)
 
 
@@ -274,8 +276,7 @@ function Icon:UpdateDamageText()
     if #text > 3 then
         k = 3.3
     end
-    local settings = ns.settings.activeProfile.unitSettings[self.unitType]
-    local fontSize = settings.iconSize / k;
+    local fontSize = settings.iconSize / k
 
     self.damageText:SetFont(STANDARD_TEXT_FONT, fontSize, "OUTLINE")
 end

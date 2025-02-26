@@ -245,14 +245,14 @@ layoutTab:SetCallback("OnGroupSelected", function(container, event, layoutType)
     labelsGroup:SetFullWidth(true)
     container:AddChild(labelsGroup)
 
-    local labelsSettings = ns.settings.activeProfile.labels
+    local labelsSettings = ns.settings.activeProfile.layoutSettings[layoutType].labels
 
     local labelEnableCheckBox = AceGUI:Create("CheckBox")
     labelEnableCheckBox:SetLabel("Enable")
     labelEnableCheckBox:SetWidth(120)
     labelEnableCheckBox:SetValue(labelsSettings.enable)
     labelEnableCheckBox:SetCallback("OnValueChanged", function(_, _, value)
-        ns.settings.activeProfile.labels.enable = value
+        ns.settings.activeProfile.layoutSettings[layoutType].labels.enable = value
         ns.settings:Save()
         for _, unit in pairs(ns.units) do
             unit.iconQueue:SyncLabelSettings()
@@ -270,7 +270,7 @@ layoutTab:SetCallback("OnGroupSelected", function(container, event, layoutType)
     })
     positionMenu:SetValue(labelsSettings.position)
     positionMenu:SetCallback("OnValueChanged", function(_, _, key)
-        ns.settings.activeProfile.labels.position = key
+        ns.settings.activeProfile.layoutSettings[layoutType].labels.position = key
         ns.settings:Save()
 
         for _, unit in pairs(ns.units) do
@@ -296,10 +296,11 @@ layoutTab:SetCallback("OnGroupSelected", function(container, event, layoutType)
         labelsSettings.damageColor.a
     )
     damageColor:SetCallback("OnValueChanged", function(_, _, r, g, b, a)
-        ns.settings.activeProfile.labels.damageColor.r = r
-        ns.settings.activeProfile.labels.damageColor.g = g
-        ns.settings.activeProfile.labels.damageColor.b = b
-        ns.settings.activeProfile.labels.damageColor.a = a
+        local labels = ns.settings.activeProfile.layoutSettings[layoutType].labels
+        labels.damageColor.r = r
+        labels.damageColor.g = g
+        labels.damageColor.b = b
+        labels.damageColor.a = a
         ns.settings:Save()
     end)
     colorGroup:AddChild(damageColor)
@@ -314,10 +315,11 @@ layoutTab:SetCallback("OnGroupSelected", function(container, event, layoutType)
         labelsSettings.healColor.a
     )
     healColor:SetCallback("OnValueChanged", function(_, _, r, g, b, a)
-        ns.settings.activeProfile.labels.healColor.r = r
-        ns.settings.activeProfile.labels.healColor.g = g
-        ns.settings.activeProfile.labels.healColor.b = b
-        ns.settings.activeProfile.labels.healColor.a = a
+        local labels = ns.settings.activeProfile.layoutSettings[layoutType].labels
+        labels.healColor.r = r
+        labels.healColor.g = g
+        labels.healColor.b = b
+        labels.healColor.a = a
         ns.settings:Save()
     end)
     colorGroup:AddChild(healColor)
@@ -332,10 +334,11 @@ layoutTab:SetCallback("OnGroupSelected", function(container, event, layoutType)
         labelsSettings.critColor.a
     )
     critColor:SetCallback("OnValueChanged", function(_, _, r, g, b, a)
-        ns.settings.activeProfile.labels.critColor.r = r
-        ns.settings.activeProfile.labels.critColor.g = g
-        ns.settings.activeProfile.labels.critColor.b = b
-        ns.settings.activeProfile.labels.critColor.a = a
+        local labels = ns.settings.activeProfile.layoutSettings[layoutType].labels
+        labels.critColor.r = r
+        labels.critColor.g = g
+        labels.critColor.b = b
+        labels.critColor.a = a
         ns.settings:Save()
     end)
     colorGroup:AddChild(critColor)
