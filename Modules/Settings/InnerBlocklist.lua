@@ -80,6 +80,8 @@ local blocklistArray = {
     421177, -- Disable ALL Mounts
     454455, -- Complicated Fuse Box
     467718, -- Bleak Arrows (Hunter)
+    431398, -- Empyrean Hammer
+    461867, -- Sacrosanct Crusade
 
     -- Unverified - from GCD History
     184707, -- Rampage
