@@ -82,7 +82,8 @@ local function replaceToTrinketIfNeeded(unitType, spellId, spellIcon)
 end
 
 ---@param spellId number
-local function checkBlocklist(spellId)
+---@param spellIcon number
+local function checkBlocklist(spellId, spellIcon)
     if ns.innerBlockList[spellId] then
         return true
     end
@@ -92,6 +93,17 @@ local function checkBlocklist(spellId)
             return true
         end
     end
+
+    -- Check if this spell is from an item usage
+    -- GetItemSpell returns itemId if the spell is from an item
+    for _, blockedItemId in ipairs(ns.settings.activeProfile.itemBlocklist) do
+        local itemSpellName, itemSpellId = GetItemSpell(blockedItemId)
+        if itemSpellId and itemSpellId == spellId then
+            return true
+        end
+    end
+
+    return false
 end
 
 ---@param event string
@@ -99,12 +111,16 @@ end
 ---@param unitType UnitType
 ---@param castId string | nil The nil value appears for _CHANNEL_ events
 function Unit:OnSpellEvent(event, spellId, unitType, castId)
-    if not ns.settings.activeProfile.layoutSettings[self.layoutType].enable or checkBlocklist(spellId) then
+    if not ns.settings.activeProfile.layoutSettings[self.layoutType].enable then
         return
     end
 
     local spellName, _, spellIcon, castTime = ns.utils.getSpellInfo(spellId)
     local spellLink = ns.utils.getSpellLink(spellId)
+
+    if checkBlocklist(spellId, spellIcon) then
+        return
+    end
 
     if not spellIcon or not spellLink or not spellName or ns.innerIconsBlocklist[spellIcon] then
         return
