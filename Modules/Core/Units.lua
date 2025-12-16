@@ -92,6 +92,17 @@ local function checkBlocklist(spellId)
             return true
         end
     end
+
+    -- Check if this spell is from an item usage
+    -- GetItemSpell returns itemId if the spell is from an item
+    for _, blockedItemId in ipairs(ns.settings.activeProfile.itemBlocklist) do
+        local _, itemSpellId = GetItemSpell(blockedItemId)
+        if itemSpellId and itemSpellId == spellId then
+            return true
+        end
+    end
+
+    return false
 end
 
 ---@param event string

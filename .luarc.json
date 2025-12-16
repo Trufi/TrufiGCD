@@ -5,6 +5,7 @@
         "globals": [
             "AddonCompartmentFrame",
             "BackdropTemplateMixin",
+            "C_Container",
             "C_Spell",
             "C_Timer",
             "ChannelInfo",
@@ -13,6 +14,10 @@
             "GameTooltip_Hide",
             "GameTooltip_SetDefaultAnchor",
             "getglobal",
+            "GetInventoryItemID",
+            "GetItemInfo",
+            "GetItemInfoInstant",
+            "GetItemSpell",
             "GetRealmName",
             "GetSpellInfo",
             "GetSpellLink",
