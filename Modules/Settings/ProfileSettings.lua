@@ -173,8 +173,8 @@ function ProfileSettings:SetFromSavedVariables(savedVariables)
     end
 
     self.itemBlocklist = {}
-    if type(savedVariables.TrGCDItemBL) == "table" then
-        for i, v in ipairs(savedVariables.TrGCDItemBL) do
+    if type(savedVariables.itemBlocklist) == "table" then
+        for i, v in ipairs(savedVariables.itemBlocklist) do
             if type(v) == "number" then
                 self.itemBlocklist[i] = v
             end
@@ -218,9 +218,9 @@ function ProfileSettings:GetSavedVariables()
         table.insert(savedVariables.TrGCDBL, v)
     end
 
-    savedVariables.TrGCDItemBL = {}
+    savedVariables.itemBlocklist = {}
     for _, v in ipairs(self.itemBlocklist) do
-        table.insert(savedVariables.TrGCDItemBL, v)
+        table.insert(savedVariables.itemBlocklist, v)
     end
 
     return savedVariables

@@ -198,7 +198,7 @@ function Icon:AddToBlocklist()
         for slotId = 0, 19 do
             local itemId = GetInventoryItemID("player", slotId)
             if itemId then
-                local itemSpellName, itemSpellId = GetItemSpell(itemId)
+                local _, itemSpellId = GetItemSpell(itemId)
                 if itemSpellId and itemSpellId == self.spellId then
                     table.insert(ns.settings.activeProfile.itemBlocklist, itemId)
                     ns.settings:Save()

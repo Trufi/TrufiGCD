@@ -11,10 +11,21 @@ frame.name = "Blocklist"
 frame.parent = "TrufiGCD"
 ns.utils.interfaceOptions_AddCategory(frame)
 
-local listBorder = CreateFrame("Frame", nil, frame, "BackdropTemplate")
+local listHeight = 230
+
+local spellsFrame = CreateFrame("Frame", nil, frame)
+spellsFrame:SetAllPoints(frame)
+spellsFrame:SetPoint("TOPLEFT", 0, 0)
+
+local spellsFrameTitle = spellsFrame:CreateFontString(nil, "BACKGROUND")
+spellsFrameTitle:SetFont(STANDARD_TEXT_FONT, 14)
+spellsFrameTitle:SetText("Spell Blocklist")
+spellsFrameTitle:SetPoint("TOPLEFT", 15, -10)
+
+local listBorder = CreateFrame("Frame", nil, spellsFrame, "BackdropTemplate")
 listBorder:SetPoint("TOPLEFT", 10, -25)
 listBorder:SetWidth(200)
-listBorder:SetHeight(501)
+listBorder:SetHeight(listHeight + 13)
 listBorder:SetBackdrop({
     bgFile = nil,
     edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
@@ -25,10 +36,10 @@ listBorder:SetBackdrop({
 })
 listBorder:SetBackdropBorderColor(0.4, 0.4, 0.4)
 
-local listContainer = CreateFrame("ScrollFrame", nil, frame)
+local listContainer = CreateFrame("ScrollFrame", nil, spellsFrame)
 listContainer:SetPoint("TOPLEFT",10, -30)
 listContainer:SetWidth(200)
-listContainer:SetHeight(488)
+listContainer:SetHeight(listHeight)
 
 local listScrollBar = CreateFrame("Slider", "TrGCDBLScroll", listContainer, "UIPanelScrollBarTemplate")
 listScrollBar:SetPoint("TOPLEFT", listContainer, "TOPRIGHT", 1, -16)
@@ -49,12 +60,7 @@ local list = CreateFrame("Frame", nil, listContainer)
 list:SetWidth(200)
 list:SetHeight(958)
 
-local listText = list:CreateFontString(nil, "BACKGROUND")
-listText:SetFont(STANDARD_TEXT_FONT, 12)
-listText:SetText("Spell Blocklist")
-listText:SetPoint("TOPLEFT", 15, 15)
-
-local selectedItemText = frame:CreateFontString(nil, "BACKGROUND")
+local selectedItemText = spellsFrame:CreateFontString(nil, "BACKGROUND")
 selectedItemText:SetFont(STANDARD_TEXT_FONT, 12)
 selectedItemText:SetText("Select spell to delete")
 
@@ -120,11 +126,11 @@ for i = 1, 60 do
 end
 
 local addOnIconClickCheckbox = ns.frameUtils.createCheckButton({
-    frame = frame,
-    text = "Add by Ctrl+Alt+Click on icon",
+    frame = spellsFrame,
+    text = "Block spells by Ctrl+Alt+Click on icon",
     position = "TOPLEFT",
     x = 260,
-    y = -280,
+    y = -200,
     name = "TrGCDCheckiconClickAddsSpellToBlocklist",
     checked = ns.settings.activeProfile.iconClickAddsSpellToBlocklist,
     tooltip = "Add a spell to blocklist by Ctrl+Alt+Click on the spell icon",
@@ -134,35 +140,10 @@ local addOnIconClickCheckbox = ns.frameUtils.createCheckButton({
     end
 })
 
-blocklistFrame.syncWithSettings = function()
-	for i = 1, 60 do
-        local spellId = ns.settings.activeProfile.blocklist[i]
-        local item = items[i]
-        if spellId ~= nil then
-            item.button:Enable()
-
-            local name = ns.utils.getSpellInfo(spellId)
-            if name then
-                item.text:SetText(spellId .. " - " .. name)
-            else
-                item.text:SetText(spellId)
-            end
-
-        else
-            item.button:Disable()
-            item.text:SetText(nil)
-            item.texture:SetAlpha(0)
-        end
-    end
-
-    addOnIconClickCheckbox:SetChecked(ns.settings.activeProfile.iconClickAddsSpellToBlocklist)
-end
-blocklistFrame.syncWithSettings()
-
-local buttonDelete = CreateFrame("Button", nil, frame, "UIPanelButtonTemplate")
+local buttonDelete = CreateFrame("Button", nil, spellsFrame, "UIPanelButtonTemplate")
 buttonDelete:SetWidth(100)
 buttonDelete:SetHeight(22)
-buttonDelete:SetPoint("TOPLEFT", 260, -130)
+buttonDelete:SetPoint("TOPLEFT", 260, -50)
 buttonDelete:SetText("Delete")
 buttonDelete:SetScript("OnClick", function()
     if selectedItem then
@@ -176,10 +157,10 @@ selectedItemText:SetPoint("TOPLEFT", buttonDelete, "TOPLEFT", 5, 15)
 
 listContainer:SetScrollChild(list)
 
-local input = CreateFrame("EditBox", nil, frame, "InputBoxTemplate")
+local input = CreateFrame("EditBox", nil, spellsFrame, "InputBoxTemplate")
 input:SetWidth(200)
 input:SetHeight(20)
-input:SetPoint("TOPLEFT", 265, -200)
+input:SetPoint("TOPLEFT", 265, -120)
 input:SetAutoFocus(false)
 input:SetScript("OnEscapePressed", function(self) self:ClearFocus() end)
 
@@ -221,10 +202,10 @@ local function addItem()
 end
 input:SetScript("OnEnterPressed", addItem)
 
-local buttonAdd = CreateFrame("Button", nil, frame, "UIPanelButtonTemplate")
+local buttonAdd = CreateFrame("Button", nil, spellsFrame, "UIPanelButtonTemplate")
 buttonAdd:SetWidth(100)
 buttonAdd:SetHeight(22)
-buttonAdd:SetPoint("TOPLEFT", 260, -225)
+buttonAdd:SetPoint("TOPLEFT", 260, -145)
 buttonAdd:SetText("Add")
 buttonAdd:SetScript("OnClick", addItem)
 
@@ -234,10 +215,19 @@ buttonAddText:SetText("Enter spell ID or name")
 buttonAddText:SetPoint("TOPLEFT", 5, 40)
 
 -- Item Blocklist Section
-local itemListBorder = CreateFrame("Frame", nil, frame, "BackdropTemplate")
-itemListBorder:SetPoint("TOPLEFT", 480, -25)
+local itemsFrame = CreateFrame("Frame", nil, frame)
+itemsFrame:SetAllPoints(frame)
+itemsFrame:SetPoint("TOPLEFT", 0, -320)
+
+local itemsFrameTitle = itemsFrame:CreateFontString(nil, "BACKGROUND")
+itemsFrameTitle:SetFont(STANDARD_TEXT_FONT, 14)
+itemsFrameTitle:SetText("Item Blocklist")
+itemsFrameTitle:SetPoint("TOPLEFT", 15, -10)
+
+local itemListBorder = CreateFrame("Frame", nil, itemsFrame, "BackdropTemplate")
+itemListBorder:SetPoint("TOPLEFT", 10, -25)
 itemListBorder:SetWidth(200)
-itemListBorder:SetHeight(501)
+itemListBorder:SetHeight(listHeight + 13)
 itemListBorder:SetBackdrop({
     bgFile = nil,
     edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
@@ -248,10 +238,10 @@ itemListBorder:SetBackdrop({
 })
 itemListBorder:SetBackdropBorderColor(0.4, 0.4, 0.4)
 
-local itemListContainer = CreateFrame("ScrollFrame", nil, frame)
-itemListContainer:SetPoint("TOPLEFT", 480, -30)
+local itemListContainer = CreateFrame("ScrollFrame", nil, itemsFrame)
+itemListContainer:SetPoint("TOPLEFT", 10, -30)
 itemListContainer:SetWidth(200)
-itemListContainer:SetHeight(488)
+itemListContainer:SetHeight(listHeight)
 
 local itemListScrollBar = CreateFrame("Slider", "TrGCDItemBLScroll", itemListContainer, "UIPanelScrollBarTemplate")
 itemListScrollBar:SetPoint("TOPLEFT", itemListContainer, "TOPRIGHT", 1, -16)
@@ -271,12 +261,7 @@ local itemList = CreateFrame("Frame", nil, itemListContainer)
 itemList:SetWidth(200)
 itemList:SetHeight(958)
 
-local itemListText = itemList:CreateFontString(nil, "BACKGROUND")
-itemListText:SetFont(STANDARD_TEXT_FONT, 12)
-itemListText:SetText("Item Blocklist")
-itemListText:SetPoint("TOPLEFT", 15, 15)
-
-local selectedItemItemText = frame:CreateFontString(nil, "BACKGROUND")
+local selectedItemItemText = itemsFrame:CreateFontString(nil, "BACKGROUND")
 selectedItemItemText:SetFont(STANDARD_TEXT_FONT, 12)
 selectedItemItemText:SetText("Select item to delete")
 
@@ -336,11 +321,11 @@ for i = 1, 60 do
 end
 
 local addOnIconClickItemCheckbox = ns.frameUtils.createCheckButton({
-    frame = frame,
-    text = "Add by Ctrl+Alt+Click on icon",
+    frame = itemsFrame,
+    text = "Block items by Ctrl+Alt+Click on icon",
     position = "TOPLEFT",
-    x = 730,
-    y = -280,
+    x = 260,
+    y = -200,
     name = "TrGCDCheckiconClickAddsItemToBlocklist",
     checked = ns.settings.activeProfile.iconClickAddsItemToBlocklist,
     tooltip = "Add an item to blocklist by Ctrl+Alt+Click on the item icon",
@@ -350,51 +335,27 @@ local addOnIconClickItemCheckbox = ns.frameUtils.createCheckButton({
     end
 })
 
-local function syncItemBlocklistWithSettings()
-    for i = 1, 60 do
-        local itemId = ns.settings.activeProfile.itemBlocklist[i]
-        local item = itemItems[i]
-        if itemId ~= nil then
-            item.button:Enable()
-
-            local itemName = GetItemInfo(itemId)
-            if itemName then
-                item.text:SetText(itemId .. " - " .. itemName)
-            else
-                item.text:SetText(itemId)
-            end
-        else
-            item.button:Disable()
-            item.text:SetText(nil)
-            item.texture:SetAlpha(0)
-        end
-    end
-
-    addOnIconClickItemCheckbox:SetChecked(ns.settings.activeProfile.iconClickAddsItemToBlocklist)
-end
-
-
-local buttonItemDelete = CreateFrame("Button", nil, frame, "UIPanelButtonTemplate")
+local buttonItemDelete = CreateFrame("Button", nil, itemsFrame, "UIPanelButtonTemplate")
 buttonItemDelete:SetWidth(100)
 buttonItemDelete:SetHeight(22)
-buttonItemDelete:SetPoint("TOPLEFT", 730, -130)
+buttonItemDelete:SetPoint("TOPLEFT", 260, -50)
 buttonItemDelete:SetText("Delete")
 buttonItemDelete:SetScript("OnClick", function()
     if selectedItemItem then
         table.remove(ns.settings.activeProfile.itemBlocklist, selectedItemItem.index)
         selectedItemItemText:SetText("Select item to delete")
         ns.settings:Save()
-        syncItemBlocklistWithSettings()
+        blocklistFrame.syncWithSettings()
     end
 end)
 selectedItemItemText:SetPoint("TOPLEFT", buttonItemDelete, "TOPLEFT", 5, 15)
 
 itemListContainer:SetScrollChild(itemList)
 
-local itemInput = CreateFrame("EditBox", nil, frame, "InputBoxTemplate")
+local itemInput = CreateFrame("EditBox", nil, itemsFrame, "InputBoxTemplate")
 itemInput:SetWidth(200)
 itemInput:SetHeight(20)
-itemInput:SetPoint("TOPLEFT", 735, -200)
+itemInput:SetPoint("TOPLEFT", 265, -120)
 itemInput:SetAutoFocus(false)
 itemInput:SetScript("OnEscapePressed", function(self) self:ClearFocus() end)
 
@@ -428,16 +389,16 @@ local function addItemToBlocklist()
     end
 
     ns.settings:Save()
-    syncItemBlocklistWithSettings()
+    blocklistFrame.syncWithSettings()
     itemInput:SetText("")
     itemInput:ClearFocus()
 end
 itemInput:SetScript("OnEnterPressed", addItemToBlocklist)
 
-local buttonItemAdd = CreateFrame("Button", nil, frame, "UIPanelButtonTemplate")
+local buttonItemAdd = CreateFrame("Button", nil, itemsFrame, "UIPanelButtonTemplate")
 buttonItemAdd:SetWidth(100)
 buttonItemAdd:SetHeight(22)
-buttonItemAdd:SetPoint("TOPLEFT", 730, -225)
+buttonItemAdd:SetPoint("TOPLEFT", 260, -145)
 buttonItemAdd:SetText("Add")
 buttonItemAdd:SetScript("OnClick", addItemToBlocklist)
 
@@ -446,12 +407,48 @@ buttonItemAddText:SetFont(STANDARD_TEXT_FONT, 12)
 buttonItemAddText:SetText("Enter item ID or name")
 buttonItemAddText:SetPoint("TOPLEFT", 5, 40)
 
--- Update the original syncWithSettings to also sync item blocklist
-local originalSyncWithSettings = blocklistFrame.syncWithSettings
 blocklistFrame.syncWithSettings = function()
-    originalSyncWithSettings()
-    syncItemBlocklistWithSettings()
-end
+	for i = 1, 60 do
+        local spellId = ns.settings.activeProfile.blocklist[i]
+        local item = items[i]
+        if spellId ~= nil then
+            item.button:Enable()
 
--- Initial sync
-syncItemBlocklistWithSettings()
+            local name = ns.utils.getSpellInfo(spellId)
+            if name then
+                item.text:SetText(spellId .. " - " .. name)
+            else
+                item.text:SetText(spellId)
+            end
+
+        else
+            item.button:Disable()
+            item.text:SetText(nil)
+            item.texture:SetAlpha(0)
+        end
+    end
+
+    addOnIconClickCheckbox:SetChecked(ns.settings.activeProfile.iconClickAddsSpellToBlocklist)
+
+    for i = 1, 60 do
+        local itemId = ns.settings.activeProfile.itemBlocklist[i]
+        local item = itemItems[i]
+        if itemId ~= nil then
+            item.button:Enable()
+
+            local itemName = GetItemInfo(itemId)
+            if itemName then
+                item.text:SetText(itemId .. " - " .. itemName)
+            else
+                item.text:SetText(itemId)
+            end
+        else
+            item.button:Disable()
+            item.text:SetText(nil)
+            item.texture:SetAlpha(0)
+        end
+    end
+
+    addOnIconClickItemCheckbox:SetChecked(ns.settings.activeProfile.iconClickAddsItemToBlocklist)
+end
+blocklistFrame.syncWithSettings()
