@@ -231,17 +231,20 @@ end
 
 ---@type {[UnitType]: LayoutType}
 local unitTypeToLayoutType = {
-    player = "player",
-    party1 = "party",
-    party2 = "party",
-    party3 = "party",
-    party4 = "party",
-    arena1 = "arena",
-    arena2 = "arena",
-    arena3 = "arena",
-    target = "target",
-    focus = "focus",
+	player = "player",
 }
+
+if not ns.constants.IsMidnight then
+	unitTypeToLayoutType.party1 = "party"
+	unitTypeToLayoutType.party2 = "party"
+	unitTypeToLayoutType.party3 = "party"
+	unitTypeToLayoutType.party4 = "party"
+	unitTypeToLayoutType.arena1 = "arena"
+	unitTypeToLayoutType.arena2 = "arena"
+	unitTypeToLayoutType.arena3 = "arena"
+	unitTypeToLayoutType.target = "target"
+	unitTypeToLayoutType.focus = "focus"
+end
 
 ns.units = {}
 for unitType, layoutType in pairs(unitTypeToLayoutType) do
