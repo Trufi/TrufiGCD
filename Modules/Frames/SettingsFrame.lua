@@ -8,12 +8,12 @@ ns.settingsFrame = settingsFrame
 local frame = CreateFrame("Frame", nil, UIParent)
 frame:Hide()
 frame.name = "TrufiGCD"
-ns.utils.interfaceOptions_AddCategory(frame)
+local category = ns.utils.interfaceOptions_AddCategory(frame)
 settingsFrame.frame = frame
 
 SLASH_TRUFI1, SLASH_TRUFI2 = '/tgcd', '/trufigcd'
 function SlashCmdList.TRUFI()
-    Settings.OpenToCategory(frame.name)
+	Settings.OpenToCategory(category:GetID())
 end
 
 ---show/hide anchors button, text and frame
