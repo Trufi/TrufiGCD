@@ -231,19 +231,19 @@ end
 
 ---@type {[UnitType]: LayoutType}
 local unitTypeToLayoutType = {
-	player = "player",
+    player = "player",
 }
 
 if not ns.constants.IsMidnight then
-	unitTypeToLayoutType.party1 = "party"
-	unitTypeToLayoutType.party2 = "party"
-	unitTypeToLayoutType.party3 = "party"
-	unitTypeToLayoutType.party4 = "party"
-	unitTypeToLayoutType.arena1 = "arena"
-	unitTypeToLayoutType.arena2 = "arena"
-	unitTypeToLayoutType.arena3 = "arena"
-	unitTypeToLayoutType.target = "target"
-	unitTypeToLayoutType.focus = "focus"
+    unitTypeToLayoutType.party1 = "party"
+    unitTypeToLayoutType.party2 = "party"
+    unitTypeToLayoutType.party3 = "party"
+    unitTypeToLayoutType.party4 = "party"
+    unitTypeToLayoutType.arena1 = "arena"
+    unitTypeToLayoutType.arena2 = "arena"
+    unitTypeToLayoutType.arena3 = "arena"
+    unitTypeToLayoutType.target = "target"
+    unitTypeToLayoutType.focus = "focus"
 end
 
 ns.units = {}

@@ -13,7 +13,7 @@ settingsFrame.frame = frame
 
 SLASH_TRUFI1, SLASH_TRUFI2 = '/tgcd', '/trufigcd'
 function SlashCmdList.TRUFI()
-	Settings.OpenToCategory(category:GetID())
+    Settings.OpenToCategory(category:GetID())
 end
 
 ---show/hide anchors button, text and frame

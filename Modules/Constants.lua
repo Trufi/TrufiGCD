@@ -5,33 +5,31 @@ local _, ns = ...
 local constants = {}
 ns.constants = constants
 
-constants.IsMidnight = select(4, GetBuildInfo()) >= 120000
-
 ---@type UnitType[]
 constants.unitTypes = {
-	"player",
+    "player",
 }
 
 if not constants.IsMidnight then
-	table.insert(constants.unitTypes, "party1")
-	table.insert(constants.unitTypes, "party2")
-	table.insert(constants.unitTypes, "party3")
-	table.insert(constants.unitTypes, "party4")
-	table.insert(constants.unitTypes, "arena1")
-	table.insert(constants.unitTypes, "arena2")
-	table.insert(constants.unitTypes, "arena3")
-	table.insert(constants.unitTypes, "target")
-	table.insert(constants.unitTypes, "focus")
+    table.insert(constants.unitTypes, "party1");
+    table.insert(constants.unitTypes, "party2");
+    table.insert(constants.unitTypes, "party3");
+    table.insert(constants.unitTypes, "party4");
+    table.insert(constants.unitTypes, "arena1");
+    table.insert(constants.unitTypes, "arena2");
+    table.insert(constants.unitTypes, "arena3");
+    table.insert(constants.unitTypes, "target");
+    table.insert(constants.unitTypes, "focus");
 end
 
 ---@type LayoutType[]
 constants.layoutTypes = {
-	"player",
+    "player",
 }
 
 if not constants.IsMidnight then
-	table.insert(constants.layoutTypes, "party")
-	table.insert(constants.layoutTypes, "arena")
-	table.insert(constants.layoutTypes, "target")
-	table.insert(constants.layoutTypes, "focus")
+    table.insert(constants.layoutTypes, "party");
+    table.insert(constants.layoutTypes, "arena");
+    table.insert(constants.layoutTypes, "target");
+    table.insert(constants.layoutTypes, "focus");
 end
