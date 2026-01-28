@@ -10,6 +10,8 @@ constants.unitTypes = {
     "player",
 }
 
+constants.IsMidnight = (select(4, GetBuildInfo()) >= 120000);
+
 if not constants.IsMidnight then
     table.insert(constants.unitTypes, "party1");
     table.insert(constants.unitTypes, "party2");

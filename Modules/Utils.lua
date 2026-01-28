@@ -72,7 +72,7 @@ utils.interfaceOptions_AddCategory = function(frame)
         local subcategory = Settings.RegisterCanvasLayoutSubcategory(category, frame, frame.name, frame.name);
 
         if not ns.constants.IsMidnight then
-            category.ID = frame.name;
+            subcategory.ID = frame.name;
         end
 
         return subcategory, category;
