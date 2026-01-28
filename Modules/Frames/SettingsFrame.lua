@@ -10,6 +10,7 @@ frame:Hide()
 frame.name = "TrufiGCD"
 local category = ns.utils.interfaceOptions_AddCategory(frame)
 settingsFrame.frame = frame
+settingsFrame.category = category
 
 SLASH_TRUFI1, SLASH_TRUFI2 = '/tgcd', '/trufigcd'
 function SlashCmdList.TRUFI()
@@ -64,7 +65,7 @@ frameShowAnchorsButtonText:SetText('TrufiGCD')
 frameShowAnchorsButtonText:SetPoint("TOP", 0, -8)
 
 frameShowAnchorsReturnButton:SetScript("OnClick", function()
-    Settings.OpenToCategory(frame.name)
+    Settings.OpenToCategory(category:GetID())
 end)
 
 local anchorDisplayed = false

@@ -109,7 +109,7 @@ local function OnLoad()
             registerForAnyClick = true,
             func = function(_, btn)
                 if btn.buttonName == "LeftButton" then
-                    Settings.OpenToCategory(ns.settingsFrame.frame.name)
+                    Settings.OpenToCategory(ns.settingsFrame.category:GetID())
                 else
                     ns.settingsFrame.toggleAnchors()
                 end
@@ -136,7 +136,7 @@ else
     local loadFrame = CreateFrame("Frame", nil, UIParent)
     loadFrame:RegisterEvent("ADDON_LOADED")
     loadFrame:SetScript("OnEvent", function(self, event, name)
-        if name ~= "TrufiGCD" or event ~= "ADDON_LOADED" then
+        if name ~= addonName or event ~= "ADDON_LOADED" then
             return
         end
 
