@@ -68,9 +68,9 @@ utils.interfaceOptions_AddCategory = function(frame)
         if category == nil then
             error("Parent category not found: " .. frame.parent);
         end
-        
+
         local subcategory = Settings.RegisterCanvasLayoutSubcategory(category, frame, frame.name, frame.name);
-        
+
         if not ns.constants.IsMidnight then
             category.ID = frame.name;
         end
