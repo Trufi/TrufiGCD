@@ -463,6 +463,129 @@ for index, layoutType in ipairs(ns.constants.layoutTypes) do
     layoutSettingsFrames[layoutType] = LayoutSettingsFrame:New(layoutType, index)
 end
 
+-- Player labels share the icon's position and fade; the queue layout is unchanged.
+local timingLabel = frame:CreateFontString(nil, "BACKGROUND")
+timingLabel:SetFont(STANDARD_TEXT_FONT, 12)
+timingLabel:SetText("Player cast timing:")
+timingLabel:SetPoint("TOPLEFT", 20, -320)
+
+local timingDropdown = CreateFrame("Frame", "TrGCDCastTimingDropdown", frame, "UIDropDownMenuTemplate")
+timingDropdown:SetPoint("TOPLEFT", 5, -340)
+UIDropDownMenu_SetWidth(timingDropdown, 180)
+local timingModes = {
+    { value = "off", text = "Off" },
+    { value = "gcd", text = "GCD gap (seconds)" },
+    { value = "elapsed", text = "Time between casts" },
+}
+local function syncTimingDropdown()
+    for _, mode in ipairs(timingModes) do
+        if mode.value == ns.settings.activeProfile.castTimingMode then
+            UIDropDownMenu_SetText(timingDropdown, mode.text)
+        end
+    end
+    for _, icon in ipairs(ns.units.player.iconQueue.icons) do icon:UpdateTimingText() end
+end
+UIDropDownMenu_Initialize(timingDropdown, function()
+    for _, mode in ipairs(timingModes) do
+        local info = UIDropDownMenu_CreateInfo()
+        local value = mode.value
+        info.text = mode.text
+        info.checked = ns.settings.activeProfile.castTimingMode == value
+        info.func = function()
+            if value == "elapsed" and ns.settings.activeProfile.castTimingMode ~= value then
+                ns.castTiming:ResetElapsed()
+            end
+            ns.settings.activeProfile.castTimingMode = value
+            ns.settings:Save()
+            syncTimingDropdown()
+        end
+        UIDropDownMenu_AddButton(info)
+    end
+end)
+ns.frameUtils.addTooltip(timingDropdown, "Player cast timing",
+    "GCD gap: idle seconds after both the previous GCD and cast/channel have ended.\n"
+    .. "Time between casts: seconds between player cast starts.\n"
+    .. "The first cast has no number. GCD gaps are blank for off-GCD abilities or unavailable cooldown timing.")
+syncTimingDropdown()
+
+local fontLabel = frame:CreateFontString(nil, "BACKGROUND")
+fontLabel:SetFont(STANDARD_TEXT_FONT, 12)
+fontLabel:SetText("Number font:")
+fontLabel:SetPoint("TOPLEFT", 20, -380)
+
+local fontButton = CreateFrame("Button", "TrGCDTimingFontButton", frame, "UIPanelButtonTemplate")
+fontButton:SetSize(210, 22)
+fontButton:SetPoint("TOPLEFT", 20, -396)
+ns.frameUtils.addTooltip(fontButton, "Number font", "Choose a font shared by your installed addons. Changes apply immediately to the numbers below the icons.")
+
+local fontPreview = frame:CreateFontString(nil, "OVERLAY")
+fontPreview:SetPoint("LEFT", fontButton, "RIGHT", 15, 0)
+-- WoW requires a font before SetText; otherwise this file stops loading.
+ns.fonts:Apply(fontPreview, "player")
+fontPreview:SetText("0.3")
+settingsFrame.refreshTimingFont = function()
+    local name = ns.settings.activeProfile.castTimingFont
+    fontButton:SetText(name == "" and "Game default" or name)
+    ns.fonts:Apply(fontPreview, "player")
+end
+local function isFontSelected(name) return ns.settings.activeProfile.castTimingFont == name end
+local function selectFont(name)
+    ns.settings.activeProfile.castTimingFont = name
+    ns.settings:Save()
+    ns.fonts:Refresh()
+end
+
+-- Older clients use the same dropdown system as the other settings.
+local legacyFontMenu = CreateFrame("Frame", "TrGCDTimingFontMenu", fontButton, "UIDropDownMenuTemplate")
+legacyFontMenu:Hide()
+UIDropDownMenu_Initialize(legacyFontMenu, function()
+    local function addFont(name, label)
+        local info = UIDropDownMenu_CreateInfo()
+        info.text = label
+        info.checked = isFontSelected(name)
+        info.func = function() selectFont(name) end
+        UIDropDownMenu_AddButton(info)
+    end
+    addFont("", "Game default")
+    for _, name in ipairs(ns.fonts:List()) do addFont(name, name) end
+end)
+fontButton:SetScript("OnClick", function(self)
+    if MenuUtil and MenuUtil.CreateContextMenu then
+        MenuUtil.CreateContextMenu(self, function(_, root)
+            -- Font packs can register hundreds of entries; keep the full list scrollable.
+            root:SetScrollMode(240)
+            root:CreateRadio("Game default", isFontSelected, selectFont, "")
+            for _, name in ipairs(ns.fonts:List()) do
+                root:CreateRadio(name, isFontSelected, selectFont, name)
+            end
+        end)
+    else
+        ToggleDropDownMenu(1, nil, legacyFontMenu, self, 0, 0)
+    end
+end)
+
+local fontSizeSlider = CreateFrame("Slider", "TrGCDTimingFontSizeSlider", frame, "TrufiGCD_OptionsSliderTemplate")
+fontSizeSlider:SetWidth(180)
+fontSizeSlider:SetPoint("TOPLEFT", 35, -450)
+fontSizeSlider:SetMinMaxValues(0, 40)
+fontSizeSlider:SetValueStep(1)
+fontSizeSlider:SetObeyStepOnDrag(true)
+_G[fontSizeSlider:GetName() .. "Low"]:SetText("Auto")
+_G[fontSizeSlider:GetName() .. "High"]:SetText("40")
+fontSizeSlider:SetScript("OnValueChanged", function(_, value)
+    value = math.max(0, math.min(40, math.floor(value + 0.5)))
+    _G[fontSizeSlider:GetName() .. "Text"]:SetText("Font size: " .. (value == 0 and "Auto" or value))
+    if ns.settings.activeProfile.castTimingFontSize ~= value then
+        ns.settings.activeProfile.castTimingFontSize = value
+        ns.settings:Save()
+        ns.fonts:Refresh()
+    end
+end)
+ns.frameUtils.addTooltip(fontSizeSlider, "Number font size", "Set the size of the numbers below the icons. Auto follows the icon size.")
+fontSizeSlider:SetValue(ns.settings.activeProfile.castTimingFontSize)
+_G[fontSizeSlider:GetName() .. "Text"]:SetText("Font size: " .. (ns.settings.activeProfile.castTimingFontSize == 0 and "Auto" or ns.settings.activeProfile.castTimingFontSize))
+settingsFrame.refreshTimingFont()
+
 settingsFrame.syncWithSettings = function()
     local settings = ns.settings.activeProfile
 
@@ -470,6 +593,10 @@ settingsFrame.syncWithSettings = function()
     stopMovingCheckbox:SetChecked(settings.tooltipStopScroll)
     spellIdCheckbox:SetChecked(settings.tooltipPrintSpellId)
     scrollingCheckbox:SetChecked(settings.iconsScroll)
+    syncTimingDropdown()
+    fontSizeSlider:SetValue(settings.castTimingFontSize)
+    _G[fontSizeSlider:GetName() .. "Text"]:SetText("Font size: " .. (settings.castTimingFontSize == 0 and "Auto" or settings.castTimingFontSize))
+    ns.fonts:Refresh()
 
     combatOnlyCheckbox:SetChecked(settings.enabledIn.combatOnly)
     enableCheckbox:SetChecked(settings.enabledIn.enabled)

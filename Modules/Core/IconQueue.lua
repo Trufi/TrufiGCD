@@ -84,12 +84,13 @@ end
 
 ---@param id number
 ---@param texture string | number
-function IconQueue:AddSpell(id, texture)
+---@param timing? CastTimingSample
+function IconQueue:AddSpell(id, texture, timing)
     if self.iconIndex == innerIconsNumber then
         self.iconIndex = 1
     end
 
-    self.icons[self.iconIndex]:SetSpell(id, texture)
+    self.icons[self.iconIndex]:SetSpell(id, texture, timing)
     table.insert(self.nextIconIndices, self.iconIndex)
     self.iconIndex = self.iconIndex + 1
 end
@@ -141,6 +142,7 @@ function IconQueue:Update(time, interval, isCasting)
 
     for _, icon in ipairs(self.icons) do
         if icon.displayed then
+            icon:UpdateTimingText()
             if ns.settings.activeProfile.iconsScroll or fastSpeedDuration > 0 then
                 icon.offset = icon.offset - offsetDelta
             end

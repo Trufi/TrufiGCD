@@ -50,6 +50,11 @@ function Icon:New(params)
     obj.cancelTexture:SetAlpha(1)
     obj.cancelTexture:Hide()
 
+    obj.timingText = obj.frame:CreateFontString(nil, "OVERLAY")
+    obj.timingText:SetPoint("TOP", obj.frame, "BOTTOM", 0, -2)
+    obj.timingText:SetTextColor(1, 1, 1)
+    obj.timingText:Hide()
+
     obj:Resize()
 
     ns.masqueHelper.addIcon(obj.frame, obj.texture)
@@ -62,6 +67,7 @@ function Icon:Show()
     self.displayed = true
     self.frame:Show()
     self.frame:SetAlpha(1)
+    self:UpdateTimingText()
 end
 
 function Icon:Hide()
@@ -79,6 +85,12 @@ function Icon:Resize()
     local settings = ns.settings.activeProfile.layoutSettings[self.layoutType]
     self.frame:SetWidth(settings.iconSize)
     self.frame:SetHeight(settings.iconSize)
+    self:UpdateTimingFont()
+    self:UpdateTimingText()
+end
+
+function Icon:UpdateTimingFont()
+    ns.fonts:Apply(self.timingText, self.layoutType)
 end
 
 function Icon:Clear()
@@ -91,6 +103,8 @@ function Icon:Clear()
     self.frame:Hide()
 
     self.cancelTexture:Hide()
+    self.timing = nil
+    self:UpdateTimingText()
 end
 
 function Icon:UpdatePosition()
@@ -110,6 +124,8 @@ end
 function Icon:Copy(from)
     self.offset = from.offset
     self.startTime = from.startTime
+    self.timing = from.timing
+    self:UpdateTimingText()
 
     self:UpdatePosition()
     self.texture:SetTexture(from.texture:GetTexture())
@@ -132,13 +148,30 @@ end
 
 ---@param id number
 ---@param texture string | number
-function Icon:SetSpell(id, texture)
+---@param timing? CastTimingSample
+function Icon:SetSpell(id, texture, timing)
     self.offset = 0
     self.displayed = false
     self.spellId = id
+    self.timing = timing
+    self:UpdateTimingText()
     self.texture:SetTexture(texture)
     self.frame:SetAlpha(0)
     self.frame:Hide()
+end
+
+function Icon:UpdateTimingText()
+    local mode = ns.settings.activeProfile.castTimingMode
+    local value
+    if self.unitType == "player" and self.timing then
+        if mode == "gcd" then value = self.timing.gcdGap end
+        if mode == "elapsed" then value = self.timing.elapsed end
+    end
+    local text = value and string.format("%.1f", value) or ""
+    if text == self.timingTextValue then return end
+    self.timingTextValue = text
+    self.timingText:SetText(text)
+    if text == "" then self.timingText:Hide() else self.timingText:Show() end
 end
 
 function Icon:ShowCancelTexture()

@@ -25,6 +25,9 @@ function ProfileSettings:New(savedVariables)
     }
 
     obj.iconsScroll = true
+    obj.castTimingMode = "gcd"
+    obj.castTimingFont = ""
+    obj.castTimingFontSize = 0 -- Automatic: match the icon size.
     obj.tooltipEnabled = true
     obj.tooltipPrintSpellId = false
     obj.tooltipStopScroll = true
@@ -102,6 +105,16 @@ function ProfileSettings:SetFromSavedVariables(savedVariables)
 
     if type(savedVariables.ModScroll) == "boolean" then
         self.iconsScroll = savedVariables.ModScroll
+    end
+    if savedVariables.castTimingMode == "off" or savedVariables.castTimingMode == "gcd" or savedVariables.castTimingMode == "elapsed" then
+        self.castTimingMode = savedVariables.castTimingMode
+    end
+    if type(savedVariables.castTimingFont) == "string" then
+        self.castTimingFont = savedVariables.castTimingFont
+    end
+    if type(savedVariables.castTimingFontSize) == "number" and savedVariables.castTimingFontSize >= 0
+        and savedVariables.castTimingFontSize <= 40 then
+        self.castTimingFontSize = math.floor(savedVariables.castTimingFontSize)
     end
     if type(savedVariables.TooltipEnable) == "boolean" then
         self.tooltipEnabled = savedVariables.TooltipEnable
@@ -197,6 +210,9 @@ function ProfileSettings:GetSavedVariables()
     savedVariables.EnableIn.Raid = self.enabledIn.raid
     savedVariables.EnableIn["Combat only"] = self.enabledIn.combatOnly
     savedVariables.ModScroll = self.iconsScroll
+    savedVariables.castTimingMode = self.castTimingMode
+    savedVariables.castTimingFont = self.castTimingFont
+    savedVariables.castTimingFontSize = self.castTimingFontSize
     savedVariables.TooltipEnable = self.tooltipEnabled
     savedVariables.TooltipSpellID = self.tooltipPrintSpellId
     savedVariables.TooltipStopMove = self.tooltipStopScroll

@@ -16,6 +16,10 @@
 ---@field masqueHelper MasqueHelper
 ---@field locationCheck LocationCheck
 ---@field constants Constants
+---@field castTiming CastTiming
+---@field fonts Fonts
+
+---@alias CastTimingMode "off" | "gcd" | "elapsed"
 
 ---@alias Direction "Left" | "Right" | "Up" | "Down"
 
@@ -97,6 +101,9 @@
 ---@field focus? UnitVariablesV2
 
 ---@class ProfileVariablesV2
+---@field castTimingMode? CastTimingMode
+---@field castTimingFont? string
+---@field castTimingFontSize? number
 ---@field id? string
 ---@field name? string
 ---@field layouts? LayoutsVariablesV2

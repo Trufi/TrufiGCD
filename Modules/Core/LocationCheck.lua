@@ -106,6 +106,7 @@ locationCheck.settingsChanged = function()
     end
 
     if not addonEnabled then
+        ns.castTiming:Reset()
         for _, unit in ipairs(ns.units) do
             unit:Clear()
         end

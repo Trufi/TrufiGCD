@@ -82,6 +82,8 @@ local function OnLoad()
         spellEventFrame:SetScript("OnEvent", function(_, unitEvent, unitType, castId, spellId)
             if ns.units[unitType] and ns.locationCheck.isAddonEnabled() then
                 ns.units[unitType]:OnSpellEvent(unitEvent, spellId, unitType, castId)
+            elseif unitType == "player" then
+                ns.castTiming:Reset()
             end
         end)
     end)

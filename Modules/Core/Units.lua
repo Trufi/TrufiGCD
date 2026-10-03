@@ -49,6 +49,7 @@ end
 function Unit:Clear()
     self.currentlyCastedSpell = nil
     self.iconQueue:Clear()
+    if self.unitType == "player" then ns.castTiming:Reset() end
 end
 
 ---@param from Unit
@@ -110,6 +111,11 @@ end
 ---@param unitType UnitType
 ---@param castId string | nil The nil value appears for _CHANNEL_ events
 function Unit:OnSpellEvent(event, spellId, unitType, castId)
+    -- Hidden spells still consume a GCD and must advance the timing reference.
+    local timing
+    if unitType == "player" then
+        timing = ns.castTiming:OnSpellEvent(event, spellId, castId)
+    end
     if not ns.settings.activeProfile.layoutSettings[self.layoutType].enable or checkBlocklist(spellId) then
         return
     end
@@ -133,7 +139,7 @@ function Unit:OnSpellEvent(event, spellId, unitType, castId)
         -- Ignore start of spells without castId - they are likely supplemental
         -- e.g. casts from druid forms create two start events (one without castId)
         if castId then
-            self:AddSpell(unitType, spellId, spellIcon, spellName)
+            self:AddSpell(unitType, spellId, spellIcon, spellName, timing)
             self.currentlyCastedSpell = {
                 id = spellId,
                 castId = castId,
@@ -147,7 +153,7 @@ function Unit:OnSpellEvent(event, spellId, unitType, castId)
         -- * their castTime is 0
         -- * the succeeded event doesn't mean the channeling stopped
 
-        self:AddSpell(unitType, spellId, spellIcon, spellName)
+        self:AddSpell(unitType, spellId, spellIcon, spellName, timing)
         self.currentlyCastedSpell = {
             id = spellId,
             castId = "channel",
@@ -178,13 +184,13 @@ function Unit:OnSpellEvent(event, spellId, unitType, castId)
             -- it is likely a supplementary spell that doesn't need to be displayed.
             elseif self.currentlyCastedSpell.name ~= spellName then
                 -- Show instant spells, e.g. for monk mist spells or mage's Ice Floes
-                self:AddSpell(unitType, spellId, spellIcon, spellName)
+                self:AddSpell(unitType, spellId, spellIcon, spellName, timing)
             end
 
         else
             -- If a unit is NOT casting, it is an instant spell or the one that became instant because of some buff.
             if castTime <= 0 then
-                self:AddSpell(unitType, spellId, spellIcon, spellName)
+                self:AddSpell(unitType, spellId, spellIcon, spellName, timing)
             end
         end
     elseif event == "UNIT_SPELLCAST_STOP" then
@@ -210,6 +216,7 @@ end
 ---@param time number
 ---@param interval number
 function Unit:Update(time, interval)
+    if self.unitType == "player" then ns.castTiming:UpdateElapsed(time) end
     -- fix for stale icons
     if time - self.stopMovingTime > 10 then
         self.currentlyCastedSpell = nil
@@ -223,8 +230,9 @@ end
 ---@param id number
 ---@param icon number
 ---@param name string
-function Unit:AddSpell(unitType, id, icon, name)
-    self.iconQueue:AddSpell(id, replaceToTrinketIfNeeded(unitType, id, icon))
+---@param timing? CastTimingSample
+function Unit:AddSpell(unitType, id, icon, name, timing)
+    self.iconQueue:AddSpell(id, replaceToTrinketIfNeeded(unitType, id, icon), timing)
     self.previousSpell.id = id
     self.previousSpell.name = name
 end

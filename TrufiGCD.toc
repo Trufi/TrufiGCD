@@ -7,7 +7,7 @@
 ## Notes: Last used spells of the player, target, party or arena members.
 ## SavedVariables: TrufiGCDGlSave
 ## SavedVariablesPerCharacter: TrufiGCDChSave
-## OptionalDeps: ButtonFacade, Masque
+## OptionalDeps: ButtonFacade, Masque, LibSharedMedia-3.0
 ## IconTexture: 4622474
 ## X-Curse-Project-ID: 46527
 ## X-WoWI-ID: 21820
@@ -20,6 +20,7 @@ Libs\LibStub\Libstub.lua
 
 # Utility modules
 Modules\Utils.lua
+Modules\Fonts.lua
 Modules\MasqueHelper.lua
 Modules\Constants.lua
 Modules\Frames\FrameUtils.lua
@@ -32,6 +33,7 @@ Modules\Settings\ProfileSettings.lua
 Modules\Settings\Settings.lua
 
 # Core modules
+Modules\Core\CastTiming.lua
 Modules\Core\Icon.lua
 Modules\Core\IconQueue.lua
 Modules\Core\LocationCheck.lua
