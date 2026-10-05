@@ -3,8 +3,9 @@
 ## Interface-BCC: 20505
 ## Interface-Cata: 40402
 ## Interface-Mists: 50500
+## Interface-Forever: 16001
 ## Title: TrufiGCD
-## Notes: Last used spells of the player, target, party or arena members.
+## Notes: Player spell history on Midnight and Forever; also party, arena, target and focus history on Classic.
 ## SavedVariables: TrufiGCDGlSave
 ## SavedVariablesPerCharacter: TrufiGCDChSave
 ## OptionalDeps: ButtonFacade, Masque

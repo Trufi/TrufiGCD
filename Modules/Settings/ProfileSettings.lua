@@ -43,13 +43,13 @@ function ProfileSettings:New(savedVariables)
 
     ---@type {[UnitType]: UnitSettings}
     obj.unitSettings = {}
-    for _, unitType in ipairs(ns.constants.unitTypes) do
+    for _, unitType in ipairs(ns.constants.allUnitTypes) do
         obj.unitSettings[unitType] = ns.UnitSettings:New(unitType)
     end
 
     ---@type {[LayoutType]: LayoutSettings}
     obj.layoutSettings = {}
-    for _, layoutType in ipairs(ns.constants.layoutTypes) do
+    for _, layoutType in ipairs(ns.constants.allLayoutTypes) do
         obj.layoutSettings[layoutType] = ns.LayoutSettings:New()
     end
 
@@ -121,12 +121,11 @@ function ProfileSettings:SetFromSavedVariables(savedVariables)
 
     -- Support for V1
     if type(savedVariables.TrGCDQueueFr) == "table" then
-        for unitIndex = 1, 12 do
+        for unitIndex, unitType in ipairs(ns.constants.allUnitTypes) do
             local unitSaves = savedVariables.TrGCDQueueFr[unitIndex]
-            local unitType = ns.constants.unitTypes[unitIndex]
             local unitSettings = self.unitSettings[unitType]
 
-            if type(unitSaves) == "table" and unitSettings then
+            if type(unitSaves) == "table" then
                 unitSettings:SetFromSavedVariables(unitSaves)
             end
         end

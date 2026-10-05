@@ -198,13 +198,13 @@ function Icon:AddToBlocklist()
         for slotId = 0, 19 do
             local itemId = GetInventoryItemID("player", slotId)
             if itemId then
-                local _, itemSpellId = GetItemSpell(itemId)
+                local _, itemSpellId = ns.utils.getItemSpell(itemId)
                 if itemSpellId and itemSpellId == self.spellId then
                     table.insert(ns.settings.activeProfile.itemBlocklist, itemId)
                     ns.settings:Save()
                     ns.blocklistFrame.syncWithSettings()
 
-                    local itemName = GetItemInfo(itemId)
+                    local itemName = ns.utils.getItemInfo(itemId)
                     if itemName then
                         print("[TrufiGCD]: item \"" .. itemName .. "\" with ID \"" .. itemId .. "\" added to the item blocklist")
                     else
@@ -220,13 +220,13 @@ function Icon:AddToBlocklist()
             for slot = 1, C_Container.GetContainerNumSlots(bag) do
                 local itemId = C_Container.GetContainerItemID(bag, slot)
                 if itemId then
-                    local itemSpellName, itemSpellId = GetItemSpell(itemId)
+                    local _, itemSpellId = ns.utils.getItemSpell(itemId)
                     if itemSpellId and itemSpellId == self.spellId then
                         table.insert(ns.settings.activeProfile.itemBlocklist, itemId)
                         ns.settings:Save()
                         ns.blocklistFrame.syncWithSettings()
 
-                        local itemName = GetItemInfo(itemId)
+                        local itemName = ns.utils.getItemInfo(itemId)
                         if itemName then
                             print("[TrufiGCD]: item \"" .. itemName .. "\" with ID \"" .. itemId .. "\" added to the item blocklist")
                         else

@@ -93,6 +93,8 @@
 ---@field arena1? UnitVariablesV2
 ---@field arena2? UnitVariablesV2
 ---@field arena3? UnitVariablesV2
+---@field arena4? UnitVariablesV2
+---@field arena5? UnitVariablesV2
 ---@field target? UnitVariablesV2
 ---@field focus? UnitVariablesV2
 

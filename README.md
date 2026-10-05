@@ -1,4 +1,4 @@
-A World of Warcraft interface addon that shows the last used abilities of party and arena members.
+A World of Warcraft interface addon that shows recently used abilities.
 
 [Video preview](https://www.youtube.com/watch?v=CtwDSMJs4Dc)
 

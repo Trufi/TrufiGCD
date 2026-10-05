@@ -54,7 +54,30 @@ utils.getSpellLink = function(spellId)
 
 end
 
+-- Prefer the supported item namespace while retaining older Classic APIs.
+utils.getItemSpell = function(itemId)
+    if C_Item and C_Item.GetItemSpell then
+        return C_Item.GetItemSpell(itemId)
+    end
+    return GetItemSpell(itemId)
+end
+
+utils.getItemInfo = function(itemId)
+    if C_Item and C_Item.GetItemInfo then
+        return C_Item.GetItemInfo(itemId)
+    end
+    return GetItemInfo(itemId)
+end
+
+utils.getItemInfoInstant = function(itemInfo)
+    if C_Item and C_Item.GetItemInfoInstant then
+        return C_Item.GetItemInfoInstant(itemInfo)
+    end
+    return GetItemInfoInstant(itemInfo)
+end
+
 local parentCategoryByName = {}
+local usesNumericCategoryIDs = C_SettingsUtil and C_SettingsUtil.OpenSettingsPanel
 
 utils.interfaceOptions_AddCategory = function(frame)
     -- cancel is no longer a default option. May add menu extension for this.
@@ -71,7 +94,7 @@ utils.interfaceOptions_AddCategory = function(frame)
 
         local subcategory = Settings.RegisterCanvasLayoutSubcategory(category, frame, frame.name, frame.name);
 
-        if not ns.constants.IsMidnight then
+        if not usesNumericCategoryIDs then
             subcategory.ID = frame.name;
         end
 
@@ -80,7 +103,7 @@ utils.interfaceOptions_AddCategory = function(frame)
         local category = Settings.RegisterCanvasLayoutCategory(frame, frame.name, frame.name);
         parentCategoryByName[frame.name] = category;
 
-        if not ns.constants.IsMidnight then
+        if not usesNumericCategoryIDs then
             category.ID = frame.name;
         end
 

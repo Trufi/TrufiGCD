@@ -93,10 +93,9 @@ local function checkBlocklist(spellId)
         end
     end
 
-    -- Check if this spell is from an item usage
-    -- GetItemSpell returns itemId if the spell is from an item
+    -- Match each blocked item's on-use spell.
     for _, blockedItemId in ipairs(ns.settings.activeProfile.itemBlocklist) do
-        local _, itemSpellId = GetItemSpell(blockedItemId)
+        local _, itemSpellId = ns.utils.getItemSpell(blockedItemId)
         if itemSpellId and itemSpellId == spellId then
             return true
         end
@@ -108,7 +107,7 @@ end
 ---@param event string
 ---@param spellId number
 ---@param unitType UnitType
----@param castId string | nil The nil value appears for _CHANNEL_ events
+---@param castId string | nil Legacy clients may omit the GUID for channel events.
 function Unit:OnSpellEvent(event, spellId, unitType, castId)
     if not ns.settings.activeProfile.layoutSettings[self.layoutType].enable or checkBlocklist(spellId) then
         return
@@ -142,10 +141,9 @@ function Unit:OnSpellEvent(event, spellId, unitType, castId)
             self.stopMovingTime = GetTime()
         end
     elseif event == "UNIT_SPELLCAST_CHANNEL_START" or event == "UNIT_SPELLCAST_EMPOWER_START" then
-        -- Channeling and empower spells are different to regular cast spells:
-        -- * they don't have castId
-        -- * their castTime is 0
-        -- * the succeeded event doesn't mean the channeling stopped
+        -- Channels and empowered casts stay active after SUCCEEDED and end on STOP.
+        -- Use a channel marker even when modern clients supply a cast GUID;
+        -- older channel events may omit it.
 
         self:AddSpell(unitType, spellId, spellIcon, spellName)
         self.currentlyCastedSpell = {
@@ -234,7 +232,7 @@ local unitTypeToLayoutType = {
     player = "player",
 }
 
-if not ns.constants.IsMidnight then
+if not ns.constants.usesRestrictedCastData then
     unitTypeToLayoutType.party1 = "party"
     unitTypeToLayoutType.party2 = "party"
     unitTypeToLayoutType.party3 = "party"

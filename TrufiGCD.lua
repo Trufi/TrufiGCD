@@ -33,7 +33,7 @@ local function OnLoad()
 
     ns.locationCheck.settingsChanged()
 
-    if not ns.constants.IsMidnight then
+    if not ns.constants.usesRestrictedCastData then
         local targetFocusChangeFrame = CreateFrame("Frame", nil, UIParent)
         targetFocusChangeFrame:RegisterEvent("PLAYER_TARGET_CHANGED")
         targetFocusChangeFrame:RegisterEvent("PLAYER_FOCUS_CHANGED")
@@ -55,7 +55,7 @@ local function OnLoad()
     --Delay the initialisation to prevent odd abilities spam at the first world enter
     C_Timer.After(0.5, function()
         local spellEventFrame = CreateFrame("Frame", nil, UIParent)
-        if ns.constants.IsMidnight then
+        if ns.constants.usesRestrictedCastData then
             spellEventFrame:RegisterUnitEvent("UNIT_SPELLCAST_START", "player")
             spellEventFrame:RegisterUnitEvent("UNIT_SPELLCAST_CHANNEL_START", "player")
             spellEventFrame:RegisterUnitEvent("UNIT_SPELLCAST_SUCCEEDED", "player")
@@ -70,7 +70,7 @@ local function OnLoad()
         end
 
         if IS_RETAIL then
-            if ns.constants.IsMidnight then
+            if ns.constants.usesRestrictedCastData then
                 spellEventFrame:RegisterUnitEvent("UNIT_SPELLCAST_EMPOWER_START", "player")
                 spellEventFrame:RegisterUnitEvent("UNIT_SPELLCAST_EMPOWER_STOP", "player")
             else
@@ -80,6 +80,11 @@ local function OnLoad()
         end
 
         spellEventFrame:SetScript("OnEvent", function(_, unitEvent, unitType, castId, spellId)
+            -- Even player casts can have spell-specific secrecy overrides.
+            if issecretvalue and (issecretvalue(unitType) or issecretvalue(castId) or issecretvalue(spellId)) then
+                return
+            end
+
             if ns.units[unitType] and ns.locationCheck.isAddonEnabled() then
                 ns.units[unitType]:OnSpellEvent(unitEvent, spellId, unitType, castId)
             end
@@ -115,16 +120,26 @@ local function OnLoad()
                 end
             end,
             funcOnEnter = function(button)
-                MenuUtil.ShowTooltip(button, function(tooltip)
+                local function populateTooltip(tooltip)
                     tooltip:ClearLines()
                     tooltip:SetText("TrufiGCD")
                     tooltip:AddLine("|cffeda55fLeft-Click|r to open the settings.", 1, 1, 1, true)
                     tooltip:AddLine("|cffeda55fRight-Click|r to show frame anchors.", 1, 1, 1, true)
                     tooltip:Show()
-                end)
+                end
+
+                if MenuUtil.ShowTooltipEx then
+                    MenuUtil.ShowTooltipEx(button, GetAppropriateTooltip(), populateTooltip)
+                else
+                    MenuUtil.ShowTooltip(button, populateTooltip)
+                end
             end,
             funcOnLeave = function(button)
-                MenuUtil.HideTooltip(button)
+                if MenuUtil.HideTooltipEx then
+                    MenuUtil.HideTooltipEx(button, GetAppropriateTooltip())
+                else
+                    MenuUtil.HideTooltip(button)
+                end
             end,
         })
     end

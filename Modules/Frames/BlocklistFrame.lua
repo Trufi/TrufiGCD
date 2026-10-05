@@ -377,7 +377,7 @@ local function addItemToBlocklist()
         table.insert(ns.settings.activeProfile.itemBlocklist, inputItemId)
     else
         local itemName = inputValue
-        local itemId = GetItemInfoInstant(itemName)
+        local itemId = ns.utils.getItemInfoInstant(itemName)
 
         if not itemId then
             print("[TrufiGCD]: can't find an item ID for the name \"" .. itemName .. "\". Please, provide the exact item ID.")
@@ -436,7 +436,7 @@ blocklistFrame.syncWithSettings = function()
         if itemId ~= nil then
             item.button:Enable()
 
-            local itemName = GetItemInfo(itemId)
+            local itemName = ns.utils.getItemInfo(itemId)
             if itemName then
                 item.text:SetText(itemId .. " - " .. itemName)
             else
