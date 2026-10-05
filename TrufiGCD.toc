@@ -1,8 +1,8 @@
-## Interface: 120000, 120001
-## Interface-Classic: 11507
-## Interface-BCC: 20505
+## Interface: 120100
+## Interface-Classic: 11509
+## Interface-BCC: 20506
 ## Interface-Cata: 40402
-## Interface-Mists: 50500
+## Interface-Mists: 50504
 ## Interface-Forever: 16001
 ## Title: TrufiGCD
 ## Notes: Player spell history on Midnight and Forever; also party, arena, target and focus history on Classic.
